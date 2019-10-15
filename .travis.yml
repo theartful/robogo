@@ -1,0 +1,22 @@
+sudo: required
+before_install:
+  - sudo apt-get install libao-dev
+  - sudo apt-get install libcurl4-openssl-dev
+  - sudo apt-get install g++
+  - sudo apt-get install cpputest
+  - sudo apt-get install python-dev
+  
+# Enable C++ support
+language: cpp
+
+# Compiler selection
+compiler:
+  - g++
+  
+install:
+  - sudo pip install cpplint
+# Build steps
+script:
+  - cpplint --recursive --exclude=./tests/*   .
+  - g++ tests/main.cpp -lCppUTest
+  - ./a.out
