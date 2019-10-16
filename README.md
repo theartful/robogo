@@ -17,7 +17,7 @@ cpplint --recursive --exclude=./tests/*   .
 - to run tests
 
 ```shell
-g++ tests/main.cpp -lCppUTest
+g++ tests/*.cpp -lCppUTest
 ./a.out
 rm a.out
 ```

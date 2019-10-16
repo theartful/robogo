@@ -18,5 +18,6 @@ install:
 # Build steps
 script:
   - cpplint --recursive --exclude=./tests/*   .
-  - g++ tests/main.cpp -lCppUTest
-  - ./a.out
+  - mkdir build
+  - g++ tests/*.cpp -lCppUTest -o build/tests-bin.out
+  - ./build/tests-bin.out
