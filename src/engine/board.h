@@ -1,19 +1,18 @@
-#ifndef _STATE_H_
-#define _STATE_H_
+#ifndef _BOARD_H_
+#define _BOARD_H_
 
 #include <chrono>
 #include <stdint.h>
+
+#ifndef NDEBUG
+#include <algorithm>
+#include <iterator>
+#endif
 
 namespace go
 {
 	namespace engine
 	{
-		enum class Player
-		{
-			WHITE_PLAYER,
-			BLACK_PLAYER
-		};
-
 		enum CellBits : unsigned char
 		{
 			WHITE_BIT = 0b00000001,
@@ -23,13 +22,19 @@ namespace go
 			DEAD_BIT = 0b00010000,
 		};
 
-		enum Cell : unsigned char
+		enum class Cell : unsigned char
 		{
 			WHITE = WHITE_BIT | ILLEGAL_WHITE_BIT | ILLEGAL_BLACK_BIT,
 			BLACK = BLACK_BIT | ILLEGAL_WHITE_BIT | ILLEGAL_BLACK_BIT,
 			DEAD = DEAD_BIT | ILLEGAL_WHITE_BIT | ILLEGAL_BLACK_BIT,
 			DEAD_WHITE = DEAD_BIT | WHITE,
 			DEAD_BLACK = DEAD_BIT | BLACK
+		};
+
+		enum class Player
+		{
+			WHITE,
+			BLACK
 		};
 
 		struct BoardState
@@ -61,7 +66,25 @@ namespace go
 			std::chrono::steady_clock::time_point start_time;
 			std::chrono::duration<uint32_t, std::milli> duration;
 		};
+
+		static inline Cell operator|(Cell cell, CellBits bit)
+		{
+			Cell result {static_cast<unsigned char>(cell) | bit};
+#ifndef NDEBUG
+			// in debug mode, enforce that Cell can't take wrong values
+			static constexpr Cell cell_values[] = {
+				Cell::WHITE, Cell::BLACK, Cell::DEAD, Cell::DEAD_WHITE, Cell::DEAD_BLACK
+			};
+			auto it = std::find(std::begin(cell_values), std::end(cell_values), result);
+			if (it == std::end(cell_values))
+			{
+				fprintf(stderr, "Illegal cell transition from %02hhx to %02hhx!\n", cell, result);
+				exit(-1);
+			}
+#endif
+			return result;
+		}
 	}
 }
 
-#endif // _STATE_H_
+#endif // _BOARD_H_
