@@ -17,7 +17,7 @@ install:
   - sudo pip install cpplint
 # Build steps
 script:
-  - cpplint --recursive --exclude=./tests/*   .
+  - cpplint --recursive --exclude=./tests/* --filter=-whitespace,-legal,-build/c++11,-build/include_subdir .
   - mkdir build
   - g++ tests/*.cpp -lCppUTest -o build/tests-bin.out
   - ./build/tests-bin.out
