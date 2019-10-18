@@ -15,7 +15,12 @@ enum CellBits : unsigned char
 	WHITE_BIT = 0b00000001,
 	BLACK_BIT = 0b00000010,
 	DEAD_BIT = 0b00010000,
+	SUICIDE_WHITE_BIT = 0b01000000,
+	SUICIDE_BLACK_BIT = 0b00100000,
 };
+static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT, SUICIDE_WHITE_BIT};
+static constexpr CellBits PLAYERS[] = {BLACK_BIT, WHITE_BIT};
+
 
 enum class Cell : unsigned char
 {
@@ -24,6 +29,8 @@ enum class Cell : unsigned char
 	BLACK = BLACK_BIT,
 	DEAD_WHITE = DEAD_BIT | WHITE,
 	DEAD_BLACK = DEAD_BIT | BLACK,
+	SUICIDE_WHITE = SUICIDE_WHITE_BIT,
+	SUICIDE_BLACK = SUICIDE_BLACK_BIT
 };
 
 struct BoardState
@@ -32,6 +39,13 @@ struct BoardState
 	Cell board[MAX_BOARD_SIZE * MAX_BOARD_SIZE];
 
 	Cell& operator()(uint32_t i, uint32_t j)
+	{
+		assert(i < MAX_BOARD_SIZE);
+		assert(j < MAX_BOARD_SIZE);
+		return board[i * MAX_BOARD_SIZE + j];
+	}
+
+	Cell operator()(uint32_t i, uint32_t j) const
 	{
 		assert(i < MAX_BOARD_SIZE);
 		assert(j < MAX_BOARD_SIZE);
@@ -70,9 +84,15 @@ struct GameState
 	Player players[2];
 };
 
+
 static inline Cell operator|(Cell cell, CellBits bit)
 {
 	return static_cast<Cell>(static_cast<unsigned char>(cell) | bit);
+}
+
+static inline unsigned char operator&(Cell cell, unsigned char bit)
+{
+	return (static_cast<unsigned char>(cell) | bit);
 }
 
 } // namespace engine
