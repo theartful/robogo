@@ -39,16 +39,16 @@ void go::simplegui::print_game_state(const GameState& game_state){
     clear_screen();
     print_board(game_state.board_state);
     std::cout<<"Players turn: "<<game_state.number_played_moves<<"\t\t\t";
-    std::cout<<"Number of played moves: "<<game_state.number_played_moves<<endl;
+    std::cout<<"Number of played moves: "<<game_state.number_played_moves<<std::endl;
 
-    std::cout<<"\tPlayer 0 \t\t\t Player 1"<<endl;
+    std::cout<<"\tPlayer 0 \t\t\t Player 1"<<std::endl;
 
     std::cout<<"Number of Captured: "<<game_state.players[0].number_captured_enemies;
-    std::cout<<"\t\t\tNumber of Captured: "<<game_state.players[1].number_captured_enemies<<endl;
+    std::cout<<"\t\t\tNumber of Captured: "<<game_state.players[1].number_captured_enemies<<estd::ndl;
 
     std::cout<<"Number of Alive: "<<game_state.players[0].number_alive_stones;
-    std::cout<<"\t\t\tNumber of Alive: "<<game_state.players[1].number_alive_stones<<endl;
+    std::cout<<"\t\t\tNumber of Alive: "<<game_state.players[1].number_alive_stones<<std::endl;
 
     std::cout<<"Total Score: "<<game_state.players[0].total_score;
-    std::cout<<"\t\t\t\tTotal Score: "<<game_state.players[1].total_score<<endl;
+    std::cout<<"\t\t\t\tTotal Score: "<<game_state.players[1].total_score<<std::endl;
 }
