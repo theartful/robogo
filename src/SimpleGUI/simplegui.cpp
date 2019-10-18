@@ -5,39 +5,55 @@ go::simplegui::BoardSimpleGUI::BoardSimpleGUI()
 	initializeBoard();
 }
 
-// initialize board at start of the game;
-void go::simplegui::BoardSimpleGUI::initializeBoard(){
-    memset(board,'.',sizeof board);
-}
+BoardSimpleGUI::BoardSimpleGUI(){initializeBoard();}
 
 // clears console
-void go::simplegui::BoardSimpleGUI::clearScreen(){
+void go::simplegui::BoardSimpleGUI::clear_screen(){
     // Hacky solution, but crossplatform :D
     std::cout << "\x1B[2J\x1B[H";
 }
 
 // prints board to console
-void go::simplegui::BoardSimpleGUI::printBoard(){
-    clearScreen();
+
+inline char get_board_symbol(Cell cell){
+    switch(cell){
+        case WHITE:
+            return '@';
+            break;
+        case BLACK:
+            return '#';
+            break;
+        default:
+            return '.';
+    }
+}
+void go::simplegui::BoardSimpleGUI::print_board(const BoardState& board){
     for(int i=0;i<BOARD_SIZE;++i){
         std::cout<<"\t\t";
         for(int j=0;j<BOARD_SIZE;++j)
-            std::cout<<board[i*BOARD_SIZE+j]<<" \n"[j==BOARD_SIZE-1];
+            std::cout<<get_board_symbol(board(i,j))<<" \n"[j==BOARD_SIZE-1];
     }
 }
 
-// changes board based on action, points are 1-based
-void go::simplegui::BoardSimpleGUI::makeMove(int x,int y,bool player){
+void go::simplegui::print_game_state(const GameState& game_state){
+    clear_screen();
+    print_board(game_state.board_state);
+    std::cout<<"Players turn: "<<game_state.number_played_moves<<"\t\t\t";
+    std::cout<<"Number of played moves: "<<game_state.number_played_moves<<endl;
 
-    //input is 1-based
-    --x,--y;
+    std::cout<<"\tPlayer 0 \t\t\t Player 1"<<endl;
 
-    assert(x >= 0);
-    assert(y >= 0);
-    assert(x < BOARD_SIZE);
-    assert(y < BOARD_SIZE);
+    std::cout<<"Number of Captured: "<<game_state.players[0].number_captured_enemies;
+    std::cout<<"\t\t\tNumber of Captured: "<<game_state.players[1].number_captured_enemies<<endl;
 
-    x = BOARD_SIZE - 1 - x;
+    std::cout<<"Number of Alive: "<<game_state.players[0].number_alive_stones;
+    std::cout<<"\t\t\tNumber of Alive: "<<game_state.players[1].number_alive_stones<<endl;
 
+<<<<<<< HEAD
     board[x*BOARD_SIZE+y] = (!player?'@':'#');
 }
+=======
+    std::cout<<"Total Score: "<<game_state.players[0].total_score;
+    std::cout<<"\t\t\t\tTotal Score: "<<game_state.players[1].total_score<<endl;
+}
+>>>>>>> Add simple gui
