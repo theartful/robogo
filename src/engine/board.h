@@ -6,11 +6,6 @@
 #include <assert.h>
 #include <chrono>
 
-#ifndef NDEBUG
-#include <algorithm>
-#include <iterator>
-#endif
-
 namespace go
 {
 namespace engine
@@ -31,19 +26,10 @@ enum class Cell : unsigned char
 	DEAD_BLACK = DEAD_BIT | BLACK,
 };
 
-enum class Player : unsigned char
-{
-	WHITE = WHITE_BIT,
-	BLACK = BLACK_BIT
-};
-
 struct BoardState
 {
 	static constexpr uint32_t MAX_BOARD_SIZE = 19;
-
 	Cell board[MAX_BOARD_SIZE * MAX_BOARD_SIZE];
-	uint32_t available_white_moves;
-	uint32_t available_black_moves;
 
 	Cell& operator()(uint32_t i, uint32_t j)
 	{
@@ -57,7 +43,22 @@ struct Action
 {
 	uint32_t x;
 	uint32_t y;
-	Player p;
+	uint32_t player_index;
+};
+
+struct Player
+{
+	uint32_t number_captured_enemies;
+	uint32_t number_alive_stones;
+	uint32_t total_score;
+	// maximum time allowed for a player throughout the game
+	std::chrono::duration<uint32_t, std::milli> max_duration;
+	// the time from which it's this player's move
+	// should be updated each time it's his turn
+	std::chrono::steady_clock::time_point move_start_time;
+	// should be updated when the player finishes his move
+	// time_left -= duration(now - move_start_time);
+	std::chrono::duration<uint32_t, std::milli> time_left;
 };
 
 struct GameState
@@ -65,13 +66,8 @@ struct GameState
 	BoardState board_state;
 	uint32_t board_size;
 	uint32_t number_played_moves;
-	Player player_turn;
-	// score
-	uint32_t white_score;
-	uint32_t black_score;
-	// time information
-	std::chrono::steady_clock::time_point start_time;
-	std::chrono::duration<uint32_t, std::milli> duration;
+	uint32_t player_turn;
+	Player players[2];
 };
 
 static inline Cell operator|(Cell cell, CellBits bit)
