@@ -35,7 +35,7 @@ public:
 		// store the value in the first 31 bits;
 		cache[top_index] |= value;
 	}
-	bool is_visited(uint32_t index)
+	bool is_visited(uint32_t index) const
 	{
 		return (cache[index] & VISIT_BIT) == VISIT_BIT;
 	}
@@ -80,18 +80,13 @@ uint32_t count_liberties(const BoardState& state, uint32_t i, uint32_t j)
 		uint32_t cur_pos = cache_stack.top();
 		cache_stack.pop();
 
-		if (int32_t up = pos - BoardState::MAX_BOARD_SIZE; up >= 0)
-			visit_pos(up);
+		std::array<int32_t, 4> neighbours = {pos - BoardState::MAX_BOARD_SIZE,
+		                                     pos + BoardState::MAX_BOARD_SIZE,
+		                                     pos - 1, pos + 1};
 
-		if (int32_t down = pos + BoardState::MAX_BOARD_SIZE;
-		    down <= BoardState::MAX_NUM_CELLS)
-			visit_pos(down);
-
-		if (int32_t left = pos - 1; left >= 0)
-			visit_pos(left);
-
-		if (int32_t right = pos + 1; right <= BoardState::MAX_NUM_CELLS)
-			visit_pos(right);
+		for (int32_t neighbour : neighbours)
+			if (neighbour >= 0 && neighbour < BoardState::MAX_NUM_CELLS)
+				visit_pos(neighbour);
 	}
 
 	return num_liberties;
