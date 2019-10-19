@@ -16,9 +16,11 @@ bool is_valid_move(const BoardState&, const Action&);
 bool is_game_finished(const GameState&);
 uint32_t calculate_score(const BoardState&, const Player&);
 
-bool is_empty_cell(Cell&);
-bool is_suicidal_cell(Cell&, uint32_t);
-bool is_dead_cell(Cell&, uint32_t);
+bool is_empty_cell(Cell);
+bool is_suicidal_cell(Cell, uint32_t);
+bool is_dead_cell(Cell, uint32_t);
+bool is_dead_cell(Cell);
+
 } // namespace engine
 } // namespace go
 
