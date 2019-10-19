@@ -1,4 +1,5 @@
 #include "interface.h"
+#include "liberties.h"
 
 bool go::engine::is_valid_move(const BoardState& board_state, const Action& action)
 {
@@ -36,11 +37,33 @@ bool go::engine::make_move(BoardState& board_state, const Action& action){
 
 void go::engine::update_dead_cells(BoardState& board_state)
 {
-    
+    for(uint32_t i = 0;i < board_state.MAX_BOARD_SIZE;i++)
+    {
+        for(uint32_t j = 0;j < board_state.MAX_BOARD_SIZE;j++)
+        {
+            if(!is_empty_cell(board_state(i, j)))
+            {
+                if( count_liberties(board_state, i, j) == 0 )
+                {
+                    board_state(i, j) = board_state(i, j) == Cell::BLACK ?  Cell::DEAD_BLACK : Cell::DEAD_WHITE;
+                }
+            }
+        }
+    }
 }
 
 void go::engine::update_suicide_cells(BoardState& board_state)
 {
+    for(uint32_t i = 0;i < board_state.MAX_BOARD_SIZE;i++)
+    {
+        for(uint32_t j = 0;j < board_state.MAX_BOARD_SIZE;j++)
+        {
+            if(is_empty_cell(board_state(i, j)))
+            {
+                board_state(i, j) = Cell::BLACK;
+            }
+        }
+    }
 
 }
 
