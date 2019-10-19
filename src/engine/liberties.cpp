@@ -1,58 +1,96 @@
 #include <array>
-#include <stack>
 
-#include "liberties.h"
 #include "board.h"
 #include "interface.h"
+#include "liberties.h"
 
 using go::engine::BoardState;
 using go::engine::Cell;
 
-static constexpr size_t VISITED_CACHE_SIZE =
-    BoardState::MAX_BOARD_SIZE * BoardState::MAX_BOARD_SIZE;
+// For the DFS, we need a stack of nodes to visit, and hashtable for visited
+// nodes. This class does both things efficiently without memory allocation
+class count_liberties_cache
+{
+public:
+	static constexpr uint32_t VISIT_BIT = 1U << 31;
+	bool empty() const
+	{
+		return top_index == -1;
+	}
+	uint32_t top() const
+	{
+		assert(top_index >= 0);
+		return cache[top_index] & (~VISIT_BIT);
+	}
+	void pop()
+	{
+		assert(top_index >= 0);
+		top_index--;
+	}
+	void push(uint32_t value)
+	{
+		top_index++;
+		// clear all except VISIT_BIT
+		cache[top_index] &= VISIT_BIT;
+		// store the value in the first 31 bits;
+		cache[top_index] |= value;
+	}
+	bool is_visited(uint32_t index)
+	{
+		return (cache[index] & VISIT_BIT) == VISIT_BIT;
+	}
+	void mark_visited(uint32_t index)
+	{
+		cache[index] |= VISIT_BIT;
+	}
+
+private:
+	std::array<uint32_t, BoardState::MAX_NUM_CELLS> cache = {};
+	uint32_t top_index = -1;
+};
 
 uint32_t count_liberties(const BoardState& state, uint32_t i, uint32_t j)
 {
 	uint32_t pos = BoardState::index(i, j);
 	Cell cell = state.board[pos];
 
+	// shouldn't be called on an empty cell
 	assert(!is_empty_cell(cell));
 	if (is_dead_cell(cell))
 		return 0;
 
 	uint32_t num_liberties = 0;
-	std::array<bool, VISITED_CACHE_SIZE> visited = {};
-	std::stack<uint32_t> to_visit;
-	to_visit.push(pos);
+	count_liberties_cache cache_stack;
+	cache_stack.push(pos);
 
 	auto visit_pos = [&](uint32_t new_pos) -> void {
 		if (is_empty_cell(state.board[new_pos]))
 		{
 			num_liberties++;
 		}
-		else if (!visited[pos] && state.board[new_pos] == cell)
+		else if (!cache_stack.is_visited(pos) && state.board[new_pos] == cell)
 		{
-			visited[new_pos] = true;
-			to_visit.push(new_pos);
+			cache_stack.mark_visited(new_pos);
+			cache_stack.push(new_pos);
 		}
 	};
 
-	while(!to_visit.empty())
+	while (!cache_stack.empty())
 	{
-		uint32_t cur_pos = to_visit.top();
-		to_visit.pop();
+		uint32_t cur_pos = cache_stack.top();
+		cache_stack.pop();
 
 		if (int32_t up = pos - BoardState::MAX_BOARD_SIZE; up >= 0)
 			visit_pos(up);
 
 		if (int32_t down = pos + BoardState::MAX_BOARD_SIZE;
-			down <= VISITED_CACHE_SIZE)
+		    down <= BoardState::MAX_NUM_CELLS)
 			visit_pos(down);
 
 		if (int32_t left = pos - 1; left >= 0)
 			visit_pos(left);
 
-		if (int32_t right = pos + 1; right <= VISITED_CACHE_SIZE)
+		if (int32_t right = pos + 1; right <= BoardState::MAX_NUM_CELLS)
 			visit_pos(right);
 	}
 

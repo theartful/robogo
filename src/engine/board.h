@@ -36,20 +36,27 @@ enum class Cell : unsigned char
 struct BoardState
 {
 	static constexpr uint32_t MAX_BOARD_SIZE = 19;
-	Cell board[MAX_BOARD_SIZE * MAX_BOARD_SIZE];
+	static constexpr uint32_t MAX_NUM_CELLS = MAX_BOARD_SIZE * MAX_BOARD_SIZE;
+
+	Cell board[MAX_NUM_CELLS];
 
 	Cell& operator()(uint32_t i, uint32_t j)
 	{
 		assert(i < MAX_BOARD_SIZE);
 		assert(j < MAX_BOARD_SIZE);
-		return board[i * MAX_BOARD_SIZE + j];
+		return board[index(i, j)];
 	}
 
 	Cell operator()(uint32_t i, uint32_t j) const
 	{
 		assert(i < MAX_BOARD_SIZE);
 		assert(j < MAX_BOARD_SIZE);
-		return board[i * MAX_BOARD_SIZE + j];
+		return board[index(i, j)];
+	}
+
+	static uint32_t index(uint32_t i, uint32_t j)
+	{
+		return i * MAX_BOARD_SIZE + j;
 	}
 };
 
