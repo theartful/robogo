@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cstring>
 
-BoardSimpleGUI::BoardSimpleGUI(){initializeBoard();}
+BoardSimpleGUI::BoardSimpleGUI(){}
 
 // clears console
 void go::simplegui::BoardSimpleGUI::clear_screen(){
