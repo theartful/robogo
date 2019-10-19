@@ -1,32 +1,30 @@
 #include "simplegui.h"
-using namespace std;
-using namespace go::simplegui;
 
-BoardSimpleGUI::BoardSimpleGUI(){initializeBoard();};
+BoardSimpleGUI::BoardSimpleGUI(){initializeBoard();}
 
 // initialize board at start of the game;
-void BoardSimpleGUI::initializeBoard(){
+void go::simplegui::BoardSimpleGUI::initializeBoard(){
     memset(board,'.',sizeof board);
 }
 
 // clears console
-void BoardSimpleGUI::clearScreen(){
+void go::simplegui::BoardSimpleGUI::clearScreen(){
     // Hacky solution, but crossplatform :D
-    cout << "\x1B[2J\x1B[H";
+    std::cout << "\x1B[2J\x1B[H";
 }
 
 // prints board to console
-void BoardSimpleGUI::printBoard(){
+void go::simplegui::BoardSimpleGUI::printBoard(){
     clearScreen();
     for(int i=0;i<BOARD_SIZE;++i){
-        cout<<"\t\t";
+        std::cout<<"\t\t";
         for(int j=0;j<BOARD_SIZE;++j)
-            cout<<board[i*BOARD_SIZE+j]<<" \n"[j==BOARD_SIZE-1];
+            std::cout<<board[i*BOARD_SIZE+j]<<" \n"[j==BOARD_SIZE-1];
     }
 }
 
 // changes board based on action, points are 1-based
-void BoardSimpleGUI::makeMove(int x,int y,bool player){
+void go::simplegui::BoardSimpleGUI::makeMove(int x,int y,bool player){
 
     //input is 1-based
     --x,--y;
