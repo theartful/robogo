@@ -1,3 +1,4 @@
+#include <cmath>
 #include "interface.h"
 #include "liberties.h"
 
@@ -26,7 +27,7 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 bool go::engine::make_move(BoardState& board_state, const Action& action){
     if(is_valid_move(board_state, action))
     {
-        board_state(action.x, action.y) = PLAYERS[action.player_index] == BLACK_BIT ?  Cell::BLACK : Cell::WHITE;
+        board_state(action.x, action.y) = PLAYERS[action.player_index];
         return true;
     }
     else
@@ -41,12 +42,9 @@ void go::engine::update_dead_cells(BoardState& board_state)
     {
         for(uint32_t j = 0;j < board_state.MAX_BOARD_SIZE;j++)
         {
-            if(!is_empty_cell(board_state(i, j)))
+            if(!is_empty_cell(board_state(i, j)) && (count_liberties(board_state, i, j) == 0) )
             {
-                if( count_liberties(board_state, i, j) == 0 )
-                {
-                    board_state(i, j) = board_state(i, j) == Cell::BLACK ?  Cell::DEAD_BLACK : Cell::DEAD_WHITE;
-                }
+                mark_dead(board_state, i , j);
             }
         }
     }
@@ -56,13 +54,15 @@ void go::engine::update_suicide_cells(BoardState& board_state)
 {
     for(uint32_t i = 0;i < BoardState::MAX_BOARD_SIZE;i++)
     {
-        for(uint32_t j = 0;j < board_state.MAX_BOARD_SIZE;j++)
+        for(uint32_t j = 0;j < BoardState::MAX_BOARD_SIZE;j++)
         {
-            if(simulate_suicide(board_state ,i, j, Cell::BLACK))
-                board_state(i, j) = Cell::SUICIDE_BLACK;
-            else
-                if(simulate_suicide(board_state ,i, j, Cell::WHITE))
-                    board_state(i, j) = Cell::SUICIDE_WHITE;
+            if(is_empty_cell(board_state(i, j))){
+                if(simulate_suicide(board_state ,i, j, Cell::BLACK))
+                    board_state(i, j) = Cell::SUICIDE_BLACK;
+                else
+                    if(simulate_suicide(board_state ,i, j, Cell::WHITE))
+                        board_state(i, j) = Cell::SUICIDE_WHITE;
+            }
         }
     }
 
@@ -70,21 +70,21 @@ void go::engine::update_suicide_cells(BoardState& board_state)
 
 bool go::engine::simulate_suicide(BoardState& board_state, uint32_t i, uint32_t j, Cell c){
     board_state(i, j) = c;
-    for(int x = -1;x < 2; x++)
+    if(count_liberties(board_state, i, j) == 0)
     {
-        for(int y = -1;y < 2;y++)
-        {
-            if(i + x >= BoardState::MAX_BOARD_SIZE || j + y >= BoardState::MAX_BOARD_SIZE || abs(x) == abs(y)){
-                continue;
-            }
-            if( board_state(i + x, j + y) == c &&  count_liberties(board_state, i + x, j + y) == 0 )
-            {
-                return true;
-            }
-        }
-    }   
-    board_state(i, j) = Cell::EMPTY;
-    return false;
+        board_state(i, j) = Cell::EMPTY;
+        return true;
+    }
+    else
+    {
+        board_state(i, j) = Cell::EMPTY;
+        return false;
+    }
+}
+
+void go::engine::mark_dead(BoardState& board_state, uint32_t i, uint32_t j)
+{
+    board_state(i, j) = board_state(i, j) | DEAD_BIT;
 }
 
 bool go::engine::is_empty_cell(Cell cell)
@@ -99,7 +99,7 @@ bool go::engine::is_suicidal_cell(Cell cell, uint32_t player)
 
 bool go::engine::is_dead_cell(Cell cell, uint32_t player_index)
 {
-    return (cell & (DEAD_BIT | PLAYERS[player_index]) ) != 0;
+    return (cell & (DEAD_BIT | PLAYERS_BITS[player_index]) ) != 0;
 }
 
 bool go::engine::is_dead_cell(Cell cell)
