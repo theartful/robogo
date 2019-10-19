@@ -54,17 +54,37 @@ void go::engine::update_dead_cells(BoardState& board_state)
 
 void go::engine::update_suicide_cells(BoardState& board_state)
 {
-    for(uint32_t i = 0;i < board_state.MAX_BOARD_SIZE;i++)
+    for(uint32_t i = 0;i < BoardState::MAX_BOARD_SIZE;i++)
     {
         for(uint32_t j = 0;j < board_state.MAX_BOARD_SIZE;j++)
         {
-            if(is_empty_cell(board_state(i, j)))
-            {
-                board_state(i, j) = Cell::BLACK;
-            }
+            if(simulate_suicide(board_state ,i, j, Cell::BLACK))
+                board_state(i, j) = Cell::SUICIDE_BLACK;
+            else
+                if(simulate_suicide(board_state ,i, j, Cell::WHITE))
+                    board_state(i, j) = Cell::SUICIDE_WHITE;
         }
     }
 
+}
+
+bool go::engine::simulate_suicide(BoardState& board_state, uint32_t i, uint32_t j, Cell c){
+    board_state(i, j) = c;
+    for(int x = -1;x < 2; x++)
+    {
+        for(int y = -1;y < 2;y++)
+        {
+            if(i + x >= BoardState::MAX_BOARD_SIZE || j + y >= BoardState::MAX_BOARD_SIZE || abs(x) == abs(y)){
+                continue;
+            }
+            if( board_state(i + x, j + y) == c &&  count_liberties(board_state, i + x, j + y) == 0 )
+            {
+                return true;
+            }
+        }
+    }   
+    board_state(i, j) = Cell::EMPTY;
+    return false;
 }
 
 bool go::engine::is_empty_cell(Cell cell)

@@ -19,6 +19,8 @@ uint32_t calculate_score(const BoardState&, const Player&);
 void update_suicide_cells(BoardState&);
 void update_dead_cells(BoardState&);
 
+bool simulate_suicide(BoardState&, uint32_t, uint32_t, Cell);
+
 bool is_empty_cell(Cell);
 bool is_suicidal_cell(Cell, uint32_t);
 bool is_dead_cell(Cell, uint32_t);
