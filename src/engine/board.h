@@ -19,7 +19,8 @@ enum CellBits : unsigned char
 	SUICIDE_BLACK_BIT = 0b00100000,
 };
 static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT, SUICIDE_WHITE_BIT};
-static constexpr CellBits PLAYERS[] = {BLACK_BIT, WHITE_BIT};
+static constexpr CellBits PLAYERS_BITS[] = {BLACK_BIT, WHITE_BIT};
+static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
 
 
 enum class Cell : unsigned char
