@@ -73,6 +73,7 @@ struct Player
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
 	uint32_t total_score;
+	uint32_t player_index; // 0 for white, 1 for black
 	// maximum time allowed for a player throughout the game
 	std::chrono::duration<uint32_t, std::milli> max_duration;
 	// the time from which it's this player's move
@@ -81,6 +82,7 @@ struct Player
 	// should be updated when the player finishes his move
 	// time_left -= duration(now - move_start_time);
 	std::chrono::duration<uint32_t, std::milli> time_left;
+
 };
 
 struct GameState

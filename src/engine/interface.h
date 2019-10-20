@@ -14,7 +14,9 @@ bool make_move(GameState&, const Action&);
 bool make_move(BoardState&, const Action&);
 bool is_valid_move(const BoardState&, const Action&);
 bool is_game_finished(const GameState&);
-uint32_t calculate_score(const BoardState&, const Player&);
+
+void calculate_score(const BoardState&, Player&, Player&);
+uint32_t territory_points(const BoardState,unsigned char&, uint32_t, uint32_t, bool*);
 
 void update_suicide_cells(BoardState&);
 void update_dead_cells(BoardState&);
