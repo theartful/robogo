@@ -112,10 +112,10 @@ void go::engine::calculate_score(const BoardState& boardState,Player& white_play
     uint32_t white_territory_score = 0, black_territory_score = 0, score_temp=0;
     
     //To detect wether the traversed territory belong to which side, "01" for white and "10" for black
-    unsigned char white = 0b00000001;
-    unsigned char black = 0b00000010;
+    unsigned char white = CellBits::WHITE_BIT;
+    unsigned char black = CellBits::BLACK_BIT;
     unsigned char territory_type; // if the output of the traversed territory was "11" the it was a false territory
-    bool visited[19*19] = {false}; // to avoid starting traversing a new territory from an already traversed empty cell
+    bool visited[boardState.MAX_NUM_CELLS] = {false}; // to avoid starting traversing a new territory from an already traversed empty cell
     
     //Traversing the board to detect any start of any territory
     for(uint32_t i = 0;i < boardState.MAX_BOARD_SIZE;i++)
@@ -124,7 +124,7 @@ void go::engine::calculate_score(const BoardState& boardState,Player& white_play
         {
             territory_type=0b00000000;
             score_temp = 0;
-            if(is_empty_cell(boardState(i, j)) && !visited[i*19+j]) score_temp = territory_points(boardState, territory_type, i, j, visited);
+            if(is_empty_cell(boardState(i, j)) && !visited[boardState.index(i,j)]) score_temp = territory_points(boardState, territory_type, i, j, visited);
             
             //XNORing the territory_type to figure out the output of the traversed territory
             if(territory_type == white) white_territory_score += score_temp;
@@ -133,22 +133,22 @@ void go::engine::calculate_score(const BoardState& boardState,Player& white_play
     }
 
     //Updating scores
-    white_player.total_score += white_territory_score + white_player.number_alive_stones + white_player.number_captured_enemies;
-    black_player.total_score += black_territory_score + black_player.number_alive_stones + black_player.number_captured_enemies;
+    white_player.total_score = white_territory_score + white_player.number_alive_stones + white_player.number_captured_enemies;
+    black_player.total_score = black_territory_score + black_player.number_alive_stones + black_player.number_captured_enemies;
 }
 
 uint32_t go::engine::territory_points(const BoardState boardState, unsigned char& territory_type, uint32_t x, uint32_t y, bool* visited){
     
 
 	uint32_t score = 0;
-	unsigned char white = 0b00000001;
-	unsigned char black = 0b00000010;
-	visited[x * 9 + y] = true;
+	unsigned char white = CellBits::WHITE_BIT;
+	unsigned char black = CellBits::BLACK_BIT;
+	visited[boardState.index(x,y)] = true;
 
 	// Checking upper cell territory
 	if (y!=0)
 	{
-        if(is_empty_cell(boardState(x,y-1)) && !visited[x*19 + (y-1)]) 
+        if(is_empty_cell(boardState(x,y-1)) && !visited[boardState.index(x,y-1)]) 
             score+= territory_points(boardState,territory_type,x,y-1,visited);
         else if(boardState(x,y-1) == Cell::WHITE || boardState(x,y-1) == Cell::DEAD_WHITE) territory_type |= white; 
         else if(boardState(x,y-1) == Cell::BLACK || boardState(x,y-1) == Cell::DEAD_BLACK) territory_type |= black; 
@@ -157,9 +157,9 @@ uint32_t go::engine::territory_points(const BoardState boardState, unsigned char
 
 	
 	// Checking right cell territory
-	if (x != 8)
+	if (x != boardState.MAX_BOARD_SIZE-1)
 	{
-        if(is_empty_cell(boardState(x+1,y)) && !visited[(x+1)*19 + y]) 
+        if(is_empty_cell(boardState(x+1,y)) && !visited[boardState.index(x+1,y)]) 
             score+= territory_points(boardState,territory_type,x+1,y,visited);
         else if(boardState(x+1,y) == Cell::WHITE || boardState(x+1,y) == Cell::DEAD_WHITE) territory_type |= white; 
         else if(boardState(x+1,y) == Cell::BLACK || boardState(x+1,y) == Cell::DEAD_BLACK) territory_type |= black; 
@@ -167,9 +167,9 @@ uint32_t go::engine::territory_points(const BoardState boardState, unsigned char
 	}
 	
 	// Checking bottom cell territory
-	if (y != 8)
+	if (y != boardState.MAX_BOARD_SIZE-1)
 	{
-        if(is_empty_cell(boardState(x,y+1)) && !visited[(x)*19 + (y+1)]) 
+        if(is_empty_cell(boardState(x,y+1)) && !visited[boardState.index(x,y+1)]) 
             score+= territory_points(boardState,territory_type,x,y+1,visited);
         else if(boardState(x,y+1) == Cell::WHITE || boardState(x,y+1) == Cell::DEAD_WHITE) territory_type |= white; 
         else if(boardState(x,y+1) == Cell::BLACK || boardState(x,y+1) == Cell::DEAD_BLACK) territory_type |= black; 
@@ -179,7 +179,7 @@ uint32_t go::engine::territory_points(const BoardState boardState, unsigned char
 	// Checking left cell territory
 	if (x!=0)
 	{
-		if(is_empty_cell(boardState(x-1,y)) && !visited[(x-1)*19 + y]) 
+		if(is_empty_cell(boardState(x-1,y)) && !visited[boardState.index(x-1,y)]) 
             score+= territory_points(boardState,territory_type,x-1,y,visited);
         else if(boardState(x-1,y) == Cell::WHITE || boardState(x-1,y) == Cell::DEAD_WHITE) territory_type |= white; 
         else if(boardState(x-1,y) == Cell::BLACK || boardState(x-1,y) == Cell::DEAD_BLACK) territory_type |= black; 
