@@ -5,6 +5,7 @@ before_install:
   - sudo apt-get install g++
   - sudo apt-get install cpputest
   - sudo apt-get install python-dev
+  - sudo apt-get install clang-format
   
 # Enable C++ support
 language: cpp
@@ -12,12 +13,10 @@ language: cpp
 # Compiler selection
 compiler:
   - g++
-  
-install:
-  - sudo pip install cpplint
 # Build steps
 script:
-  - cpplint --recursive --exclude=./tests/* --filter=-whitespace,-legal,-build/c++11,-build/include_subdir .
+  - ./check_format.sh ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH} 
+  - echo ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH}
   - mkdir build
   - g++ tests/*.cpp -lCppUTest -o build/tests-bin.out
   - ./build/tests-bin.out
