@@ -1,4 +1,8 @@
 sudo: required
+
+notifications:
+  slack: go-mi:Rw8QWzrSzlolt3Tx1AAEeFYJ
+
 before_install:
   - sudo apt-get install libao-dev
   - sudo apt-get install libcurl4-openssl-dev
