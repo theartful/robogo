@@ -18,10 +18,10 @@ enum CellBits : unsigned char
 	SUICIDE_WHITE_BIT = 0b01000000,
 	SUICIDE_BLACK_BIT = 0b00100000,
 };
-static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT, SUICIDE_WHITE_BIT};
+static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT,
+                                            SUICIDE_WHITE_BIT};
 static constexpr CellBits PLAYERS_BITS[] = {BLACK_BIT, WHITE_BIT};
 static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
-
 
 enum class Cell : unsigned char
 {
@@ -73,6 +73,7 @@ struct Player
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
 	uint32_t total_score;
+	uint32_t player_index; // 0 for white, 1 for black
 	// maximum time allowed for a player throughout the game
 	std::chrono::duration<uint32_t, std::milli> max_duration;
 	// the time from which it's this player's move
@@ -91,7 +92,6 @@ struct GameState
 	uint32_t player_turn;
 	Player players[2];
 };
-
 
 static inline Cell operator|(Cell cell, CellBits bit)
 {
