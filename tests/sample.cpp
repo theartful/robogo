@@ -1,44 +1,51 @@
-#include <CppUTest/TestHarness.h>
-
+#include "includes/catch.hpp"
 #include <iostream>
 
-TEST_GROUP(FooTestGroup)
-{
-   void setup()
-   {
-      // Init stuff
-      std::cout << "This runs first before every test in the group is run.\n"
-                << "Use this function to initialize resources.\n";
-   }
+// Basic format
 
-   void teardown()
-   {
-      // Uninit stuff
-      std::cout << "This runs after every test in the group is completed.\n"
-                << "Use this function to deallocate any resources.\n";
-   }
-};
-
-TEST(FooTestGroup, Foo)
-{
-    // FAIL("Fail me!");
-   // Test FOO
+TEST_CASE( "name", "[tags]" ) {
+   REQUIRE( 1/*assertion condition*/ );
+   REQUIRE( 1/*assertion condition*/ );
+   REQUIRE( 1/*assertion condition*/ );
 }
 
-TEST(FooTestGroup, MoreFoo)
-{
-   // Test more FOO
+
+//test case with sections
+TEST_CASE( "name", "[tags]" ) {
+
+//  set up code and assertions
+
+    SECTION( "name" ) {
+        //further setup 
+
+        REQUIRE( 1/*assertion condition*/ );
+    }
+    SECTION( "name" ) {
+        SECTION("nested section"){
+
+        }
+    }
 }
 
-TEST_GROUP(BarTestGroup)
-{
-   void setup()
-   {
-      // Init Bar
-   }
-};
+//BDD approach (behavioural-driven development)
 
-TEST(BarTestGroup, Bar)
-{
-   // Test Bar
+SCENARIO( "descriptive name", "[tags]" ) {
+
+    GIVEN( "descriptive name" ) {
+        //set up code and assertions
+        WHEN( "descriptive name") {
+            //further setup
+
+            THEN( "descriptive name" ) {
+                 REQUIRE( 1/*assertion condition*/ );
+            }
+        }
+          WHEN( "descriptive name") {
+            //further setup
+
+            THEN( "descriptive name" ) {
+                 REQUIRE( 1/*assertion condition*/ );
+            }
+        }
+    }
 }
