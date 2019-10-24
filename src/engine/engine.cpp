@@ -1,116 +1,127 @@
+#include "cluster.h"
 #include "interface.h"
 #include "liberties.h"
+#include "utility.h"
 #include <cmath>
 
+using namespace go::engine;
+
 bool go::engine::is_valid_move(
-    const BoardState& board_state, const Action& action)
+    ClusterTable& table, const BoardState& board_state, const Action& action)
 {
-	Cell cell = board_state(action.x, action.y);
-	return is_empty_cell(cell) &&
-	       !is_suicidal_cell(cell, action.player_index) &&
-	       !is_dead_cell(cell, action.player_index);
-}
-
-bool go::engine::make_move(GameState& game_state, const Action& action)
-{
-	if (game_state.player_turn == action.player_index &&
-	    make_move(game_state.board_state, action))
-	{
-		game_state.player_turn = 1 - action.player_index;
-		game_state.number_played_moves++;
-
-		return true;
-	}
-	else
-	{
+	uint32_t action_pos = BoardState::index(action.x, action.y);
+	if (action.x >= BoardState::MAX_BOARD_SIZE ||
+	    action.y >= BoardState::MAX_BOARD_SIZE)
 		return false;
-	}
-}
-
-bool go::engine::make_move(BoardState& board_state, const Action& action)
-{
-	if (is_valid_move(board_state, action))
-	{
-		board_state(action.x, action.y) = PLAYERS[action.player_index];
-		return true;
-	}
-	else
-	{
+	if (action.player_index > 1)
 		return false;
-	}
+	if (!is_empty_cell(board_state, action_pos))
+		return false;
+	if (action_pos == board_state.ko)
+		return false;
+	if (is_suicide_move(table, board_state, action))
+		return false;
+	return true;
 }
 
-void go::engine::update_dead_cells(BoardState& board_state)
+bool go::engine::is_suicide_move(
+    ClusterTable& table, const BoardState& board_state, const Action& action)
 {
-	for (uint32_t i = 0; i < board_state.MAX_BOARD_SIZE; i++)
-	{
-		for (uint32_t j = 0; j < board_state.MAX_BOARD_SIZE; j++)
+	uint32_t action_pos = BoardState::index(action.x, action.y);
+	bool is_suicide = true;
+	// move is not suicide if:
+	//     1. a neighbor cell is empty, or
+	//     2. a neighbor friend cluster has more than one liberty, or
+	//     3. a neighbor enemy cluster will be captured
+	for_each_neighbor(action_pos, [&](uint32_t neighbor) {
+		if (is_empty_cell(board_state, neighbor))
 		{
-			if (!is_empty_cell(board_state(i, j)) &&
-			    (count_liberties(board_state, i, j) == 0))
+			is_suicide = false;
+			return BREAK;
+		}
+		else if (board_state.board[neighbor] == PLAYERS[action.player_index])
+		{
+			if (get_cluster(table, neighbor).num_liberties > 1)
 			{
-				mark_dead(board_state, i, j);
+				is_suicide = false;
+				return BREAK;
 			}
 		}
-	}
-}
-
-void go::engine::update_suicide_cells(BoardState& board_state)
-{
-	for (uint32_t i = 0; i < BoardState::MAX_BOARD_SIZE; i++)
-	{
-		for (uint32_t j = 0; j < BoardState::MAX_BOARD_SIZE; j++)
+		// enemy neighbor cell
+		else
 		{
-			if (is_empty_cell(board_state(i, j)))
+			// if an enemy cluster will be captured
+			if (get_cluster(table, neighbor).num_liberties == 1)
 			{
-				if (simulate_suicide(board_state, i, j, Cell::BLACK))
-					board_state(i, j) = Cell::SUICIDE_BLACK;
-				else if (simulate_suicide(board_state, i, j, Cell::WHITE))
-					board_state(i, j) = Cell::SUICIDE_WHITE;
+				is_suicide = false;
+				return BREAK;
 			}
 		}
-	}
+		return CONTINUE;
+	});
+	return is_suicide;
 }
 
-bool go::engine::simulate_suicide(
-    BoardState& board_state, uint32_t i, uint32_t j, Cell c)
+static uint32_t
+get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
 {
-	board_state(i, j) = c;
-	if (count_liberties(board_state, i, j) == 0)
+	uint32_t num_captured_stones = 0;
+	uint32_t captured_stone_idx;
+	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
+		if (cluster.num_liberties == 1)
+		{
+			num_captured_stones += cluster.size;
+			captured_stone_idx = cluster.parent_idx;
+		}
+	});
+
+	// there is a ko if:
+	//     1. the previous move captured exactly one stone,
+	//     2. the played stone has exactly one liberty, and
+	//     3. the played stone's cluster consists only of it
+	if (get_cluster(table, action_pos).size == 1 && num_captured_stones == 1 &&
+	    count_liberties(table, action_pos) == 1)
+		return captured_stone_idx;
+	else
+		return BoardState::INVALID_INDEX;
+}
+
+bool go::engine::make_move(
+    ClusterTable& table, GameState& game_state, const Action& action)
+{
+	if (!make_move(table, game_state.board_state, action))
+		return false;
+
+	game_state.number_played_moves++;
+	game_state.player_turn = 1 - game_state.player_turn;
+	return true;
+}
+
+bool go::engine::make_move(
+    ClusterTable& table, BoardState& board_state, const Action& action)
+{
+	if (is_valid_move(table, board_state, action))
 	{
-		board_state(i, j) = Cell::EMPTY;
+		uint32_t action_pos = BoardState::index(action.x, action.y);
+		board_state.board[action_pos] = PLAYERS[action.player_index];
+		board_state.ko = get_ko(table, board_state, action_pos);
+		update_clusters(table, board_state, action);
 		return true;
 	}
 	else
 	{
-		board_state(i, j) = Cell::EMPTY;
 		return false;
 	}
-}
-
-void go::engine::mark_dead(BoardState& board_state, uint32_t i, uint32_t j)
-{
-	board_state(i, j) = board_state(i, j) | DEAD_BIT;
 }
 
 bool go::engine::is_empty_cell(Cell cell)
 {
-	return (cell & (WHITE_BIT | BLACK_BIT)) == 0;
+	return cell == Cell::EMPTY;
 }
 
-bool go::engine::is_suicidal_cell(Cell cell, uint32_t player)
+bool go::engine::is_empty_cell(const BoardState& state, uint32_t idx)
 {
-	return (cell & (SUICIDE_BITS[player])) != 0;
-}
-
-bool go::engine::is_dead_cell(Cell cell, uint32_t player_index)
-{
-	return (cell & (DEAD_BIT | PLAYERS_BITS[player_index])) != 0;
-}
-
-bool go::engine::is_dead_cell(Cell cell)
-{
-	return (cell & DEAD_BIT) != 0;
+	return is_empty_cell(state.board[idx]);
 }
 
 void go::engine::calculate_score(
@@ -121,8 +132,8 @@ void go::engine::calculate_score(
 
 	// To detect wether the traversed territory belong to which side, "01" for
 	// white and "10" for black
-	unsigned char white = CellBits::WHITE_BIT;
-	unsigned char black = CellBits::BLACK_BIT;
+	unsigned char white = 0b00000001;
+	unsigned char black = 0b00000010;
 	unsigned char territory_type; // if the output of the traversed territory
 	                              // was "11" the it was a false territory
 	bool visited[BoardState::MAX_NUM_CELLS] = {
@@ -160,13 +171,13 @@ void go::engine::calculate_score(
 }
 
 uint32_t go::engine::territory_points(
-    const BoardState boardState, unsigned char& territory_type, uint32_t x,
+    const BoardState& boardState, unsigned char& territory_type, uint32_t x,
     uint32_t y, bool* visited)
 {
 
 	uint32_t score = 0;
-	unsigned char white = CellBits::WHITE_BIT;
-	unsigned char black = CellBits::BLACK_BIT;
+	unsigned char white = 0b00000001;
+	unsigned char black = 0b00000010;
 	visited[boardState.index(x, y)] = true;
 
 	// Checking upper cell territory
@@ -176,13 +187,9 @@ uint32_t go::engine::territory_points(
 		    !visited[boardState.index(x, y - 1)])
 			score +=
 			    territory_points(boardState, territory_type, x, y - 1, visited);
-		else if (
-		    boardState(x, y - 1) == Cell::WHITE ||
-		    boardState(x, y - 1) == Cell::DEAD_WHITE)
+		else if (boardState(x, y - 1) == Cell::WHITE)
 			territory_type |= white;
-		else if (
-		    boardState(x, y - 1) == Cell::BLACK ||
-		    boardState(x, y - 1) == Cell::DEAD_BLACK)
+		else if (boardState(x, y - 1) == Cell::BLACK)
 			territory_type |= black;
 	}
 
@@ -193,13 +200,9 @@ uint32_t go::engine::territory_points(
 		    !visited[boardState.index(x + 1, y)])
 			score +=
 			    territory_points(boardState, territory_type, x + 1, y, visited);
-		else if (
-		    boardState(x + 1, y) == Cell::WHITE ||
-		    boardState(x + 1, y) == Cell::DEAD_WHITE)
+		else if (boardState(x + 1, y) == Cell::WHITE)
 			territory_type |= white;
-		else if (
-		    boardState(x + 1, y) == Cell::BLACK ||
-		    boardState(x + 1, y) == Cell::DEAD_BLACK)
+		else if (boardState(x + 1, y) == Cell::BLACK)
 			territory_type |= black;
 	}
 
@@ -210,13 +213,9 @@ uint32_t go::engine::territory_points(
 		    !visited[boardState.index(x, y + 1)])
 			score +=
 			    territory_points(boardState, territory_type, x, y + 1, visited);
-		else if (
-		    boardState(x, y + 1) == Cell::WHITE ||
-		    boardState(x, y + 1) == Cell::DEAD_WHITE)
+		else if (boardState(x, y + 1) == Cell::WHITE)
 			territory_type |= white;
-		else if (
-		    boardState(x, y + 1) == Cell::BLACK ||
-		    boardState(x, y + 1) == Cell::DEAD_BLACK)
+		else if (boardState(x, y + 1) == Cell::BLACK)
 			territory_type |= black;
 	}
 
@@ -227,13 +226,9 @@ uint32_t go::engine::territory_points(
 		    !visited[boardState.index(x - 1, y)])
 			score +=
 			    territory_points(boardState, territory_type, x - 1, y, visited);
-		else if (
-		    boardState(x - 1, y) == Cell::WHITE ||
-		    boardState(x - 1, y) == Cell::DEAD_WHITE)
+		else if (boardState(x - 1, y) == Cell::WHITE)
 			territory_type |= white;
-		else if (
-		    boardState(x - 1, y) == Cell::BLACK ||
-		    boardState(x - 1, y) == Cell::DEAD_BLACK)
+		else if (boardState(x - 1, y) == Cell::BLACK)
 			territory_type |= black;
 	}
 
