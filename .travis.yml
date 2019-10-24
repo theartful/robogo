@@ -1,13 +1,12 @@
 sudo: required
 
 notifications:
-  slack: go-mi:Rw8QWzrSzlolt3Tx1AAEeFYJ
+  slack: go-mi:emgh2vMsJ523vXca8Pif0wUF
 
 before_install:
   - sudo apt-get install libao-dev
   - sudo apt-get install libcurl4-openssl-dev
   - sudo apt-get install g++
-  - sudo apt-get install cpputest
   - sudo apt-get install python-dev
   - sudo apt-get install clang-format
   
@@ -20,7 +19,3 @@ compiler:
 # Build steps
 script:
   - ./check_format.sh ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH} 
-  - echo ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH}
-  - mkdir build
-  - g++ tests/*.cpp -lCppUTest -o build/tests-bin.out
-  - ./build/tests-bin.out

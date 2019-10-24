@@ -1,6 +1,2 @@
-#include <CppUTest/CommandLineTestRunner.h>
-
-int main(int ac, char** av)
-{
-    return CommandLineTestRunner::RunAllTests(ac, av);
-}
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "includes/catch.hpp"
