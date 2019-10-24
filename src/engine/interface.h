@@ -2,6 +2,7 @@
 #define SRC_ENGINE_INTERFACE_H_
 
 #include "board.h"
+#include "config.h"
 
 namespace go
 {

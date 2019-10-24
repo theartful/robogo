@@ -1,0 +1,6 @@
+#ifndef SRC_CONFIG_H_
+#define SRC_CONFIG_H_
+
+#cmakedefine NDEBUG
+
+#endif

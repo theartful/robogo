@@ -19,3 +19,7 @@ compiler:
 # Build steps
 script:
   - ./check_format.sh ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH} 
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j3

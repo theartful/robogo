@@ -45,11 +45,12 @@ public:
 	}
 
 private:
-	std::array<uint32_t, BoardState::MAX_NUM_CELLS> cache = {};
-	uint32_t top_index = -1;
+	uint32_t cache[BoardState::MAX_NUM_CELLS] = {};
+	int32_t top_index = -1;
 };
 
-uint32_t count_liberties(const BoardState& state, uint32_t i, uint32_t j)
+uint32_t
+go::engine::count_liberties(const BoardState& state, uint32_t i, uint32_t j)
 {
 	uint32_t pos = BoardState::index(i, j);
 	Cell cell = state.board[pos];
@@ -80,12 +81,12 @@ uint32_t count_liberties(const BoardState& state, uint32_t i, uint32_t j)
 		uint32_t cur_pos = cache_stack.top();
 		cache_stack.pop();
 
-		std::array<int32_t, 4> neighbours = {pos - BoardState::MAX_BOARD_SIZE,
-		                                     pos + BoardState::MAX_BOARD_SIZE,
-		                                     pos - 1, pos + 1};
+		std::array<uint32_t, 4> neighbours = {pos - BoardState::MAX_BOARD_SIZE,
+		                                      pos + BoardState::MAX_BOARD_SIZE,
+		                                      pos - 1, pos + 1};
 
-		for (int32_t neighbour : neighbours)
-			if (neighbour >= 0 && neighbour < BoardState::MAX_NUM_CELLS)
+		for (uint32_t neighbour : neighbours)
+			if (neighbour < BoardState::MAX_NUM_CELLS)
 				visit_pos(neighbour);
 	}
 
