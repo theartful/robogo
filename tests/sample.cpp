@@ -3,49 +3,58 @@
 
 // Basic format
 
-TEST_CASE( "name", "[tags]" ) {
-   REQUIRE( 1/*assertion condition*/ );
-   REQUIRE( 1/*assertion condition*/ );
-   REQUIRE( 1/*assertion condition*/ );
+TEST_CASE("name", "[tags]")
+{
+	REQUIRE(1 /*assertion condition*/);
+	REQUIRE(1 /*assertion condition*/);
+	REQUIRE(1 /*assertion condition*/);
 }
 
+// test case with sections
+TEST_CASE("name2", "[tags]")
+{
 
-//test case with sections
-TEST_CASE( "name2", "[tags]" ) {
+	//  set up code and assertions
 
-//  set up code and assertions
+	SECTION("name")
+	{
+		// further setup
 
-    SECTION( "name" ) {
-        //further setup 
-
-        REQUIRE( 1/*assertion condition*/ );
-    }
-    SECTION( "name" ) {
-        SECTION("nested section"){
-
-        }
-    }
+		REQUIRE(1 /*assertion condition*/);
+	}
+	SECTION("name")
+	{
+		SECTION("nested section")
+		{
+		}
+	}
 }
 
-//BDD approach (behavioural-driven development)
+// BDD approach (behavioural-driven development)
 
-SCENARIO( "descriptive name", "[tags]" ) {
+SCENARIO("descriptive name", "[tags]")
+{
 
-    GIVEN( "descriptive name" ) {
-        //set up code and assertions
-        WHEN( "descriptive name") {
-            //further setup
+	GIVEN("descriptive name")
+	{
+		// set up code and assertions
+		WHEN("descriptive name")
+		{
+			// further setup
 
-            THEN( "descriptive name" ) {
-                 REQUIRE( 1/*assertion condition*/ );
-            }
-        }
-          WHEN( "descriptive name") {
-            //further setup
+			THEN("descriptive name")
+			{
+				REQUIRE(1 /*assertion condition*/);
+			}
+		}
+		WHEN("descriptive name")
+		{
+			// further setup
 
-            THEN( "descriptive name" ) {
-                 REQUIRE( 1/*assertion condition*/ );
-            }
-        }
-    }
+			THEN("descriptive name")
+			{
+				REQUIRE(1 /*assertion condition*/);
+			}
+		}
+	}
 }
