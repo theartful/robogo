@@ -2,9 +2,10 @@
 #define SRC_ENGINE_BOARD_H_
 
 #include <stdint.h>
-
 #include <assert.h>
 #include <chrono>
+
+#include "config.h"
 
 namespace go
 {
@@ -18,10 +19,6 @@ enum CellBits : unsigned char
 	SUICIDE_WHITE_BIT = 0b01000000,
 	SUICIDE_BLACK_BIT = 0b00100000,
 };
-static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT,
-                                            SUICIDE_WHITE_BIT};
-static constexpr CellBits PLAYERS_BITS[] = {BLACK_BIT, WHITE_BIT};
-static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
 
 enum class Cell : unsigned char
 {
@@ -33,6 +30,11 @@ enum class Cell : unsigned char
 	SUICIDE_WHITE = SUICIDE_WHITE_BIT,
 	SUICIDE_BLACK = SUICIDE_BLACK_BIT
 };
+
+static constexpr CellBits SUICIDE_BITS[] = {SUICIDE_BLACK_BIT,
+                                            SUICIDE_WHITE_BIT};
+static constexpr CellBits PLAYERS_BITS[] = {BLACK_BIT, WHITE_BIT};
+static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
 
 struct BoardState
 {

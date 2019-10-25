@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "config.h"
+
 namespace go
 {
 namespace engine
