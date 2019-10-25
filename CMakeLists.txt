@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(goslayer)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake.modules/")
+
 # set default build type
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "DEBUG" CACHE STRING
@@ -21,7 +23,6 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/src/config.h"
 )
 
-# add config.h to include directories
 include_directories("${PROJECT_BINARY_DIR}/src/")
 
 # use c++17
@@ -58,3 +59,11 @@ endif()
 set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/engine)
+
+################ testing ###############
+option(ENABLE_TESTING "Enable testing" OFF)
+
+if (ENABLE_TESTING)
+	enable_testing()
+	add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
+endif()

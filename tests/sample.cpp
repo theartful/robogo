@@ -11,7 +11,7 @@ TEST_CASE( "name", "[tags]" ) {
 
 
 //test case with sections
-TEST_CASE( "name", "[tags]" ) {
+TEST_CASE( "name2", "[tags]" ) {
 
 //  set up code and assertions
 
