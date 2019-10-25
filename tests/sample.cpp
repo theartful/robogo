@@ -1,5 +1,4 @@
 #include "includes/catch.hpp"
-#include <iostream>
 
 // Basic format
 

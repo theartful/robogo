@@ -23,7 +23,10 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/src/config.h"
 )
 
-include_directories("${PROJECT_BINARY_DIR}/src/")
+include_directories(
+	"${PROJECT_SOURCE_DIR}/src/"
+	"${PROJECT_BINARY_DIR}/src/"
+)
 
 # use c++17
 set(CMAKE_CXX_STANDARD 17) 
