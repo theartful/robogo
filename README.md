@@ -10,26 +10,36 @@ your code follows our standards, otherwise, travis will complain.
 - If you already made your commit, you can run `git clang-format HEAD~1` to
 format it, or you can use `clang-format <path-to-file> -i` from the beginning.
 
+## Building
+
+To build the project, simply create a build directory, go inside it, run cmake,
+then start the building process by running make:
+
+```shell
+mkdir build
+cd build
+cmake ..
+make
+```
+
 ## Testing
 
-- set up
+To build unit tests, pass `-DENABLE_TESTING=ON` flag to cmake:
 
 ```shell
-g++ -c tests/main.cpp -o tests/main.o
+cmake -DENABLE_TESTING=ON ..
 ```
 
-*avoid compiling main.cpp again, it takes time*
-
-- to run tests
+And after building the project, execute the following command to start running the tests:
 
 ```shell
-g++ tests/main.o tests/*test-file*.cpp -o test-run 
-./test-run
-rm test-run.exe
+make test
 ```
 
-- refer to [Catch2 CL ](https://github.com/catchorg/Catch2/blob/master/docs/command-line.md) for more CL options
-
+You can also run the resulting binary, which might give more flexibility.
+Refer to
+[Catch2 CL ](https://github.com/catchorg/Catch2/blob/master/docs/command-line.md)
+for the CL options of the Catch2 test binary.
 
 ## How to Run
 
