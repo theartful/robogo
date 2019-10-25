@@ -36,11 +36,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(COMPILER_WARNINGS
 	    "-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
-	    -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wnoexcept \
+	    -Wdisabled-optimization -Wformat=2 -Winit-self -Wstrict-overflow=5 \
 	    -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
 	    -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
-	    -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef \
-		-Werror -Wno-unused")
+	    -Wundef -Wswitch-default -Werror -Wno-unused")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 elseif (MSVC)
