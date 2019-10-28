@@ -1,4 +1,5 @@
 sudo: required
+dist: bionic
 
 notifications:
   slack: go-mi:emgh2vMsJ523vXca8Pif0wUF
