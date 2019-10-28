@@ -1,32 +1,28 @@
+#include "../src/engine/board.h"
 #include "includes/catch.hpp"
-
 // Basic format
 
-TEST_CASE("name", "[tags]")
-{
-	REQUIRE(1 /*assertion condition*/);
-	REQUIRE(1 /*assertion condition*/);
-	REQUIRE(1 /*assertion condition*/);
-}
-
-// test case with sections
-TEST_CASE("name2", "[tags]")
+TEST_CASE("Board access/set Basics ", "[tags]")
 {
 
-	//  set up code and assertions
+	go::engine::BoardState board_state;
 
-	SECTION("name")
+	for (uint32_t i = 0; i < board_state.MAX_BOARD_SIZE; i++)
 	{
-		// further setup
-
-		REQUIRE(1 /*assertion condition*/);
-	}
-	SECTION("name")
-	{
-		SECTION("nested section")
+		for (uint32_t j = 0; j < board_state.MAX_BOARD_SIZE; j++)
 		{
+			REQUIRE(board_state(i, j) == go::engine::Cell::EMPTY);
 		}
 	}
+
+	board_state(0, 0) = go::engine::Cell::BLACK;
+	REQUIRE(board_state(0, 0) == go::engine::Cell::BLACK);
+
+	board_state(1, 1) = go::engine::Cell::BLACK;
+	board_state(0, 0) = go::engine::Cell::WHITE;
+
+	REQUIRE(board_state(0, 0) == go::engine::Cell::WHITE);
+	REQUIRE(board_state(1, 1) == go::engine::Cell::BLACK);
 }
 
 // BDD approach (behavioural-driven development)
