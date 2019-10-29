@@ -49,11 +49,6 @@ void go::simplegui::print_game_state(const GameState& game_state){
     std::cout<<"Number of Alive: "<<game_state.players[0].number_alive_stones;
     std::cout<<"\t\t\tNumber of Alive: "<<game_state.players[1].number_alive_stones<<endl;
 
-<<<<<<< HEAD
-    board[x*BOARD_SIZE+y] = (!player?'@':'#');
-}
-=======
     std::cout<<"Total Score: "<<game_state.players[0].total_score;
     std::cout<<"\t\t\t\tTotal Score: "<<game_state.players[1].total_score<<endl;
 }
->>>>>>> Add simple gui
