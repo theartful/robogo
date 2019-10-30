@@ -60,7 +60,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/engine)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 ################ testing ###############
 option(ENABLE_TESTING "Enable testing" OFF)

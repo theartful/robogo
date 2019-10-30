@@ -1,4 +1,0 @@
-file(GLOB_RECURSE ENGINE_SRC *.cpp)
-file(GLOB_RECURSE ENGINE_HEADERS *.h)
-
-add_library(goslayer-engine ${ENGINE_SRC} ${ENGINE_HEADERS})

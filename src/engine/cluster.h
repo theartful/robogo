@@ -1,6 +1,7 @@
 #ifndef SRC_ENGINE_CLUSTER_H_
 #define SRC_ENGINE_CLUSTER_H_
 
+#include <array>
 #include <bitset>
 #include <stdint.h>
 
@@ -24,7 +25,10 @@ struct Cluster
 // A union find structure
 struct ClusterTable
 {
-	Cluster clusters[BoardState::MAX_NUM_CELLS];
+	std::array<Cluster, BoardState::MAX_NUM_CELLS> clusters;
+	ClusterTable() : clusters{} // initialize clusters to 0
+	{
+	}
 };
 
 uint32_t get_num_liberties(const Cluster&);
