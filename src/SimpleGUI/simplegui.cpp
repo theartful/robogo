@@ -1,6 +1,9 @@
 #include "simplegui.h"
 
-BoardSimpleGUI::BoardSimpleGUI(){initializeBoard();}
+go::simplegui::BoardSimpleGUI::BoardSimpleGUI()
+{
+	initializeBoard();
+}
 
 // initialize board at start of the game;
 void go::simplegui::BoardSimpleGUI::initializeBoard(){

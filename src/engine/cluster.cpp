@@ -40,7 +40,6 @@ go::engine::get_cluster(const ClusterTable& table, uint32_t cell_idx)
 void go::engine::update_clusters(
     ClusterTable& table, BoardState& state, const Action& action)
 {
-	const uint32_t action_pos = BoardState::index(action.x, action.y);
 	// obtain a list of neighbor clusters, and update liberties
 	// of enemy clusters
 	Cluster* to_merge[4];
@@ -48,8 +47,8 @@ void go::engine::update_clusters(
 	uint32_t merge_count = 0;
 	uint32_t capture_count = 0;
 
-	for_each_neighbor_cluster(table, state, action_pos, [&](Cluster& cluster) {
-		cluster.liberties_map.set(action_pos, false);
+	for_each_neighbor_cluster(table, state, action.pos, [&](Cluster& cluster) {
+		cluster.liberties_map.set(action.pos, false);
 		cluster.num_liberties--;
 		// if friendly cluster, add it to be merged
 		if (cluster.player == action.player_index)
@@ -59,7 +58,7 @@ void go::engine::update_clusters(
 			to_capture[capture_count++] = &cluster;
 	});
 
-	Cluster& action_cluster = table.clusters[action_pos];
+	Cluster& action_cluster = table.clusters[action.pos];
 	if (merge_count == 0)
 	{
 		init_single_cell_cluster(action_cluster, state, action);
@@ -67,7 +66,7 @@ void go::engine::update_clusters(
 	else
 	{
 		Cluster& mega_cluster = *merge_clusters(to_merge, merge_count);
-		merge_cluster_with_cell(mega_cluster, action_pos, table, state);
+		merge_cluster_with_cell(mega_cluster, action.pos, table, state);
 	}
 	// now cleanup dead clusters
 	for (auto it = to_capture; it != to_capture + capture_count; it++)
@@ -77,14 +76,12 @@ void go::engine::update_clusters(
 static void init_single_cell_cluster(
     Cluster& cluster, const BoardState& state, const Action& action)
 {
-	const uint32_t action_pos = BoardState::index(action.x, action.y);
-
-	cluster.parent_idx = BoardState::index(action.x, action.y);
+	cluster.parent_idx = action.pos;
 	cluster.player = action.player_index;
 	cluster.size = 1;
 	cluster.liberties_map.reset();
 	cluster.num_liberties = 0;
-	for_each_neighbor(action_pos, [&](uint32_t neighbor) {
+	for_each_neighbor(action.pos, [&](uint32_t neighbor) {
 		if (is_empty_cell(state, neighbor))
 		{
 			cluster.liberties_map.set(neighbor, true);
