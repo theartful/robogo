@@ -83,7 +83,7 @@ inline bool is_invalid(const Action& action)
 
 struct Player
 {
-	static constexpr uint32_t DEFAULT_ALLOWED_TIME = 30 * 60 * 1000;
+	static constexpr uint32_t DEFAULT_ALLOWED_TIME = 15 * 60 * 1000;
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
 	uint32_t total_score;
