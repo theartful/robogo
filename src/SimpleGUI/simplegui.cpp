@@ -188,7 +188,7 @@ void go::simplegui::BoardSimpleGUI::print_liberties(const go::engine::Cluster& c
 }
 
 void go::simplegui::BoardSimpleGUI::print_cluster_info(int index,const go::engine::ClusterTable& table){
-
+    clear_screen();
     const go::engine::Cluster& cluster = go::engine::get_cluster(table,index);
 
     std::cout<<"Parent idx = "<<cluster.parent_idx;
