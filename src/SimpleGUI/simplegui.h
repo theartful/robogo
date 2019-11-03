@@ -18,12 +18,12 @@ class BoardSimpleGUI: public Agent
 {
 public:
 
+    BoardSimpleGUI();
+    
     virtual uint32_t generate_move(const Game& game);
 
 private:
     const int BOARD_SIZE = 19;
-    
-    BoardSimpleGUI();
     
     // clears console
     void clear_screen();
