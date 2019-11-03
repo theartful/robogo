@@ -19,7 +19,7 @@ class BoardSimpleGUI: public Agent
 public:
 
     BoardSimpleGUI();
-    
+
     virtual uint32_t generate_move(const Game& game);
 
 private:
@@ -44,7 +44,7 @@ private:
     void print_liberties(const go::engine::Cluster& cluster);
 
     // prints cluster information
-    void print_cluster_info(int index,const go::engine::ClusterTable& table);
+    void print_cluster_info(uint32_t index,const go::engine::ClusterTable& table);
     
     // returns list of indices of cluster
     void get_cluster_indices(std::vector<int>& indices,const go::engine::ClusterTable& table,int parent_idx);
