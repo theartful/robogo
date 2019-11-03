@@ -9,7 +9,7 @@ uint32_t go::simplegui::BoardSimpleGUI::generate_move(const Game& game){
     std::stringstream stream;
 
     std::string command;
-    uint32_t x,y;
+    int x,y;
     
     print_board(game.get_board_state());
 
@@ -45,14 +45,14 @@ uint32_t go::simplegui::BoardSimpleGUI::generate_move(const Game& game){
     }
 }
 
-void go::simplegui::BoardSimpleGUI::read_position(std::stringstream& stream, uint32_t& x,uint32_t &y){
+void go::simplegui::BoardSimpleGUI::read_position(std::stringstream& stream, int& x,int &y){
     std::string position;
     stream >> position;
     
     to_lower(position);
 
     char column = position[0];
-    uint32_t row = atoi(position.substr(1).c_str());
+    int row = atoi(position.substr(1).c_str());
 
     get_index(column,row,x,y);
 }
@@ -63,7 +63,7 @@ void go::simplegui::BoardSimpleGUI::to_lower(std::string& str){
     });
 }
 
-void go::simplegui::BoardSimpleGUI::get_index(char column, uint32_t row, uint32_t& x, uint32_t& y){
+void go::simplegui::BoardSimpleGUI::get_index(char column, int row, int& x, int& y){
     assert(column >= 'a' && column <= 't' && column != 'i');
     assert(row >= 1 && row <= 19);
 
@@ -83,11 +83,11 @@ void go::simplegui::BoardSimpleGUI::clear_screen(){
     std::cout << "\x1B[2J\x1B[H";
 }
 
-inline bool go::simplegui::BoardSimpleGUI::is_special(uint32_t idx){
+inline bool go::simplegui::BoardSimpleGUI::is_special(int idx){
     return idx == 3 || idx == 9 || idx == 15;
 }
 
-inline char go::simplegui::BoardSimpleGUI::get_board_symbol(go::engine::Cell cell, uint32_t x, uint32_t y){
+inline char go::simplegui::BoardSimpleGUI::get_board_symbol(go::engine::Cell cell, int x, int y){
 
     if(cell == go::engine::Cell::WHITE)
         return '@';
@@ -178,7 +178,7 @@ void go::simplegui::BoardSimpleGUI::print_liberties(const go::engine::Cluster& c
         std::cout<<BOARD_SIZE - i<<" ";
 
         for(int j=0;j<BOARD_SIZE;++j)
-            std::cout<<cluster.liberties_map[go::engine::BoardState::(i,j)]<<" ";
+            std::cout<<cluster.liberties_map[go::engine::BoardState::index(i,j)]<<" ";
 
         std::cout<<BOARD_SIZE - i<<std::endl; 
     }  
@@ -187,14 +187,14 @@ void go::simplegui::BoardSimpleGUI::print_liberties(const go::engine::Cluster& c
 
 }
 
-void go::simplegui::BoardSimpleGUI::print_cluster_info(uint32_t index,const go::engine::ClusterTable& table){
+void go::simplegui::BoardSimpleGUI::print_cluster_info(int index,const go::engine::ClusterTable& table){
     clear_screen();
-    const go::engine::Cluster& cluster = go::engine::get_cluster(table,);
+    const go::engine::Cluster& cluster = go::engine::get_cluster(table,index);
 
     std::cout<<"Parent idx = "<<cluster.parent_idx;
 
-    uint32_t x = cluster.parent_idx / BOARD_SIZE;
-    uint32_t y = cluster.parent_idx % BOARD_SIZE;
+    int x = cluster.parent_idx / BOARD_SIZE;
+    int y = cluster.parent_idx % BOARD_SIZE;
 
     std::cout<<" = "<<get_alphanumeric_position(x,y)<<" ";
     std::cout<<"Player idx = "<<cluster.player<<std::endl;
@@ -203,10 +203,10 @@ void go::simplegui::BoardSimpleGUI::print_cluster_info(uint32_t index,const go::
     std::cout<<"Cluster positions: "<<std::endl;
     std::cout<<"[";
 
-    std::vector<uint32_t> indices;
+    std::vector<int> indices;
     get_cluster_indices(indices,table,cluster.parent_idx);
 
-    for(uint32_t i = 0 ; i < indices.size() ; ++i){
+    for(int i = 0 ; i < indices.size() ; ++i){
         x = indices[i] / BOARD_SIZE;
         y = indices[i] % BOARD_SIZE;
         std::cout<<get_alphanumeric_position(x,y);
@@ -217,18 +217,18 @@ void go::simplegui::BoardSimpleGUI::print_cluster_info(uint32_t index,const go::
 
 }
 
-void go::simplegui::BoardSimpleGUI::get_cluster_indices(std::vector<uint32_t>& indices,const go::engine::ClusterTable& table,uint32_t parent_idx){
+void go::simplegui::BoardSimpleGUI::get_cluster_indices(std::vector<int>& indices,const go::engine::ClusterTable& table,int parent_idx){
     
     indices.clear();
-    for(uint32_t i = 0; i < BOARD_SIZE*BOARD_SIZE; ++i){
+    for(int i = 0; i < BOARD_SIZE*BOARD_SIZE; ++i){
         if(go::engine::get_cluster_idx(table,i) == parent_idx)
             indices.push_back(i);
     }
 
 }
 
-inline std::string go::simplegui::BoardSimpleGUI::get_alphanumeric_position(uint32_t x,uint32_t y){
-    uint32_t row = BOARD_SIZE - x;
+inline std::string go::simplegui::BoardSimpleGUI::get_alphanumeric_position(int x,int y){
+    int row = BOARD_SIZE - x;
     char column = 'A' + y;
 
     return std::to_string(row) + column;
