@@ -31,12 +31,12 @@ uint32_t go::simplegui::BoardSimpleGUI::generate_move(const Game& game){
         }
         else if(command == "lib"){
             read_position(stream,x,y);
-            int index = go::engine::BoardState::index(x,y);
+            uint32_t index = go::engine::BoardState::index(x,y);
             print_liberties(get_cluster(game.get_cluster_table(),index));
         }
         else if(command == "cluster"){
             read_position(stream,x,y);
-            int index = go::engine::BoardState::index(x,y);
+            uint32_t index = go::engine::BoardState::index(x,y);
             print_cluster_info(index,game.get_cluster_table());
         }
         else if(command == "state"){
