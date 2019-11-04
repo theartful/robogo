@@ -20,7 +20,7 @@ public:
 
     BoardSimpleGUI();
     
-    virtual uint32_t generate_move(const Game& game);
+    virtual uint32_t generate_move(const Game& game) override;
 
 private:
     const uint32_t BOARD_SIZE = 19;
