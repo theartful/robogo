@@ -3,12 +3,15 @@
 using namespace go::simplegui;
 using namespace go::engine;
 
-BoardSimpleGUI::BoardSimpleGUI(){}
+BoardSimpleGUI::BoardSimpleGUI()
+{
+}
 
 //Blocks waiting for input from user, and return when he enters position
-uint32_t BoardSimpleGUI::generate_move(const Game& game){
-    
-    std::string user_input;
+uint32_t BoardSimpleGUI::generate_move(const Game& game)
+{
+
+	std::string user_input;
     std::stringstream stream;
 
     std::string command;
@@ -16,8 +19,9 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game){
 
 	print_board(game.get_board_state());
 
-	while(true){
-        get_user_input(user_input);
+	while (true)
+	{
+		get_user_input(user_input);
 
         stream.clear();
         stream << user_input;
@@ -30,17 +34,17 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game){
         }
         else if(command == "mv"){
             read_position(stream,x,y);
-            return BoardState::index(x,y);
-        }
+			return BoardState::index(x, y);
+		}
         else if(command == "lib"){
             read_position(stream,x,y);
-            uint32_t index = BoardState::index(x,y);
-            print_liberties(get_cluster(game.get_cluster_table(),index));
+			uint32_t index = BoardState::index(x, y);
+			print_liberties(get_cluster(game.get_cluster_table(),index));
         }
         else if(command == "cluster"){
             read_position(stream,x,y);
-            uint32_t index = BoardState::index(x,y);
-            print_cluster_info(index,game.get_cluster_table());
+			uint32_t index = BoardState::index(x, y);
+			print_cluster_info(index,game.get_cluster_table());
         }
         else if(command == "state"){
             print_game_state(game.get_game_state());
@@ -53,8 +57,8 @@ void BoardSimpleGUI::read_position(
 {
 	std::string position;
 	stream >> position;
-    
-    to_lower(position);
+
+	to_lower(position);
 
     char column = position[0];
 	uint32_t row = uint32_t(atoi(position.substr(1).c_str()));
@@ -62,8 +66,9 @@ void BoardSimpleGUI::read_position(
 	get_index(column, row, x, y);
 }
 
-void BoardSimpleGUI::to_lower(std::string& str){
-    for_each(str.begin(),str.end(),[] (char& c){
+void BoardSimpleGUI::to_lower(std::string& str)
+{
+	for_each(str.begin(),str.end(),[] (char& c){
                 c = std::tolower(c);
     });
 }
@@ -74,19 +79,20 @@ void BoardSimpleGUI::get_index(
 	assert(column >= 'a' && column <= 't' && column != 'i');
 	assert(row >= 1 && row <= 19);
 
-    const char MIN_CHAR = 'a';
+	const char MIN_CHAR = 'a';
 
     //board doesn't have letter i, so I decrement column to remove the gap
     if(column >= 'j')
         column--;
 
     x = BOARD_SIZE - row;
-    y = uint32_t(column - MIN_CHAR);
+	y = uint32_t(column - MIN_CHAR);
 }
 
 // clears console
-void BoardSimpleGUI::clear_screen(){
-    // Hacky solution, but crossplatform :D
+void BoardSimpleGUI::clear_screen()
+{
+	// Hacky solution, but crossplatform :D
     std::cout << "\x1B[2J\x1B[H";
 }
 
@@ -95,22 +101,22 @@ inline bool BoardSimpleGUI::is_special(uint32_t idx)
 	return idx == 3 || idx == 9 || idx == 15;
 }
 
-inline char BoardSimpleGUI::get_board_symbol(
-    Cell cell, uint32_t x, uint32_t y)
+inline char BoardSimpleGUI::get_board_symbol(Cell cell, uint32_t x, uint32_t y)
 {
 
 	if (cell == Cell::WHITE)
 		return '@';
-    else if(cell == Cell::BLACK)
-        return '#';
+	else if (cell == Cell::BLACK)
+		return '#';
     else if(is_special(x) && is_special(y))
         return '_';
     else
         return '.';
 }
 
-void BoardSimpleGUI::print_board(const BoardState& board){
-    clear_screen();
+void BoardSimpleGUI::print_board(const BoardState& board)
+{
+	clear_screen();
     std::cout<<"\t\t   ";
     for(char i='A';i<='T';++i){
         if(i=='I') //for some reason, go boatd doesn't have letter i
@@ -126,17 +132,16 @@ void BoardSimpleGUI::print_board(const BoardState& board){
 	{
 
 		std::cout << "\t  \t";
-		if(BOARD_SIZE - i < LAST_TWO_DIGIT_NUMBER)
-            std::cout<<" ";
+		if (BOARD_SIZE - i < LAST_TWO_DIGIT_NUMBER)
+			std::cout<<" ";
 
         std::cout<<BOARD_SIZE - i<<" ";
 
 		for (uint32_t j = 0; j < BOARD_SIZE; ++j)
 			std::cout << get_board_symbol(board(i, j), i, j) << " ";
 
-		std::cout<<BOARD_SIZE - i<<std::endl;
-        
-    }
+		std::cout << BOARD_SIZE - i << std::endl;
+	}
 
     std::cout<<"\t\t   ";
     for(char i='A';i<='T';++i){
@@ -148,8 +153,9 @@ void BoardSimpleGUI::print_board(const BoardState& board){
     std::cout<<std::endl;
 }
 
-void BoardSimpleGUI::print_game_state(const GameState& game_state){
-    clear_screen();
+void BoardSimpleGUI::print_game_state(const GameState& game_state)
+{
+	clear_screen();
     print_board(game_state.board_state);
     std::cout<<"Players turn: "<<game_state.number_played_moves<<"\t\t\t";
     std::cout<<"Number of played moves: "<<game_state.number_played_moves<<std::endl;
@@ -166,8 +172,9 @@ void BoardSimpleGUI::print_game_state(const GameState& game_state){
     std::cout<<"\t\t\t\tTotal Score: "<<game_state.players[1].total_score<<std::endl;
 }
 
-void BoardSimpleGUI::print_liberties(const Cluster& cluster){
-    clear_screen();
+void BoardSimpleGUI::print_liberties(const Cluster& cluster)
+{
+	clear_screen();
     std::cout<<"Liberty map"<<std::endl;
     std::cout<<"\t\t   ";
     for(char i='A';i<='T';++i){
@@ -184,18 +191,16 @@ void BoardSimpleGUI::print_liberties(const Cluster& cluster){
 	{
 
 		std::cout << "\t  \t";
-		if(BOARD_SIZE - i < LAST_TWO_DIGIT_NUMBER)
-            std::cout<<" ";
+		if (BOARD_SIZE - i < LAST_TWO_DIGIT_NUMBER)
+			std::cout<<" ";
 
         std::cout<<BOARD_SIZE - i<<" ";
 
 		for (uint32_t j = 0; j < BOARD_SIZE; ++j)
-			std::cout
-			    << cluster.liberties_map[BoardState::index(i, j)]
-			    << " ";
+			std::cout << cluster.liberties_map[BoardState::index(i, j)] << " ";
 
-		std::cout<<BOARD_SIZE - i<<std::endl; 
-    }  
+		std::cout << BOARD_SIZE - i << std::endl;
+	}  
 
     
 
@@ -205,18 +210,18 @@ void BoardSimpleGUI::print_cluster_info(
     uint32_t index, const ClusterTable& table)
 {
 	clear_screen();
-	const Cluster& cluster = get_cluster(table,index);
+	const Cluster& cluster = get_cluster(table, index);
 
-    std::cout<<"Parent idx = "<<cluster.parent_idx;
+	std::cout<<"Parent idx = "<<cluster.parent_idx;
 
 	uint32_t x = cluster.parent_idx / BOARD_SIZE;
 	uint32_t y = cluster.parent_idx % BOARD_SIZE;
 
 	std::cout << " = " << get_alphanumeric_position(x, y) << " ";
-	std::cout<<"Player idx = "<<cluster.player<<std::endl;
-    std::cout<<"Cluster size = "<<cluster.size<<std::endl;
-    std::cout<<"Number of liberties = "<<cluster.num_liberties<<std::endl;
-    std::cout<<"Cluster positions: "<<std::endl;
+	std::cout << "Player idx = " << cluster.player << std::endl;
+	std::cout<<"Cluster size = "<<cluster.size<<std::endl;
+	std::cout << "Number of liberties = " << cluster.num_liberties << std::endl;
+	std::cout<<"Cluster positions: "<<std::endl;
     std::cout<<"[";
 
 	std::vector<uint32_t> indices;
@@ -226,7 +231,7 @@ void BoardSimpleGUI::print_cluster_info(
 	{
 		x = indices[i] / BOARD_SIZE;
 		y = indices[i] % BOARD_SIZE;
-        std::cout<<get_alphanumeric_position(x,y);
+		std::cout<<get_alphanumeric_position(x,y);
         if(i != indices.size() - 1)
             std::cout<<",";
     }
@@ -244,7 +249,7 @@ void BoardSimpleGUI::get_cluster_indices(
 	{
 		if (get_cluster_idx(table, i) == parent_idx)
 			indices.push_back(i);
-    }
+	}
 
 }
 
@@ -257,7 +262,8 @@ BoardSimpleGUI::get_alphanumeric_position(uint32_t x, uint32_t y)
 	return std::to_string(row) + column;
 }
 
-void BoardSimpleGUI::get_user_input(std::string& user_input){
-    std::cout<<"Enter Input: ";
+void BoardSimpleGUI::get_user_input(std::string& user_input)
+{
+	std::cout<<"Enter Input: ";
     std::getline(std::cin,user_input);
 }
