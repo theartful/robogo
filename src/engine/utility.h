@@ -8,6 +8,8 @@
 #include "board.h"
 #include "cluster.h"
 
+#include "interface.h"
+
 namespace go
 {
 namespace engine

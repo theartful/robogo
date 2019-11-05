@@ -1,7 +1,8 @@
 #include "simplegui.h"
+#include "engine/utility.h"
 #include <algorithm>
 #include <iostream>
-
+#include <stdint.h>
 using namespace go::simplegui;
 using namespace go::engine;
 
@@ -12,45 +13,52 @@ BoardSimpleGUI::BoardSimpleGUI()
 // Blocks waiting for input from user, and return when he enters position
 uint32_t BoardSimpleGUI::generate_move(const Game& game)
 {
-
-	std::string user_input;
-	std::stringstream stream;
-
 	std::string command;
 	uint32_t x, y;
 
-	print_board(game.get_board_state());
+	print_game_state(game.get_game_state());
 
 	while (true)
 	{
-		get_user_input(user_input);
-
-		stream.clear();
-		stream << user_input;
-		stream >> command;
+		std::cout << "Enter command: ";
+		std::cin >> command;
 
 		to_lower(command);
 
 		if (command == "board")
 		{
-			print_board(game.get_board_state());
+			print_board(
+			    game.get_board_state(), game.get_game_state().player_turn);
 		}
 		else if (command == "mv")
 		{
-			read_position(stream, x, y);
-			return BoardState::index(x, y);
+			read_position(x, y);
+			if (x == UINT32_MAX && y == UINT32_MAX) // pass
+				return BoardState::INVALID_INDEX;
+			else if (x == UINT32_MAX) // invalid input
+				continue;
+			else
+				return BoardState::index(x, y);
 		}
 		else if (command == "lib")
 		{
-			read_position(stream, x, y);
+			read_position(x, y);
+			if (x == UINT32_MAX) // invalid input
+				continue;
 			uint32_t index = BoardState::index(x, y);
 			print_liberties(get_cluster(game.get_cluster_table(), index));
 		}
 		else if (command == "cluster")
 		{
-			read_position(stream, x, y);
+			read_position(x, y);
+			if (x == UINT32_MAX) // invalid input
+				continue;
 			uint32_t index = BoardState::index(x, y);
-			print_cluster_info(index, game.get_cluster_table());
+			print_board(
+			    game.get_board_state(), game.get_game_state().player_turn);
+			print_cluster_info(
+			    index, game.get_cluster_table(),
+			    game.get_game_state().board_state);
 		}
 		else if (command == "state")
 		{
@@ -59,13 +67,19 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 	}
 }
 
-void BoardSimpleGUI::read_position(
-    std::stringstream& stream, uint32_t& x, uint32_t& y)
+void BoardSimpleGUI::read_position(uint32_t& x, uint32_t& y)
 {
 	std::string position;
-	stream >> position;
+	std::cin >> position;
 
 	to_lower(position);
+
+	if (position == "pass")
+	{
+		x = UINT32_MAX;
+		y = UINT32_MAX;
+		return;
+	}
 
 	char column = position[0];
 	uint32_t row = uint32_t(atoi(position.substr(1).c_str()));
@@ -81,8 +95,12 @@ void BoardSimpleGUI::to_lower(std::string& str)
 void BoardSimpleGUI::get_index(
     char column, uint32_t row, uint32_t& x, uint32_t& y)
 {
-	assert(column >= 'a' && column <= 't' && column != 'i');
-	assert(row >= 1 && row <= 19);
+	if (column < 'a' || column > 't' || column == 'i' || row < 1 || row > 19)
+	{
+		x = UINT32_MAX;
+		y = 0;
+		return;
+	}
 
 	const char MIN_CHAR = 'a';
 
@@ -119,7 +137,7 @@ inline char BoardSimpleGUI::get_board_symbol(Cell cell, uint32_t x, uint32_t y)
 		return '.';
 }
 
-void BoardSimpleGUI::print_board(const BoardState& board)
+void BoardSimpleGUI::print_board(const BoardState& board, uint32_t player_turn)
 {
 	clear_screen();
 	std::cout << "\t\t   ";
@@ -158,13 +176,18 @@ void BoardSimpleGUI::print_board(const BoardState& board)
 	}
 
 	std::cout << std::endl;
+	std::cout << "Players turn: " << player_turn << std::endl;
 }
 
 void BoardSimpleGUI::print_game_state(const GameState& game_state)
 {
 	clear_screen();
-	print_board(game_state.board_state);
-	std::cout << "Players turn: " << game_state.number_played_moves << "\t\t\t";
+	print_board(game_state.board_state, game_state.player_turn);
+	const Player& p = game_state.players[game_state.player_turn];
+
+	std::cout << "Allowed time: " << p.allowed_time.count() << " ";
+	std::cout << "Elapsed time: " << p.elapsed_time.count() << std::endl;
+
 	std::cout << "Number of played moves: " << game_state.number_played_moves
 	          << std::endl;
 
@@ -211,16 +234,32 @@ void BoardSimpleGUI::print_liberties(const Cluster& cluster)
 		std::cout << BOARD_SIZE - i << " ";
 
 		for (uint32_t j = 0; j < BOARD_SIZE; ++j)
-			std::cout << cluster.liberties_map[BoardState::index(i, j)] << " ";
-
+		{
+			if (cluster.liberties_map[BoardState::index(i, j)])
+				std::cout << cluster.liberties_map[BoardState::index(i, j)]
+				          << " ";
+			else
+				std::cout << "-"
+				          << " ";
+		}
 		std::cout << BOARD_SIZE - i << std::endl;
 	}
+
+	std::cout << "\t\t   ";
+	for (char i = 'A'; i <= 'T'; ++i)
+	{
+		if (i == 'I') // for some reason, go boatd doesn't have letter i
+			continue;
+		std::cout << i << " ";
+	}
+
+	std::cout << std::endl;
 }
 
 void BoardSimpleGUI::print_cluster_info(
-    uint32_t index, const ClusterTable& table)
+    uint32_t index, const ClusterTable& table,
+    const go::engine::BoardState& state)
 {
-	clear_screen();
 	const Cluster& cluster = get_cluster(table, index);
 
 	std::cout << "Parent idx = " << cluster.parent_idx;
@@ -235,31 +274,18 @@ void BoardSimpleGUI::print_cluster_info(
 	std::cout << "Cluster positions: " << std::endl;
 	std::cout << "[";
 
-	std::vector<uint32_t> indices;
-	get_cluster_indices(indices, table, cluster.parent_idx);
+	bool is_first_number = true;
+	for_each_cluster_cell(cluster, state, [&](uint32_t idx) {
+		x = idx / BOARD_SIZE;
+		y = idx % BOARD_SIZE;
 
-	for (uint32_t i = 0; i < indices.size(); ++i)
-	{
-		x = indices[i] / BOARD_SIZE;
-		y = indices[i] % BOARD_SIZE;
+		if (!is_first_number)
+			std::cout << ", ";
 		std::cout << get_alphanumeric_position(x, y);
-		if (i != indices.size() - 1)
-			std::cout << ",";
-	}
+		is_first_number = false;
+	});
+
 	std::cout << "]" << std::endl;
-}
-
-void BoardSimpleGUI::get_cluster_indices(
-    std::vector<uint32_t>& indices, const ClusterTable& table,
-    uint32_t parent_idx)
-{
-
-	indices.clear();
-	for (uint32_t i = 0; i < BOARD_SIZE * BOARD_SIZE; ++i)
-	{
-		if (get_cluster_idx(table, i) == parent_idx)
-			indices.push_back(i);
-	}
 }
 
 inline std::string
@@ -269,10 +295,4 @@ BoardSimpleGUI::get_alphanumeric_position(uint32_t x, uint32_t y)
 	char column = 'A' + y;
 
 	return std::to_string(row) + column;
-}
-
-void BoardSimpleGUI::get_user_input(std::string& user_input)
-{
-	std::cout << "Enter Input: ";
-	std::getline(std::cin, user_input);
 }
