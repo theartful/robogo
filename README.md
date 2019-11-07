@@ -43,4 +43,46 @@ for the CL options of the Catch2 test binary.
 
 ## How to Run
 
-TBA
+Make sure you are in build folder, and you built the project with cmake, then run the following command:
+
+```shell
+./src/goslayer-executable
+```
+
+### CLI Supported Commands
+
+- Make a move in position xy
+
+```shell
+mv xy
+```
+
+For example
+
+```shell
+mv F12
+```
+
+- Show board
+
+```shell
+board
+```
+
+- Show liberties map of cluster
+
+```shell
+lib xy
+```
+
+- Show cluster information
+
+```shell
+cluster xy
+```
+
+- Show game state (board, time, score ,, etc)
+
+```shell
+state
+```
