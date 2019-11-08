@@ -49,9 +49,9 @@ Make sure you are in build folder, and you built the project with cmake, then ru
 ./bin/goslayer-executable
 ```
 
-### CLI Supported Commands
+## CLI Supported Commands
 
-- Make a move in position xy
+#### Make a move in position xy
 
 ```shell
 mv xy
@@ -63,25 +63,25 @@ For example
 mv F12
 ```
 
-- Show board
+#### Show board
 
 ```shell
 board
 ```
 
-- Show liberties map of cluster
+#### Show liberties map of cluster
 
 ```shell
 lib xy
 ```
 
-- Show cluster information
+#### Show cluster information
 
 ```shell
 cluster xy
 ```
 
-- Show game state (board, time, score ,, etc)
+#### Show game state (board, time, score, etc.)
 
 ```shell
 state
