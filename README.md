@@ -46,7 +46,7 @@ for the CL options of the Catch2 test binary.
 Make sure you are in build folder, and you built the project with cmake, then run the following command:
 
 ```shell
-./src/goslayer-executable
+./bin/goslayer-executable
 ```
 
 ### CLI Supported Commands
