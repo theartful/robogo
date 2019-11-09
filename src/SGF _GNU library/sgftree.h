@@ -39,10 +39,10 @@
  * want to redefine these symbols if we include this file into board.h.
  */
 
-#define EMPTY 0
-#define WHITE 1
-#define BLACK 2
-#endif
+// #define EMPTY 0
+// #define WHITE 1
+// #define BLACK 2
+// #endif
 
 
 void *xalloc(unsigned int);

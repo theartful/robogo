@@ -243,10 +243,10 @@ find_move(SGFNode *node)
   while (sgf_prop) {
     switch (sgf_prop->name) {
     case SGFB: 
-      return BLACK;
+      return 2;
       break;
     case SGFW: 
-      return WHITE;
+      return 1;
       break;
     default:
       break;
@@ -254,7 +254,7 @@ find_move(SGFNode *node)
     sgf_prop = sgf_prop->next;
   }
 
-  return EMPTY;
+  return 0;
 }
 
 
