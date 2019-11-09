@@ -1,0 +1,28 @@
+(
+;
+FF[4]
+CA[UTF-8]
+PB[GoBase-1994]
+PW[GoBase-2019]
+KM[0.00]
+RU[Japanese]
+ST[2]
+AP[sgf2misc:3.1.9]
+AB[bc][cc][dc][ec][fc][gc][lc][mc][nc][oc][pc][qc][rc][sc][ad]
+  [hd][ld][sd][ae][ee][ie][le][se][af][bf][cf][df][ff][if][lf]
+  [of][pf][qf][rf][sf][fg][ig][lg][og][fh][ih][lh][oh][fi][hi]
+  [li][oi][pi][dj][ej][gj][lj][qj][ck][fk][mk][nk][ok][rk][bl]
+  [el][pl][sl][am][dm][pm][sm][an][dn][ln][mn][nn][pn][sn][ao]
+  [do][go][ho][io][lo][oo][so][ap][ep][fp][ip][mp][rp][aq][iq]
+  [nq][qq][ar][br][cr][dr][er][fr][gr][hr][ir][or][pr]
+AW[bd][cd][ed][fd][gd][md][nd][od][qd][rd][be][ce][de][fe][ge]
+  [he][me][ne][oe][pe][qe][re][gf][hf][mf][nf][gg][hg][mg][ng]
+  [gh][hh][mh][nh][gi][mi][ni][mj][nj][oj][pj][dk][ek][pk][qk]
+  [cl][dl][ql][rl][bm][cm][qm][rm][bn][cn][qn][rn][bo][co][mo]
+  [no][po][qo][ro][bp][cp][gp][hp][np][op][qp][bq][cq][dq][eq]
+  [fq][gq][hq][oq][pq]
+
+  [dd][dp][pd][pp]
+  [fj]
+  C[Above stone additions are illegal but on purpose...]
+)

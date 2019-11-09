@@ -1561,34 +1561,356 @@ writesgf(SGFNode *root, const char *filename)
 }
 
 
-//#ifdef TEST_SGFPARSER
-int main()
+short str2short(char *str)
 {
-  static char buffer[25000];
-  static char output[25000];
-  SGFNode *game;
+  return (str[0] | str[1] << 8);
+}
 
-  sgffile = stdin;
+const char* getPropertyName(short propName)
+{
+  switch(propName)
+  {
+     /*  Add Black       setup            list of stone */
+    case SGFAB: return "SGFAB";
+     /*  Add Empty       setup            list of point */
 
-  nexttoken();
-  gametree(&game, NULL,LAX_SGF);
-  if (sgferr) {
-    fprintf(stderr, "Parse error:");
-    fprintf(stderr, sgferr, sgferrpos);
-    fprintf(stderr, " at position %d\n", sgferrpos);
-  }
-  else {
-    unparse_game(stdin, game, 1);
-    //write(1, output, output - output);
+    case SGFAE: return "SGFAE";
+        /*  Annotation      game-info        simpletext */
+
+    case SGFAN: return "SGFAN";
+        /*  Application     root             composed simpletext ':' simpletext */
+
+    case SGFAP: return "SGFAP";
+        /*  Arrow           -                list of composed point ':' point */
+
+    case SGFAR: return "SGFAR";
+        /*  Who adds stones - (LOA)          simpletext */
+
+    case SGFAS: return "SGFAS";
+        /*  Add White       setup            list of stone */
+
+    case SGFAW: return "SGFAW";
+        /*  Black           move             move */
+
+    case SGFB: return "SGFB";
+        /*  Black time left move             real */
+
+    case SGFBL: return "SGFBL";
+        /*  Bad move        move             double */
+
+    case SGFBM: return "SGFBM";
+        /*  Black rank      game-info        simpletext */
+
+    case SGFBR: return "SGFBR";
+        /*  Black team      game-info        simpletext */
+
+    case SGFBT: return "SGFBT";
+        /*  Comment         -                text */
+
+    case SGFC: return "SGFC";
+        /*  Charset         root             simpletext */
+
+    case SGFCA: return "SGFCA";
+        /*  Copyright       game-info        simpletext */
+
+    case SGFCP: return "SGFCP";
+        /*  Circle          -                list of point */
+
+    case SGFCR: return "SGFCR";
+        /*  Dim points      - (inherit)      elist of point */
+
+    case SGFDD: return "SGFDD";
+        /*  Even position   -                double */
+
+    case SGFDM: return "SGFDM";
+        /*  Doubtful        move             none */
+
+    case SGFDO: return "SGFDO";
+        /*  Date            game-info        simpletext */
+
+    case SGFDT: return "SGFDT";
+        /*  Event           game-info        simpletext */
+
+    case SGFEV: return "SGFEV";
+        /*  Fileformat      root             number (range: */
+
+    case SGFFF: return "SGFFF";
+        /*  Figure          -                none | composed number ":" simpletext */
+
+    case SGFFG: return "SGFFG";
+        /*  Good for Black  -                double */
+
+    case SGFGB: return "SGFGB";
+        /*  Game comment    game-info        text */
+
+    case SGFGC: return "SGFGC";
+        /*  Game            root             number (range: */
+
+    case SGFGM: return "SGFGM";
+        /*  Game name       game-info        simpletext */
+
+    case SGFGN: return "SGFGN";
+        /*  Good for White  -                double */
+
+    case SGFGW: return "SGFGW";
+        /*  Handicap        game-info (Go)   number */
+
+    case SGFHA: return "SGFHA";
+        /*  Hotspot         -                double */
+
+    case SGFHO: return "SGFHO";
+        /*  Initial pos.    game-info (LOA)  simpletext */
+
+    case SGFIP: return "SGFIP";
+        /*  Interesting     move             none */
+
+    case SGFIT: return "SGFIT";
+        /*  Invert Y-axis   game-info (LOA)  simpletext */
+
+    case SGFIY: return "SGFIY";
+        /*  Komi            game-info (Go)   real */
+
+    case SGFKM: return "SGFKM";
+        /*  Ko              move             none */
+
+    case SGFKO: return "SGFKO";
+        /*  Label           -                list of composed point ':' simpletext */
+
+    case SGFLB: return "SGFLB";
+        /*  Line            -                list of composed point ':' point */
+
+    case SGFLN: return "SGFLN";
+        /*  Mark            -                list of point */
+
+    case SGFMA: return "SGFMA";
+        /*  set move number move             number */
+
+    case SGFMN: return "SGFMN";
+        /*  Nodename        -                simpletext */
+
+    case SGFN: return "SGFN";
+        /*  OtStones Black  move             number */
+
+    case SGFOB: return "SGFOB";
+        /*  Opening         game-info        text */
+
+    case SGFON: return "SGFON";
+        /*  Overtime        game-info        simpletext */
+
+    case SGFOT: return "SGFOT";
+        /*  OtStones White  move             number */
+
+    case SGFOW: return "SGFOW";
+        /*  Player Black    game-info        simpletext */
+
+    case SGFPB: return "SGFPB";
+        /*  Place           game-info        simpletext */
+
+    case SGFPC: return "SGFPC";
+        /*  Player to play  setup            color */
+
+    case SGFPL: return "SGFPL";
+        /*  Print move mode - (inherit)      number */
+
+    case SGFPM: return "SGFPM";
+        /*  Player White    game-info        simpletext */
+        /*  Round           game-info        simpletext */
+
+    case SGFPW: return "SGFPW";
+        /*  Result          game-info        simpletext */
+
+    case SGFRE: return "SGFRE";
+
+    case SGFRO: return "SGFRO";
+        /*  Rules           game-info        simpletext */
+
+    case SGFRU: return "SGFRU";
+        /*  Markup          - (LOA)          point */
+
+    case SGFSE: return "SGFSE";
+        /*  Selected        -                list of point */
+
+    case SGFSL: return "SGFSL";
+        /*  Source          game-info        simpletext */
+
+    case SGFSO: return "SGFSO";
+        /*  Square          -                list of point */
+
+    case SGFSQ: return "SGFSQ";
+        /*  Style           root             number (range: */
+
+    case SGFST: return "SGFST";
+        /*  Setup type      game-info (LOA)  simpletext */
+
+    case SGFSU: return "SGFSU";
+        /*  Size            root             (number | composed number ':' number) */
+
+    case SGFSZ: return "SGFSZ";
+        /*  Territory Black - (Go)           elist of point */
+
+    case SGFTB: return "SGFTB";
+        /*  Tesuji          move             double */
+
+    case SGFTE: return "SGFTE";
+        /*  Timelimit       game-info        real */
+
+    case SGFTM: return "SGFTM";
+        /*  Triangle        -                list of point */
+
+    case SGFTR: return "SGFTR";
+        /*  Territory White - (Go)           elist of point */
+
+    case SGFTW: return "SGFTW";
+        /*  Unclear pos     -                double */
+
+    case SGFUC: return "SGFUC";
+        /*  User            game-info        simpletext */
+
+    case SGFUS: return "SGFUS";
+        /*  Value           -                real */
+
+    case SGFV: return "SGFV";
+        /*  View            - (inherit)      elist of point */
+
+    case SGFVW: return "SGFVW";
+        /*  White           move             move */
+
+    case SGFW: return "SGFW";
+        /*  White time left move             real */
+
+    case SGFWL: return "SGFWL";
+        /*  White rank      game-info        simpletext */
+
+    case SGFWR: return "SGFWR";
+        /*  White team      game-info        simpletext */
+
+    case SGFWT: return "SGFWT";
+
+    default: return "not listed";
   }
 }
-//#endif
+
+void printNodeProps(SGFNode* head)
+{
+  printf("enter \n");
+  printf("head is %p\n",head);
+  SGFProperty * next = head->props;
+  
+  while(next)
+  {
+
+    printf("property name in bytes %d\n",next->name);
+    printf("property name %s\n",getPropertyName(next->name));
+    printf("propery value %s\n",next->value);
+    printf("---------------------------------------------\n");
+    
+    next = next->next;
+    // printf("child %d", head);
+  }
+  printf("---------------------this is the end of this node----------------------\n");
+  return;
+}
+
+void printGameTreeRecursive(SGFNode* head, bool isVariation, int nodeNumber)
+{
+  SGFNode* next = head;
+  int i = 0;
+  while(next)
+  {
+    if(isVariation)
+    {
+      printf("this is a variation and it's from node: %d\n", nodeNumber);
+      i = nodeNumber;
+    }
+    printf("this is the node number: %d\n", i);
+    printf("is variation: %d\n", isVariation);
+    printNodeProps(next);
+    if(next->next)
+    {
+      isVariation = true;
+      printf("!!!this node has a variation and it's number is: %d\n", i);
+      printGameTree(next->next, isVariation, i);
+    }
+    next = next->child;
+    i++;
+    isVariation = false;
+    // printf("child %d", head);
+  }
+  return;
+}
+
+void printVariation(SGFNode* head, int nodeNumber)
+{
+  int i = nodeNumber;
+  SGFNode* next = head;
+  while(next)
+  {
+    printf("this is node number: %d and it's a variation from node number: %d\n",i,nodeNumber);
+    printNodeProps(next);
+    i++;
+    next = next->child;
+    
+  }
+}
 
 
+void printGameTree(SGFNode* head)
+{
+    SGFNode* next = head;
+    SGFNode* nextVariation = NULL;
+    int i = 0;
+    while(next)
+    {
+      printf("this is node number: %d\n", i);
+      nextVariation = next->next;
+      printNodeProps(next);
+      while(nextVariation)
+      {
+        printf("!!!this node has a variation and it's number is: %d\n", i);
+        printVariation(next,i);
+        nextVariation = nextVariation->next;
+      }
+        next = next->child;
+        i++;
+      
+      // printf("child %d", head);
+    }
+    return;
+}
+// void printGameTree(SGFNode* head, bool isVariation, int nodeNumber)
+// {
+//   SGFNode* next = head;
+//   int i = nodeNumber;
+//   // isVariation = next->next? true : false;
+//   while(next)
+//   {
+//     if(isVariation)
+//     {
+//       printf("this node is a variation from node number: %d\n", i);
+//       printGameTree(next->child, isVariation, i);
+//     }
+//     if(next->next)
+//     {
+//       printf("!!!this node has a variation and it's number is: %d\n", i);
+//       isVariation = true;
+//       printGameTree(next->next, isVariation, i);
+//     }
+//     else
+//     {
+//       isVariation = false;
+//       next = next->child;
+//       i++;
+//     }
+    
+//     // printf("child %d", head);
+//   }
+//   return;
+// }
 
-/*
- * Local Variables:
- * tab-width: 8
- * c-basic-offset: 2
- * End:
- */
+int main()
+{
+  char* filename ="my_sgf.sgf"; 
+  SGFNode *treeHead = readsgffile(filename);
+  printGameTree(treeHead);
+  
+}
