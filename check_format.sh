@@ -24,14 +24,22 @@ function check_format {
 
 	COMMIT_FILES=$(git diff --name-only $BASE_COMMIT)
 
-	# Use clang-format only on existent files
+	# Use clang-format only on existent h/cpp files
 	LIST=("")
 	for file in $COMMIT_FILES
 	do
-		if [ -f $file ]; then
+		ext="${file##*.}"
+		if [ -f $file  ] && ( [ "$ext" == "cpp" ] ||  [ "$ext" == "h" ] ); then
 			LIST=("${LIST[@]}" "$file")
 		fi
 	done
+
+	if [ "${LIST}" == "" ]; then
+		echo "clang-forma passed. \0/."
+		echo "No *.h or *.cpp files were changed."
+		echo "-----"
+		exit 0
+	fi
 
 	RESULT_OUTPUT="$(git clang-format --commit $BASE_COMMIT --diff --binary `which clang-format` $LIST)"
 
