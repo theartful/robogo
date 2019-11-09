@@ -1,0 +1,166 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/SGFinterface.cpp
+SGFinterface.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/SGFinterface.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/SGFinterface.h
+sgftree.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgftree.h
+stdint.h
+-
+../engine/board.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgf_properties.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgfnode.cpp
+config.h
+-
+stdio.h
+-
+stdlib.h
+-
+ctype.h
+-
+string.h
+-
+assert.h
+-
+sys/time.h
+-
+time.h
+-
+sys/time.h
+-
+time.h
+-
+stdarg.h
+-
+sgftree.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgftree.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgftree.cpp
+assert.h
+-
+sgftree.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgftree.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgftree.h
+stdio.h
+-
+sgf_properties.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/sgf_properties.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SimpleGUI/simplegui.cpp
+simplegui.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SimpleGUI/simplegui.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SimpleGUI/simplegui.h
+iostream
+-
+cassert
+-
+cstring
+-
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/build/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/controller/game.cpp
+controller/game.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/controller/controller/game.h
+config.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/controller/config.h
+engine/interface.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/controller/engine/interface.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+array
+-
+assert.h
+-
+chrono
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.cpp
+algorithm
+-
+cluster.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.h
+interface.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/interface.h
+liberties.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/liberties.h
+utility.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/utility.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.h
+array
+-
+bitset
+-
+stdint.h
+-
+board.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/engine.cpp
+cluster.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.h
+interface.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/interface.h
+liberties.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/liberties.h
+utility.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/utility.h
+cmath
+-
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/interface.h
+board.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/liberties.cpp
+array
+-
+board.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+cluster.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.h
+interface.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/interface.h
+liberties.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/liberties.h
+utility.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/utility.h
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/liberties.h
+stdint.h
+-
+
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/utility.h
+algorithm
+-
+array
+-
+type_traits
+-
+board.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/board.h
+cluster.h
+/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/engine/cluster.h
+
