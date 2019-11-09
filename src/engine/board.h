@@ -19,6 +19,8 @@ enum class Cell : unsigned char
 	BLACK,
 };
 
+
+
 static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
 
 struct BoardState
