@@ -32,7 +32,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <assert.h>
-
+#include "SGFinterface.h"
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -507,7 +507,7 @@ sgfAddStone(SGFNode *node, int color, int movex, int movey)
   char move[3];
 
   sprintf(move, "%c%c", movey + 'a', movex + 'a');
-  sgfAddProperty(node, (color == BLACK) ? "AB" : "AW", move);
+  sgfAddProperty(node, (color == 2) ? "AB" : "AW", move);
 
   return node;
 }
@@ -537,7 +537,7 @@ sgfAddPlay(SGFNode *node, int who, int movex, int movey)
     new_node->parent = node;
   }
   
-  sgfAddProperty(new_node, (who == BLACK) ? "B" : "W", move);
+  sgfAddProperty(new_node, (who == 2) ? "B" : "W", move);
 
   return new_node;
 }
@@ -561,7 +561,7 @@ sgfAddPlayLast(SGFNode *node, int who, int movex, int movey)
     sprintf(move, "%c%c", movey + 'a', movex + 'a');
 
   new_node = sgfAddChild(node);
-  sgfAddProperty(new_node, (who == BLACK) ? "B" : "W", move);
+  sgfAddProperty(new_node, (who == 2) ? "B" : "W", move);
 
   return new_node;
 }
@@ -1859,11 +1859,17 @@ void printGameTree(SGFNode* head)
     SGFNode* next = head;
     SGFNode* nextVariation = NULL;
     int i = 0;
+    int index, player = 0;
+    bool valid = false;
     while(next)
     {
       printf("this is node number: %d\n", i);
       nextVariation = next->next;
       printNodeProps(next);
+
+      sgf_play_node(next, index, player, valid); //here just for testing
+      printf("index: %d, player: %d",index, player);
+
       while(nextVariation)
       {
         printf("!!!this node has a variation and it's number is: %d\n", i);
@@ -1872,45 +1878,15 @@ void printGameTree(SGFNode* head)
       }
         next = next->child;
         i++;
-      
-      // printf("child %d", head);
     }
     return;
 }
-// void printGameTree(SGFNode* head, bool isVariation, int nodeNumber)
-// {
-//   SGFNode* next = head;
-//   int i = nodeNumber;
-//   // isVariation = next->next? true : false;
-//   while(next)
-//   {
-//     if(isVariation)
-//     {
-//       printf("this node is a variation from node number: %d\n", i);
-//       printGameTree(next->child, isVariation, i);
-//     }
-//     if(next->next)
-//     {
-//       printf("!!!this node has a variation and it's number is: %d\n", i);
-//       isVariation = true;
-//       printGameTree(next->next, isVariation, i);
-//     }
-//     else
-//     {
-//       isVariation = false;
-//       next = next->child;
-//       i++;
-//     }
-    
-//     // printf("child %d", head);
-//   }
-//   return;
-// }
 
 int main()
 {
   char* filename ="my_sgf.sgf"; 
   SGFNode *treeHead = readsgffile(filename);
   printGameTree(treeHead);
-  
+  sgfFreeNode(treeHead);
+
 }
