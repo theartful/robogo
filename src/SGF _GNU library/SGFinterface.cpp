@@ -1,5 +1,6 @@
 #include "SGFinterface.h"
-Action play_node(SGFNode *node)
+
+Action sgf_play_node(SGFNode *node)
 {
 
     SGFProperty *prop;

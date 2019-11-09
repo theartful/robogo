@@ -42,7 +42,7 @@
 // #define EMPTY 0
 // #define WHITE 1
 // #define BLACK 2
-// #endif
+#endif
 
 
 void *xalloc(unsigned int);

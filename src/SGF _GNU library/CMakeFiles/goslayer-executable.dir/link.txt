@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/goslayer-executable.dir/main.o  -o goslayer-executable libgoslayer.a 
