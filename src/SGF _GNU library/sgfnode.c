@@ -1829,7 +1829,7 @@ void printGameTreeRecursive(SGFNode* head, bool isVariation, int nodeNumber)
     {
       isVariation = true;
       printf("!!!this node has a variation and it's number is: %d\n", i);
-      printGameTree(next->next, isVariation, i);
+      printGameTreeRecursive(next->next, isVariation, i);
     }
     next = next->child;
     i++;
