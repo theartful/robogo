@@ -6,6 +6,6 @@
 void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass);
 void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move);
 std::vector<Action> load_sgf_tree(SGFNode* head);
-void get_move_x_y(uint32_t index, int& x, int& y)
-void extract_sgf_file(std::vector<Action>& moves)
+void get_move_x_y(uint32_t index, char* x, char* y);
+void extract_sgf_file(std::vector<Action>& moves, const char* file_name);
 
