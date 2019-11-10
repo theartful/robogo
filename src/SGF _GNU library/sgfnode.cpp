@@ -297,7 +297,7 @@ sgfOverwriteProperty(SGFNode *node, const char *name, const char *text)
 
   for (prop = node->props; prop; prop = prop->next)
     if (prop->name == nam) {
-      prop->value = new char[strlen(text)+1];//(prop->value*)xrealloc(prop->value, strlen(text)+1);
+      prop->value = new char[strlen(text)+1];
       strcpy(prop->value, text);
       return;
     }
