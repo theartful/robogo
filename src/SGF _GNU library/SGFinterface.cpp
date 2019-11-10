@@ -104,10 +104,10 @@ void get_move_x_y(uint32_t index, char* x, char* y)
 
 void extract_sgf_file(std::vector<Action>& moves, const char* file_name)
 {
-    SGFNode* head = sgfNewNode() ;
+    SGFNode* head = sgfNewNode();
     char* x;
     char* y;
-    sgf_write_header_reduced(head, 0);
+    sgf_write_header(head,0,0,0,0,0,0);
 
     for (int i=0; i < moves.size(); i++) 
     {
