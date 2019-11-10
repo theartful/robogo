@@ -1,4 +1,0 @@
-/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/CMakeFiles/rebuild_cache.dir
-/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/CMakeFiles/edit_cache.dir
-/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/CMakeFiles/goslayer.dir
-/mnt/g/Studying Stuff/4A/Machine Intelligence/project/RoboGo/src/SGF _GNU library/CMakeFiles/goslayer-executable.dir

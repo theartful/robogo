@@ -52,6 +52,7 @@ void *xalloc(unsigned int);
  * list of these.
  */
 
+  struct SGFNode_t *parent;
 typedef struct SGFProperty_t {
   struct SGFProperty_t *next;
   short name;
@@ -61,7 +62,6 @@ typedef struct SGFProperty_t {
     
 typedef struct SGFNode_t {
   SGFProperty *props;
-  struct SGFNode_t *parent;
   struct SGFNode_t *child;
   struct SGFNode_t *next;
 } SGFNode;
@@ -94,6 +94,8 @@ SGFNode *sgfAddPlayLast(SGFNode *node, int who, int movex, int movey);
 void sgfWriteResult(SGFNode *node, float score, int overwrite);
 void sgf_write_header(SGFNode *root, int overwrite, int seed, float komi,
 		      int handicap, int level, int rules);
+static void sgf_write_header_reduced(SGFNode *root, int overwrite);
+
 
 SGFNode *sgfLabel(SGFNode *node, const char *label, int i, int j);
 SGFNode *sgfLabelInt(SGFNode *node, int num, int i, int j);
