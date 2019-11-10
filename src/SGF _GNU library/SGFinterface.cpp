@@ -91,3 +91,24 @@ std::vector<Action> load_sgf_tree(SGFNode* head)
 
     return moves;
 }
+
+//-------------------------------------write functions-----------------------------------------------------//
+// assuming the input is a vector of moves that can either be a pass or add black (white res)
+
+
+void get_move_x_y(uint32_t index, int& x, int& y)
+{
+    //reverse the index into a pos(x,y)   
+}
+
+void extract_sgf_file(std::vector<Action>& moves)
+{
+    SGFNode* head;
+    int x, y = 0;
+    sgf_write_header_reduced(head, 0);
+
+    for (int i=0; i < moves.size(); i++) 
+    {
+        get_move_x_y(moves[i].pos, x, y);
+    }
+}
