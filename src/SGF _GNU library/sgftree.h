@@ -51,8 +51,6 @@ void *xalloc(unsigned int);
  * A property of an SGF node.  An SGF node is described by a linked
  * list of these.
  */
-
-  struct SGFNode_t *parent;
 typedef struct SGFProperty_t {
   struct SGFProperty_t *next;
   short name;
@@ -62,10 +60,10 @@ typedef struct SGFProperty_t {
     
 typedef struct SGFNode_t {
   SGFProperty *props;
+  struct SGFNode_t *parent;
   struct SGFNode_t *child;
   struct SGFNode_t *next;
 } SGFNode;
-
 
 /* low level functions */
 SGFNode *sgfPrev(SGFNode *node);
