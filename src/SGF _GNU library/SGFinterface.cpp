@@ -96,19 +96,35 @@ std::vector<Action> load_sgf_tree(SGFNode* head)
 // assuming the input is a vector of moves that can either be a pass or add black (white res)
 
 
-void get_move_x_y(uint32_t index, int& x, int& y)
+void get_move_x_y(uint32_t index, char* x, char* y)
 {
-    //reverse the index into a pos(x,y)   
+    *x = (index / BoardState::MAX_BOARD_SIZE) + 98;
+    *y = (index % BoardState::MAX_BOARD_SIZE) + 98;
 }
 
-void extract_sgf_file(std::vector<Action>& moves)
+void extract_sgf_file(std::vector<Action>& moves, const char* file_name)
 {
-    SGFNode* head;
-    int x, y = 0;
+    SGFNode* head = sgfNewNode() ;
+    char* x;
+    char* y;
     sgf_write_header_reduced(head, 0);
 
     for (int i=0; i < moves.size(); i++) 
     {
+        if(moves[i].pos > BoardState::INVALID_INDEX)
+        {
+            printf("wrong entry in pos\n");
+            return;
+        }
+
+        SGFNode* temp = sgfAddChild(temp);
         get_move_x_y(moves[i].pos, x, y);
+        strcat(x,y);
+
+        const char* name = (moves[i].player_index == 1) ? "AB" : "AW";
+        sgfAddProperty(temp,name, x);
+        
     }
+
+    writesgf(head, file_name);
 }
