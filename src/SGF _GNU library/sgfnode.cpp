@@ -34,6 +34,12 @@
 #include <assert.h>
 #include "SGFinterface.h"
 
+#define TIME_WITH_SYS_TIME 0
+#define HAVE_SYS_TIME_H 0
+#define HAVE_G_VSNPRINTF 0
+#define HAVE__VSNPRINTF 0
+
+
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -106,7 +112,7 @@ xalloc(unsigned int size)
     exit(EXIT_FAILURE);
   }
 
-  memset(pt, 0, (unsigned long) size);
+  memset(pt, 0, static_cast<unsigned long> (size));
   return pt;
 }
 
@@ -237,7 +243,7 @@ sgfGetFloatProperty(SGFNode *node, const char *name, float *value)
 
   for (prop = node->props; prop; prop = prop->next)
     if (prop->name == nam) {
-      *value = (float) atof(prop->value);
+      *value = static_cast<float>(atof(prop->value));
       /* MS-C warns of loss of data (double to float) */
       return 1;
     }
@@ -402,7 +408,7 @@ do_sgf_make_property(short sgf_name,  const char *value,
 {
   SGFProperty *prop;
 
-  prop = (SGFProperty *) xalloc(sizeof(SGFProperty));
+  prop = static_cast<SGFProperty *> (xalloc(sizeof(SGFProperty)));
   prop->name = sgf_name;
   prop->value = new char(strlen(value) + 1);//xalloc(strlen(value) + 1);
   strcpy(prop->value, value);
@@ -442,7 +448,7 @@ sgfMkProperty(const char *name, const  char *value,
   short sgf_name;
 
   if (strlen(name) == 1)
-    sgf_name = name[0] | (short) (' ' << 8);
+    sgf_name = name[0] | static_cast<short> (' ' << 8);
   else
     sgf_name = name[0] | name[1] << 8;
 
@@ -769,11 +775,11 @@ sgfStartVariantFirst(SGFNode *node)
   new_first_child->next = old_first_child;
   new_first_child->parent = old_first_child->parent;
 
+
   new_first_child->parent->child = new_first_child;
 
   return new_first_child;
 }
-
 
 /*
  * If no child exists, add one. Otherwise add a sibling to the
@@ -858,7 +864,7 @@ sgf_write_header_reduced(SGFNode *root, int overwrite)
   if (overwrite || !sgfGetIntProperty(root, "DT", &dummy))
     sgfOverwriteProperty(root, "DT", str);
   if (overwrite || !sgfGetIntProperty(root, "AP", &dummy))
-    sgfOverwriteProperty(root, "AP", "GNU Go:"__VERSION__);
+    sgfOverwriteProperty(root, "AP", "GNU Go:" __VERSION__);
   sgfOverwriteProperty(root, "FF", "4");
 }
 
@@ -944,7 +950,7 @@ static int lookahead;
 static void
 parse_error(const char *msg, int arg)
 {
-  fprintf(stderr, msg, arg);
+  //fprintf(stderr, msg, arg);
   fprintf(stderr, "\n");
   exit(EXIT_FAILURE);
 }
@@ -1026,7 +1032,7 @@ propvalue(char *buffer, int size)
    * possibly causing an assertion failure.
    */
   --p;
-  while (p > buffer && isspace((int) (unsigned char) *p))
+  while (p > buffer && isspace(static_cast<int> (static_cast<unsigned char> (*p))))
     --p;
   *++p = '\0';
 }
@@ -1309,7 +1315,7 @@ sgf_puts(const char *s, FILE *file)
       fputc('\\', file);
       sgf_column++;
     }
-    fputc((int) *s, file);
+    fputc(static_cast<int>( *s), file);
     sgf_column++;
   }
 }
@@ -1884,7 +1890,7 @@ void printGameTree(SGFNode* head)
 
 int main()
 {
-  char* filename ="my_sgf.sgf"; 
+  char const* filename = "my_sgf.sgf"; 
   SGFNode *treeHead = readsgffile(filename);
   printGameTree(treeHead);
   sgfFreeNode(treeHead);

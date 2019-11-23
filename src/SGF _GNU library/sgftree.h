@@ -174,6 +174,15 @@ int is_move_node(SGFNode *node);
 int is_pass_node(SGFNode *node, int boardsize);
 int find_move(SGFNode *node);
 
+//-------------------------------------------------------------------------------------------
+void gg_vsnprintf(char *dest, unsigned long len, const char *fmt, va_list args);
+void gg_snprintf(char *dest, unsigned long len, const char *fmt, ...);
+short str2short(char *str);
+const char* getPropertyName(short propName);
+void printVariation(SGFNode* head, int nodeNumber);
+void printNodeProps(SGFNode* head);
+void printGameTreeRecursive(SGFNode* head, bool isVariation, int nodeNumber);
+void printGameTree(SGFNode* head);
 
 #endif
 

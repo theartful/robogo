@@ -58,6 +58,10 @@ void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
             player = (prop->name  == SGFAB || SGFB)? 1 : 2;
             has_move = true;
             break;
+            default:
+            index = -1;
+            printf("wrong format for attribute\n");
+            
         }
     }
     return;
@@ -76,12 +80,14 @@ std::vector<Action> load_sgf_tree(SGFNode* head)
     while(next)
     {
         sgf_play_node(next, index, player,has_move);
+        if(index == -1)
+            continue;
         // append to action vector if has move
         if(has_move)
         {
             Action move;
-            move.player_index = player;
-            move.pos = index;
+            move.player_index = static_cast<uint32_t>(player);
+            move.pos = static_cast<uint32_t>(index);
             
             moves.push_back(move);
         }
@@ -105,11 +111,11 @@ void get_move_x_y(uint32_t index, char* x, char* y)
 void extract_sgf_file(std::vector<Action>& moves, const char* file_name)
 {
     SGFNode* head = sgfNewNode();
-    char* x;
-    char* y;
+    char* x = NULL;
+    char* y = NULL;
     sgf_write_header(head,0,0,0,0,0,0);
 
-    for (int i=0; i < moves.size(); i++) 
+    for (uint32_t i=0; i < moves.size(); i++) 
     {
         if(moves[i].pos > BoardState::INVALID_INDEX)
         {
