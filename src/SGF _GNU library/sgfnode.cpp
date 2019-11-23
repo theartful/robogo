@@ -1792,8 +1792,8 @@ const char* getPropertyName(short propName)
 
 void printNodeProps(SGFNode* head)
 {
-  printf("enter \n");
-  printf("head is %p\n",head);
+  //printf("enter \n");
+  //printf("head is %p\n",head);
   SGFProperty * next = head->props;
   
   while(next)
