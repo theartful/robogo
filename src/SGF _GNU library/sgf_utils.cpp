@@ -18,7 +18,7 @@ get_moveX(SGFProperty *property, int boardsize)
   if (strlen(property->value) < 2)
     return -1;
 
-  i = toupper((int) property->value[1]) - 'A';
+  i = toupper(static_cast<int> (property->value[1])) - 'A';
   if (i >= boardsize)
     return -1;
 
@@ -36,7 +36,7 @@ get_moveY(SGFProperty *property, int boardsize)
   if (strlen(property->value) < 2)
     return -1;
 
-  j = toupper((int) property->value[0]) - 'A';
+  j = toupper(static_cast<int> (property->value[0])) - 'A';
   if (j >= boardsize)
     return -1;
 
