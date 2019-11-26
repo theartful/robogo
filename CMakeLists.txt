@@ -31,15 +31,6 @@ include_directories(
 	"${PROJECT_BINARY_DIR}/src/"
 )
 
-# use Websocketpp as depandancy
-find_package(Websocketpp)
-if(NOT Websocketpp_FOUND)
-  message(FATAL_ERROR "websocketpp library not found you can install it from here: https://github.com/zaphoyd/websocketpp.git")
-endif()
-
-include_directories (${Websocketpp_INCLUDE_DIRS})
-link_directories (${Websocketpp_LIBRARY_DIRS})
-
 # use c++17
 set(CMAKE_CXX_STANDARD 17) 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
