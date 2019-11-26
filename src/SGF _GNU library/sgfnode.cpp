@@ -1888,11 +1888,11 @@ void printGameTree(SGFNode* head)
     return;
 }
 
-int main()
-{
-  char const* filename = "my_sgf.sgf"; 
-  SGFNode *treeHead = readsgffile(filename);
-  printGameTree(treeHead);
-  sgfFreeNode(treeHead);
+// int main()
+// {
+//   char const* filename = "my_sgf.sgf"; 
+//   SGFNode *treeHead = readsgffile(filename);
+//   printGameTree(treeHead);
+//   sgfFreeNode(treeHead);
 
-}
+// }

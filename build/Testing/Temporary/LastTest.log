@@ -1,0 +1,65 @@
+Start testing: Nov 26 22:02 EET
+----------------------------------------------------------
+1/3 Testing: goslayer-unit-tests:test sgf
+1/3 Test: goslayer-unit-tests:test sgf
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "test sgf"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:test sgf" start time: Nov 26 22:02 EET
+Output:
+----------------------------------------------------------
+Filters: test sgf
+===============================================================================
+All tests passed (1 assertion in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:test sgf" end time: Nov 26 22:02 EET
+"goslayer-unit-tests:test sgf" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/3 Testing: goslayer-unit-tests:Board updates
+2/3 Test: goslayer-unit-tests:Board updates
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Board updates"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Board updates" start time: Nov 26 22:02 EET
+Output:
+----------------------------------------------------------
+Filters: Board updates
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Board updates" end time: Nov 26 22:02 EET
+"goslayer-unit-tests:Board updates" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: goslayer-unit-tests:test 1
+3/3 Test: goslayer-unit-tests:test 1
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "test 1"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:test 1" start time: Nov 26 22:02 EET
+Output:
+----------------------------------------------------------
+Filters: test 1
+===============================================================================
+All tests passed (1 assertion in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:test 1" end time: Nov 26 22:02 EET
+"goslayer-unit-tests:test 1" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 26 22:02 EET
+
+goslayer-unit-tests =   0.01 sec*proc
+
+tags =   0.00 sec*proc
+

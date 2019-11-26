@@ -1,0 +1,84 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/controller/agent.h
+engine/board.h
+../src/controller/engine/board.h
+
+../src/engine/board.h
+array
+-
+assert.h
+-
+chrono
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+../src/engine/cluster.h
+array
+-
+bitset
+-
+stdint.h
+-
+board.h
+../src/engine/board.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/agent.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/game.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/board.h
+engine/cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/cluster.h
+string
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.h
+array
+-
+memory
+-
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/controller/agent.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/board.h
+engine/cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/cluster.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+array
+-
+assert.h
+-
+chrono
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/main.cpp
+SimpleGUI/simplegui.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+memory
+-
+

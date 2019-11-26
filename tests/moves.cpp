@@ -5,16 +5,35 @@
 #include "controller/game.h"
 #include "engine/board.h"
 #include "engine/cluster.h"
+#include "SGF _GNU library/SGFinterface.h"
 
 using namespace go;
 using namespace go::engine;
 
 
 
-TEST_CASE("tryTest")
+TEST_CASE("test sgf")
 {
-	REQUIRE(1 == 1);
+    Game game;
+    bool all = true;
+    int k = 0;  
+    char const* filename = "ko.sgf"; 
+    SGFNode *treeHead = readsgffile(filename);
+    std::vector<go::engine::Action> actions = load_sgf_tree(treeHead);
+    REQUIRE (actions.size() == 2 );
+    for (unsigned int i = 0; i < actions.size();i++)
+    {
+        k ++;
+        if (i == 6) 
+            all = all && !(game.make_move(actions[i]));
+        else
+            all = all && game.make_move(actions[i]);
+    }
+    REQUIRE( k == 2);
+    REQUIRE (all == true);
 }
+
+
 
 TEST_CASE("Board updates")
 {
