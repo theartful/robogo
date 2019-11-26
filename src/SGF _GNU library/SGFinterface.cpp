@@ -36,11 +36,12 @@ void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass)
 
 void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
 {
-    SGFProperty *prop;
+    SGFProperty *prop = node->props;
     int x, y;
     bool isPass;
     for (prop = node->props; prop; prop = prop->next)
     {
+
         switch (prop->name)
         {
             case SGFB:
@@ -81,14 +82,16 @@ std::vector<go::engine::Action> load_sgf_tree(SGFNode* head)
     {
         sgf_play_node(next, index, player,has_move);
         if(index == -1)
+        {
+            next = next->child;
             continue;
+        }
         // append to action vector if has move
         if(has_move)
         {
             go::engine::Action move;
             move.player_index = static_cast<uint32_t>(player);
             move.pos = static_cast<uint32_t>(index);
-            
             moves.push_back(move);
         }
 
@@ -134,3 +137,15 @@ void extract_sgf_file(std::vector<go::engine::Action>& moves, const char* file_n
 
     writesgf(head, file_name);
 }
+
+
+// int main()
+// {
+//   char const* filename = "ko.sgf"; 
+//   SGFNode *treeHead = readsgffile(filename);
+//   printGameTree(treeHead);
+//   std::vector<go::engine::Action> moves = load_sgf_tree(treeHead);
+//   printGameTree(treeHead);
+//   sgfFreeNode(treeHead);
+
+// }
