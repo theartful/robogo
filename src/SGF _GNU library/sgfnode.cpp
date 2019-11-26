@@ -1874,7 +1874,7 @@ void printGameTree(SGFNode* head)
       printNodeProps(next);
 
       sgf_play_node(next, index, player, valid); //here just for testing
-      printf("index: %d, player: %d",index, player);
+      printf("index: %d, player: %d\n",index, player);
 
       while(nextVariation)
       {
