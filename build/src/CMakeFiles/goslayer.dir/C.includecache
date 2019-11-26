@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/CMakeFiles/3.10.2/CompilerIdC/CMakeCCompilerId.c
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/CMakeFiles/feature_tests.c
+
