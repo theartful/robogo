@@ -12,6 +12,7 @@ using websocketpp::lib::placeholders::_2;
 
 // pull out the type of messages sent by our config
 typedef server::message_ptr message_ptr;
+void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg);
 
 // Define a callback to handle incoming messages
 void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg)
