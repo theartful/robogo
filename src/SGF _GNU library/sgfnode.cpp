@@ -1874,7 +1874,7 @@ void printGameTree(SGFNode* head)
       printNodeProps(next);
 
       sgf_play_node(next, index, player, valid); //here just for testing
-      printf("index: %d, player: %d",index, player);
+      printf("index: %d, player: %d\n",index, player);
 
       while(nextVariation)
       {
@@ -1888,11 +1888,11 @@ void printGameTree(SGFNode* head)
     return;
 }
 
-int main()
-{
-  char const* filename = "my_sgf.sgf"; 
-  SGFNode *treeHead = readsgffile(filename);
-  printGameTree(treeHead);
-  sgfFreeNode(treeHead);
+// int main()
+// {
+//   char const* filename = "my_sgf.sgf"; 
+//   SGFNode *treeHead = readsgffile(filename);
+//   printGameTree(treeHead);
+//   sgfFreeNode(treeHead);
 
-}
+// }
