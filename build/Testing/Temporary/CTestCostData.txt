@@ -1,43 +1,5 @@
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 1
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test 0 0
-goslayer-unit-tests:Board 0 1
-goslayer-unit-tests:test 1 1
-goslayer-unit-tests:test sgf 1 0.00404191
-goslayer-unit-tests:Board updates 1 0.00619411
-goslayer-unit-tests:test 1 1 0.00462103
+goslayer-unit-tests:test sgf 0 0
+goslayer-unit-tests:Board updates 1 0.00798297
+goslayer-unit-tests:test 1 1 0.00573015
 ---
+goslayer-unit-tests:test sgf
