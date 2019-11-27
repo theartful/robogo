@@ -56,7 +56,7 @@ void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
                 return;
             }
             index = x*19 + y;
-            player = (prop->name  == SGFAB || SGFB)? 1 : 2;
+            player = (prop->name  == SGFB)? 1 : 2;
             has_move = true;
             break;
             default:
