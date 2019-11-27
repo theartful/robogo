@@ -11,8 +11,6 @@ using std::to_string;
 using std::invalid_argument;
 using std::out_of_range;
 
-#define BOARD_SIZE 19
-
 struct Color;
 struct Vertex;
 struct Move;
@@ -70,7 +68,7 @@ struct Vertex
             if (value.length() > 3)
                 throw invalid_argument("invalid vertex value");
 
-            if ((value[1] >= 48 && value[1] <= 57) && (value[2] >= 49 && value[2] <= 57))
+            if (!(value[1] >= 48 && value[1] <= 57) && (value[2] >= 49 && value[2] <= 57))
                 throw out_of_range("invalid vertex value");
 
             if (value[0] == 'i' || value[0] == 'I')
