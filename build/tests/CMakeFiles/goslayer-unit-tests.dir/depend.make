@@ -11,6 +11,7 @@ tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../src/controller/agent.h
 tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../src/controller/game.h
 tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../src/engine/board.h
 tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../src/engine/cluster.h
+tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../src/engine/interface.h
 tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../tests/includes/catch.hpp
 tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o: ../tests/moves.cpp
 

@@ -62,6 +62,10 @@ stdint.h
 board.h
 ../src/engine/board.h
 
+../src/engine/interface.h
+board.h
+../src/engine/board.h
+
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/includes/catch.hpp
 TargetConditionals.h
 -
@@ -637,6 +641,8 @@ includes/catch.hpp
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/moves.cpp
 includes/catch.hpp
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/includes/catch.hpp
+SGF _GNU library/SGFinterface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/tests/SGF _GNU library/SGFinterface.h
 controller/agent.h
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/controller/agent.h
 controller/game.h
@@ -645,8 +651,10 @@ engine/board.h
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/engine/board.h
 engine/cluster.h
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/engine/cluster.h
-SGF _GNU library/SGFinterface.h
-/media/reem/Data/4th years projects/MI - Project/RoboGo/tests/SGF _GNU library/SGFinterface.h
+engine/interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/tests/engine/interface.h
+fstream
+-
 
 /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/sample.cpp
 includes/catch.hpp
