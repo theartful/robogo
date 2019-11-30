@@ -143,7 +143,7 @@ void BoardSimpleGUI::print_board(const BoardState& board, uint32_t player_turn)
 	std::cout << "\t\t   ";
 	for (char i = 'A'; i <= 'T'; ++i)
 	{
-		if (i == 'I') // for some reason, go boatd doesn't have letter i
+		if (i == 'I') // for some reason, go board doesn't have letter i
 			continue;
 		std::cout << i << " ";
 	}
@@ -170,7 +170,7 @@ void BoardSimpleGUI::print_board(const BoardState& board, uint32_t player_turn)
 	std::cout << "\t\t   ";
 	for (char i = 'A'; i <= 'T'; ++i)
 	{
-		if (i == 'I') // for some reason, go boatd doesn't have letter i
+		if (i == 'I') // for some reason, go board doesn't have letter i
 			continue;
 		std::cout << i << " ";
 	}

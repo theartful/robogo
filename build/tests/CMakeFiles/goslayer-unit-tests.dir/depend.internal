@@ -12,6 +12,7 @@ tests/CMakeFiles/goslayer-unit-tests.dir/moves.cpp.o
  ../src/controller/game.h
  ../src/engine/board.h
  ../src/engine/cluster.h
+ ../src/engine/interface.h
  /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/includes/catch.hpp
  /media/reem/Data/4th years projects/MI - Project/RoboGo/tests/moves.cpp
 tests/CMakeFiles/goslayer-unit-tests.dir/sample.cpp.o
