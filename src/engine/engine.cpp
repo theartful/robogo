@@ -16,7 +16,7 @@ bool go::engine::is_valid_move(
 		return false;
 	else if (!is_empty_cell(board_state, action.pos))
 		return false;
-	else if (action.pos == board_state.ko)
+	else if (is_ko(board_state, action))
 		return false;
 	else if (is_suicide_move(table, board_state, action))
 		return false;
@@ -33,7 +33,7 @@ bool go::engine::is_suicide_move(
 	//     1. a neighbor cell is empty, or
 	//     2. a neighbor friend cluster has more than one liberty, or
 	//     3. a neighbor enemy cluster will be captured
-	for_each_neighbor(action.pos, [&](uint32_t neighbor) {
+	for_each_neighbor(board_state, action.pos, [&](uint32_t neighbor) {
 		if (is_empty_cell(board_state, neighbor))
 		{
 			is_suicide = false;
@@ -65,6 +65,9 @@ bool go::engine::is_suicide_move(
 static uint32_t
 get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
 {
+	if (count_liberties(table, action_pos) != 1)
+		return BoardState::INVALID_INDEX;
+
 	uint32_t num_captured_stones = 0;
 	uint32_t captured_stone_idx;
 	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
@@ -79,26 +82,24 @@ get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
 	//     1. the previous move captured exactly one stone,
 	//     2. the played stone has exactly one liberty, and
 	//     3. the played stone's cluster consists only of it
-	if (get_cluster(table, action_pos).size == 1 && num_captured_stones == 1 &&
-	    count_liberties(table, action_pos) == 1)
+	if (get_cluster(table, action_pos).size == 1 && num_captured_stones == 1)
 		return captured_stone_idx;
 	else
 		return BoardState::INVALID_INDEX;
 }
 
-bool go::engine::make_move(
-    ClusterTable& table, GameState& game_state, const Action& action)
+bool go::engine::make_move(GameState& game_state, const Action& action)
 {
+	ClusterTable& table = game_state.cluster_table;
 	BoardState& board_state = game_state.board_state;
 	if (is_valid_move(table, board_state, action))
 	{
-		// TODO: update player number_alive_stones and number_captured_enemies
-		// will require update_clusters to return some information
 		if (!is_pass(action))
 		{
+			game_state.players[game_state.player_turn].number_alive_stones++;
 			board_state.board[action.pos] = PLAYERS[action.player_index];
 			board_state.ko = get_ko(table, board_state, action.pos);
-			update_clusters(table, board_state, action);
+			update_clusters(game_state, action);
 		}
 
 		game_state.number_played_moves++;
@@ -109,18 +110,9 @@ bool go::engine::make_move(
 	}
 	else
 	{
+		DEBUG_PRINT("engine::make_move: invalid move!\n");
 		return false;
 	}
-}
-
-bool go::engine::is_empty_cell(Cell cell)
-{
-	return cell == Cell::EMPTY;
-}
-
-bool go::engine::is_empty_cell(const BoardState& state, uint32_t idx)
-{
-	return is_empty_cell(state.board[idx]);
 }
 
 void go::engine::calculate_score(
@@ -235,36 +227,16 @@ uint32_t go::engine::territory_points(
 	return score;
 }
 
-bool go::engine::is_overtime(const Player& player)
-{
-	return player.elapsed_time > player.allowed_time;
-}
-
-bool go::engine::is_game_finished(const GameState& state)
+bool go::engine::is_terminal_state(const GameState& state)
 {
 	if (state.move_history.size() > 1)
 	{
 		const Action& last = state.move_history.back();
 		const Action& before_last = state.move_history.rbegin()[1];
-		if (is_pass(last) && is_pass(before_last))
-			return true;
+		return is_pass(last) && is_pass(before_last);
 	}
-	else if (is_overtime(state.players[0]))
-		return true;
-	else if (is_overtime(state.players[1]))
-		return true;
-
-	bool full_board = true;
-	for (Cell cell : state.board_state.board)
+	else
 	{
-		if (is_empty_cell(cell))
-		{
-			full_board = false;
-			break;
-		}
+		return false;
 	}
-	if (full_board)
-		return true;
-
-	return false;
 }

@@ -40,24 +40,30 @@ auto wrap_void_lambda(Lambda lambda)
 } // namespace details
 
 template <typename Lambda>
-void for_each_neighbor(uint32_t cell_idx, Lambda lambda)
+void for_each_neighbor(BoardState state, uint32_t cell_idx, Lambda lambda)
 {
 	auto wrapped_lambda = details::wrap_void_lambda(lambda);
+
 	// right
-	if (cell_idx + 1 < BoardState::MAX_NUM_CELLS)
-		if (wrapped_lambda(cell_idx + 1) == BREAK)
+	if (uint32_t right = cell_idx + 1; state.board[right] != Cell::BORDER)
+		if (wrapped_lambda(right) == BREAK)
 			return;
+
 	// up
-	if (cell_idx >= BoardState::MAX_BOARD_SIZE)
-		if (wrapped_lambda(cell_idx - BoardState::MAX_BOARD_SIZE) == BREAK)
+	if (uint32_t up = cell_idx - BoardState::EXTENDED_BOARD_SIZE;
+	    state.board[up] != Cell::BORDER)
+		if (wrapped_lambda(up) == BREAK)
 			return;
+
 	// left
-	if (cell_idx >= 1)
-		if (wrapped_lambda(cell_idx - 1) == BREAK)
+	if (uint32_t left = cell_idx - 1; state.board[left] != Cell::BORDER)
+		if (wrapped_lambda(left) == BREAK)
 			return;
+
 	// down
-	if (cell_idx + BoardState::MAX_BOARD_SIZE < BoardState::MAX_NUM_CELLS)
-		if (wrapped_lambda(cell_idx + BoardState::MAX_BOARD_SIZE) == BREAK)
+	if (uint32_t down = cell_idx + BoardState::EXTENDED_BOARD_SIZE;
+	    state.board[down] != Cell::BORDER)
+		if (wrapped_lambda(down) == BREAK)
 			return;
 }
 
@@ -69,7 +75,7 @@ void for_each_neighbor_cluster(
 	auto wrapped_lambda = details::wrap_void_lambda<Cluster&>(lambda);
 	uint32_t visited[4];
 	uint32_t visited_count = 0;
-	for_each_neighbor(cell_idx, [&](uint32_t neighbor) {
+	for_each_neighbor(state, cell_idx, [&](uint32_t neighbor) {
 		if (!is_empty_cell(state.board[neighbor]))
 		{
 			uint32_t cluster_idx = get_cluster_idx(table, neighbor);
@@ -122,7 +128,7 @@ struct SearchCache
 } // namespace details
 
 template <typename Lambda>
-void for_each_cell(uint32_t root, Lambda lambda)
+void for_each_cell(const BoardState& state, uint32_t root, Lambda lambda)
 {
 	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, EXPAND>(lambda);
 	details::SearchCache search_cache;
@@ -134,7 +140,7 @@ void for_each_cell(uint32_t root, Lambda lambda)
 		uint32_t cur_pos = search_cache.pop();
 		if (wrapped_lambda(cur_pos) == EXPAND)
 		{
-			for_each_neighbor(cur_pos, [&](uint32_t neighbour) {
+			for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
 				if (!search_cache.is_visited(neighbour))
 				{
 					search_cache.push(neighbour);
@@ -150,11 +156,40 @@ void for_each_cluster_cell(
     const Cluster& cluster, const BoardState& state, Lambda lambda)
 {
 	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, EXPAND>(lambda);
-	for_each_cell(cluster.parent_idx, [&](uint32_t idx) {
-		if (state.board[idx] == PLAYERS[cluster.player])
+	Cell cluster_color = state.board[cluster.parent_idx];
+	for_each_cell(state, cluster.parent_idx, [&](uint32_t idx) {
+		if (state.board[idx] == cluster_color)
 			return wrapped_lambda(idx);
 		else
 			return DONT_EXPAND;
+	});
+}
+
+template <typename Lambda>
+void for_each_empty_cell(const BoardState& state, Lambda lambda)
+{
+	auto wrapped_lambda = details::wrap_void_lambda<uint32_t>(lambda);
+	for (uint32_t i = 0; i < static_cast<uint32_t>(state.board.size()); i++)
+	{
+		if (state.board[i] == Cell::EMPTY)
+			if (wrapped_lambda(i) == BREAK)
+				return;
+	}
+}
+
+// if there are no actions, calls lambda on pass, otherwise pass is not
+// considered
+template <typename Lambda>
+void for_each_valid_action(const GameState& state, Lambda lambda)
+{
+	auto wrapped_lambda = details::wrap_void_lambda<Action&>(lambda);
+	Action action;
+	action.player_index = state.player_turn;
+	for_each_empty_cell(state.board_state, [&](auto pos) {
+		action.pos = pos;
+		if (is_valid_move(state.cluster_table, state.board_state, action))
+			return wrapped_lambda(action);
+		return CONTINUE;
 	});
 }
 

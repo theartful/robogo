@@ -16,7 +16,7 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 	std::string command;
 	uint32_t x, y;
 
-	print_game_state(game.get_game_state());
+	print_game_state(game);
 
 	while (true)
 	{
@@ -62,7 +62,7 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 		}
 		else if (command == "state")
 		{
-			print_game_state(game.get_game_state());
+			print_game_state(game);
 		}
 	}
 }
@@ -133,6 +133,8 @@ inline char BoardSimpleGUI::get_board_symbol(Cell cell, uint32_t x, uint32_t y)
 		return '#';
 	else if (is_special(x) && is_special(y))
 		return '_';
+	else if (cell == Cell::BORDER)
+		return 'B';
 	else
 		return '.';
 }
@@ -179,14 +181,17 @@ void BoardSimpleGUI::print_board(const BoardState& board, uint32_t player_turn)
 	std::cout << "Players turn: " << player_turn << std::endl;
 }
 
-void BoardSimpleGUI::print_game_state(const GameState& game_state)
+void BoardSimpleGUI::print_game_state(const Game& game)
 {
+	const GameState& game_state = game.get_game_state();
 	clear_screen();
 	print_board(game_state.board_state, game_state.player_turn);
-	const Player& p = game_state.players[game_state.player_turn];
 
-	std::cout << "Allowed time: " << p.allowed_time.count() << " ";
-	std::cout << "Elapsed time: " << p.elapsed_time.count() << std::endl;
+	std::cout << "Allowed time: "
+	          << game.get_allowed_time(game_state.player_turn).count() << " ";
+	std::cout << "Elapsed time: "
+	          << game.get_elapsed_time(game_state.player_turn).count()
+	          << std::endl;
 
 	std::cout << "Number of played moves: " << game_state.number_played_moves
 	          << std::endl;
