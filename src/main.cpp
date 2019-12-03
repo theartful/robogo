@@ -1,4 +1,5 @@
 #include "SimpleGUI/simplegui.h"
+#include "agents/mcts_agent.h"
 #include "controller/game.h"
 #include "engine/board.h"
 #include <memory>
@@ -11,7 +12,7 @@ int main()
 {
 	Game game;
 	auto agent = std::make_shared<BoardSimpleGUI>();
-	auto agent2 = std::make_shared<BoardSimpleGUI>();
+	auto agent2 = std::make_shared<MCTSAgent>();
 	agent->set_player_idx(0);
 	agent2->set_player_idx(1);
 	game.register_agent(agent, 0);
