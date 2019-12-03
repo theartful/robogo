@@ -24,7 +24,6 @@ inline bool is_ko(const BoardState& board_state, const Action& action)
 	return action.pos == board_state.ko;
 }
 
-
 } // namespace engine
 } // namespace go
 
