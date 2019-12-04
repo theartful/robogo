@@ -13,6 +13,7 @@ var board = new Array(arraySize + 1)
   .map(() => new Array(arraySize + 1).fill(0));
 
 const drawBoard = () => {
+  ctx.clearRect(0, 0, c.height, c.width);
   for (let xAxis = startOffset; xAxis <= endOffset; xAxis += step) {
     ctx.moveTo(xAxis, startOffset);
     ctx.lineTo(xAxis, endOffset);
@@ -44,13 +45,41 @@ const drawAllPieces = () => {
   }
 };
 
-board[0][0] = "w";
-board[7][12] = "w";
-board[9][13] = "w";
-board[8][16] = "b";
-board[7][17] = "b";
-board[5][16] = "b";
-board[18][18] = "b";
+function updateBoard(moves_log, position) {
+  for (var i = 0; i <board.length; i++){
+    board[i].fill(0);
+  }
+  var move;
+  for(var i = 0; i < moves_log.length; i++) {
+    if (i > position)
+      return;
+    move = moves_log[i];
+    board[move[0]][move[1]] = move[2];
+  }
+}
+
+var moves_log = [[0,0,"w"], [8,16,"b"], [7,12,"w"], [7,17,"b"], [9,13,"w"], [18,18,"b"]];
+var movestr;
+
+for(i=0; i<moves_log.length; i++){  
+  movestr = moves_log[i][2] + " (" + moves_log[i][0] + ", " + moves_log[i][1] + ")"
+  $("#movesContainer ").append('<a href="#" id ='+i+' class="list-group-item list-group-item-action moveLink">'+ movestr +'</a>');
+}
+
+$(".list-group .list-group-item").click(function(e) {
+  $(".list-group .list-group-item").removeClass("active");
+  $(e.target).addClass("active");
+});
+
+var position = moves_log.length-1;
+$(".moveLink").on("click", handleLinkClick);
+function handleLinkClick() {
+  position = parseInt($(this).attr("id"));
+  updateBoard(moves_log, position);
+  drawBoard();
+  drawAllPieces();
+}
 
 drawBoard();
+updateBoard(moves_log, position);
 drawAllPieces();
