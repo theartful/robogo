@@ -24,10 +24,10 @@ namespace engine
 {
 enum class Cell : unsigned char
 {
-	EMPTY,
-	WHITE,
-	BLACK,
-	BORDER
+	EMPTY = 0,
+	WHITE = 1,
+	BLACK = 2,
+	BORDER = 4
 };
 
 static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
@@ -126,7 +126,7 @@ struct Player
 {
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
-	uint32_t total_score;
+	float total_score;
 
 	Player()
 	    : number_captured_enemies{0}, number_alive_stones{0}, total_score{0}
@@ -149,6 +149,12 @@ struct GameState
 	      number_played_moves{0}, player_turn{0}
 	{
 	}
+};
+
+// TODO: Support more rules and make it runtime!
+struct Rules
+{
+	static constexpr float KOMI = 6.5;
 };
 
 } // namespace engine
