@@ -12,7 +12,7 @@ using go::engine::Cell;
 uint32_t go::engine::count_liberties(const BoardState& state, uint32_t cell_idx)
 {
 	uint32_t num_liberties = 0;
-	for_each_cell(cell_idx, [&](uint32_t cur_idx) {
+	for_each_cell(state, cell_idx, [&](uint32_t cur_idx) {
 		if (is_empty_cell(state, cur_idx))
 			num_liberties++;
 		if (state.board[cur_idx] == state.board[cell_idx])
