@@ -3,7 +3,7 @@
 
 #include <array>
 #include <assert.h>
-#include <chrono>
+#include <bitset>
 #include <stdint.h>
 #include <vector>
 
@@ -27,6 +27,7 @@ enum class Cell : unsigned char
 	EMPTY,
 	WHITE,
 	BLACK,
+	BORDER
 };
 
 static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
@@ -34,14 +35,26 @@ static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
 struct BoardState
 {
 	static constexpr uint32_t MAX_BOARD_SIZE = 19;
-	static constexpr uint32_t MAX_NUM_CELLS = MAX_BOARD_SIZE * MAX_BOARD_SIZE;
+	static constexpr uint32_t EXTENDED_BOARD_SIZE = MAX_BOARD_SIZE + 2;
+	static constexpr uint32_t MAX_NUM_CELLS =
+	    EXTENDED_BOARD_SIZE * EXTENDED_BOARD_SIZE;
 	static constexpr uint32_t INVALID_INDEX = MAX_NUM_CELLS;
 
 	std::array<Cell, MAX_NUM_CELLS> board;
 	uint32_t ko;
 
-	BoardState() : board{Cell::EMPTY}, ko{INVALID_INDEX}
+	BoardState() : ko{INVALID_INDEX}
 	{
+		std::fill(board.begin(), board.end(), Cell::EMPTY);
+		for (uint32_t i = 0; i < EXTENDED_BOARD_SIZE; i++)
+		{
+			board[i] = Cell::BORDER;
+			board[i + (EXTENDED_BOARD_SIZE - 1) * EXTENDED_BOARD_SIZE] =
+			    Cell::BORDER;
+			board[i * EXTENDED_BOARD_SIZE] = Cell::BORDER;
+			board[i * EXTENDED_BOARD_SIZE + EXTENDED_BOARD_SIZE - 1] =
+			    Cell::BORDER;
+		}
 	}
 
 	Cell& operator()(uint32_t i, uint32_t j)
@@ -60,9 +73,18 @@ struct BoardState
 
 	static uint32_t index(uint32_t i, uint32_t j)
 	{
-		return i * MAX_BOARD_SIZE + j;
+		return (i + 1) * EXTENDED_BOARD_SIZE + (j + 1);
 	}
 };
+
+inline bool is_empty_cell(Cell cell)
+{
+	return cell == Cell::EMPTY;
+}
+inline bool is_empty_cell(const BoardState& state, uint32_t idx)
+{
+	return is_empty_cell(state.board[idx]);
+}
 
 struct Action
 {
@@ -81,25 +103,33 @@ inline bool is_invalid(const Action& action)
 	return action.pos > BoardState::INVALID_INDEX || action.player_index > 1;
 }
 
+// A cluster is a maximal set of connected stones
+struct Cluster
+{
+	mutable uint32_t parent_idx;
+	uint32_t player;
+	uint32_t size;
+	uint32_t num_liberties;
+	std::bitset<BoardState::MAX_NUM_CELLS> liberties_map;
+};
+
+// A union find structure
+struct ClusterTable
+{
+	std::array<Cluster, BoardState::MAX_NUM_CELLS> clusters;
+	ClusterTable() : clusters{} // initialize clusters to 0
+	{
+	}
+};
+
 struct Player
 {
-	static constexpr uint32_t DEFAULT_ALLOWED_TIME = 15 * 60 * 1000;
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
 	uint32_t total_score;
-	uint32_t player_index; // 0 for black, 1 for white
-	// maximum time allowed for a player throughout the game
-	std::chrono::duration<uint32_t, std::milli> allowed_time;
-	// the time from which it's this player's move
-	// should be updated each time it's his turn
-	std::chrono::steady_clock::time_point move_start_time;
-	// should be updated when the player finishes his move
-	// elapsed_time += duration(now - move_start_time);
-	std::chrono::duration<uint32_t, std::milli> elapsed_time;
 
-	Player(uint32_t idx = 0)
-	    : number_captured_enemies{0}, number_alive_stones{0}, total_score{0},
-	      player_index{idx}, allowed_time{DEFAULT_ALLOWED_TIME}, elapsed_time{0}
+	Player()
+	    : number_captured_enemies{0}, number_alive_stones{0}, total_score{0}
 	{
 	}
 };
@@ -107,6 +137,7 @@ struct Player
 struct GameState
 {
 	BoardState board_state;
+	ClusterTable cluster_table;
 	uint32_t board_size;
 	uint32_t number_played_moves;
 	uint32_t player_turn;
@@ -115,7 +146,7 @@ struct GameState
 
 	GameState()
 	    : board_state(), board_size{BoardState::MAX_BOARD_SIZE},
-	      number_played_moves{0}, player_turn{0}, players{0, 1}
+	      number_played_moves{0}, player_turn{0}
 	{
 	}
 };

@@ -2,14 +2,70 @@
 #define SRC_CONTROLLER_INTERFACE_H
 
 #include <array>
+#include <chrono>
 #include <memory>
 
 #include "controller/agent.h"
 #include "engine/board.h"
 #include "engine/cluster.h"
+#include "engine/interface.h"
 
 namespace go
 {
+
+class AgentTime
+{
+public:
+	AgentTime() : allowed_time{DEFAULT_ALLOWED_TIME}, elapsed_time{0}
+	{
+	}
+	auto get_allowed_time() const
+	{
+		return allowed_time;
+	}
+	auto get_elapsed_time() const
+	{
+		return elapsed_time;
+	}
+	void
+	set_allowed_time(std::chrono::duration<uint32_t, std::milli> allowed_time_)
+	{
+		this->allowed_time = allowed_time_;
+	}
+	void
+	set_elapsed_time(std::chrono::duration<uint32_t, std::milli> elapsed_time_)
+	{
+		this->elapsed_time = elapsed_time_;
+	}
+	void start_counting()
+	{
+		move_start_time = std::chrono::steady_clock::now();
+	}
+	void stop_counting()
+	{
+		elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(
+		    std::chrono::steady_clock::now() - move_start_time);
+	}
+	bool is_overtime() const
+	{
+		return elapsed_time > allowed_time;
+	}
+	void reset()
+	{
+		elapsed_time = std::chrono::duration<uint32_t, std::milli>::zero();
+	}
+
+private:
+	static constexpr uint32_t DEFAULT_ALLOWED_TIME = 15 * 60 * 1000;
+	// maximum time allowed for a player throughout the game
+	std::chrono::duration<uint32_t, std::milli> allowed_time;
+	// the time from which it's this player's move
+	// should be updated each time it's his turn
+	std::chrono::steady_clock::time_point move_start_time;
+	// should be updated when the player finishes his move
+	// elapsed_time += duration(now - move_start_time);
+	std::chrono::duration<uint32_t, std::milli> elapsed_time;
+};
 
 class Game
 {
@@ -22,9 +78,28 @@ public:
 	void set_allowed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);
+	auto get_allowed_time(uint32_t player_idx) const
+	{
+		return agents_time_info[player_idx].get_allowed_time();
+	}
+	auto get_elapsed_time(uint32_t player_idx) const
+	{
+		return agents_time_info[player_idx].get_elapsed_time();
+	}
 	void set_elapsed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);
+	bool is_game_finished() const
+	{
+		if (engine::is_terminal_state(game_state))
+			return true;
+		else if (agents_time_info[0].is_overtime())
+			return true;
+		else if (agents_time_info[1].is_overtime())
+			return true;
+		else
+			return false;
+	}
 
 	const engine::GameState& get_game_state() const;
 	const engine::BoardState& get_board_state() const;
@@ -32,8 +107,8 @@ public:
 
 private:
 	engine::GameState game_state;
-	engine::ClusterTable cluster_table;
 	std::array<std::shared_ptr<Agent>, 2> agents;
+	std::array<AgentTime, 2> agents_time_info;
 };
 
 } // namespace go
