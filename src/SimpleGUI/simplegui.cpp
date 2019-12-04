@@ -64,6 +64,23 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 		{
 			print_game_state(game);
 		}
+		else if (command == "score")
+		{
+			GameState game_state = game.get_game_state();
+			engine::calculate_score(
+			    game_state.board_state, game_state.players[0],
+			    game_state.players[1]);
+			std::cout << "Black total score: "
+			          << game_state.players[0].total_score << '\n';
+			std::cout << "White total score: "
+			          << game_state.players[1].total_score << '\n';
+		}
+		else if (command == "mvv")
+		{
+			uint32_t pos = 0;
+			std::cin >> pos;
+			return pos;
+		}
 	}
 }
 
