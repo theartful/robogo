@@ -167,6 +167,18 @@ template<typename T> struct List
         items.push_back(item);
     }
 
+    void appendAll(vector<T> items)
+    {
+      for (int i = 0; i < items.length(); i++) {
+        this.items.push_back(items[i]);
+      }
+    }
+
+    Boolean includes(T item)
+    {
+      return (std::find(items.begin(), items.end()) != items.end());
+    }
+
     operator string ()
     {
         string result = "";

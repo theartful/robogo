@@ -38,4 +38,7 @@ Alternative<Vertex, string> reg_genmove(Color color);
 // Debug Commands
 MultiLineList<List<string>> showboard();
 
+// Handle Requests
+string makeRequest(string command,vector<string> args,int id);
+
 #endif
