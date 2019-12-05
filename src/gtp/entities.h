@@ -22,6 +22,10 @@ template <typename Z, typename H> struct Alternative;
 struct Boolean
 {
     string boolean;
+    Boolean()
+    {
+    }
+
     Boolean(bool value)
     {
         this->boolean = (value) ? "true" : "false";
@@ -44,6 +48,10 @@ struct Boolean
 struct Color
 {
     string color;
+    Color()
+    {
+    }
+
     Color(string value)
     {
         if (!(value == "w" || value == "b" || value == "white" || value == "black"))
@@ -61,6 +69,10 @@ struct Color
 struct Vertex
 {
     string vertex;
+    Vertex()
+    {
+    }
+
     Vertex(string value)
     {
         if (!(value == "pass"))
@@ -91,6 +103,16 @@ struct Vertex
         this->vertex = value;
     }
 
+    Vertex(uint32_t row, uint32_t column)
+    {
+        if (row > 25 || column > 25)
+            throw out_of_range("invalid vertex value: protocol doesn't support boards larger than 25x25");
+
+        char column = (column < 105) ? column + 96 : column + 97;
+        string row_str = (to_string(row).length() == 1) ? "0" + to_string(row) : to_string(row);
+        this->vertex = to_string(column) + row_str;
+    }
+
     operator string()
     {
         return this->vertex;
@@ -100,6 +122,10 @@ struct Vertex
 struct Move
 {
     string move;
+    Move()
+    {
+    }
+
     Move(Color color, Vertex vertex)
     {
         this->move = (string)color + (string)vertex;

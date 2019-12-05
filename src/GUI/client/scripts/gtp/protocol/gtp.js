@@ -105,7 +105,7 @@ let takeRequest = (request) => {
         return `${errorPrefix} command doesn't exist\n\n`;
     
     let commandArgs = getArrowFunctionArgList(commands[command]);
-    if (commandArgs.length === args.length)
+    if (commandArgs.length !== args.length)
         return `${errorPrefix} ${command} arguments doesn't match\n\n`;
     
     try {
