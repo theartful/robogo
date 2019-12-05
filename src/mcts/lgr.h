@@ -50,11 +50,11 @@ private:
     //lgr_1[action][i] -> last good reply for player i where other played action
     std::array<std::array<Action,BoardState::MAX_NUM_CELLS>,2> lgr_1; 
 
-    std::array<std::array<Action,2*BoardState::MAX_NUM_CELLS>,2> lgr_2; 
+    std::array<std::array<Action,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> lgr_2; 
 
     std::array<std::array<bool,BoardState::MAX_NUM_CELLS>,2> is_set_lgr_1; 
 
-    std::array<std::array<bool,2*BoardState::MAX_NUM_CELLS>,2> is_set_lgr_2; 
+    std::array<std::array<bool,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> is_set_lgr_2; 
 };
 
 }
