@@ -11,7 +11,7 @@ class Color {
         }
         else
             throw "Parameter is not a color value";
-    
+
     }
 
     toString() {
@@ -60,7 +60,7 @@ class Move {
             move = move.split(' ');
             if (move.length !== 2)
                 throw "Invalid Move must be string containing a Color and a Vertex separated by a space";
-    
+
             let color = null;
             let vertex = null;
             try {
@@ -86,7 +86,7 @@ class List {
     constructor(type) {
         if (!validTypes.includes(type))
             throw "Invalid List type";
-        
+
         this.type = type;
         this.items = [];
     }
@@ -130,7 +130,7 @@ class MultiLineList {
     constructor(type) {
         if (!validTypes.includes(type))
             throw "Invalid MultiLineList type";
-        
+
         this.type = type;
         this.items = [];
 

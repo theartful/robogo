@@ -1,15 +1,15 @@
 #ifndef ENTITIES_H_
 #define ENTITIES_H_
 
-#include <stdexcept>
-#include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <iostream>
+#include <stdexcept>
 using std::string;
 using std::vector;
 using std::to_string;
-using std::invalid_argument;
 using std::out_of_range;
+using std::invalid_argument;
 
 struct Color;
 struct Vertex;
@@ -105,12 +105,12 @@ struct Vertex
 
     Vertex(uint32_t row, uint32_t column)
     {
-        if (row > 25 || column > 25)
+        if (row == 0 || row > 25 || column == 0 || column > 25)
             throw out_of_range("invalid vertex value: protocol doesn't support boards larger than 25x25");
 
-        char column = (column < 105) ? column + 96 : column + 97;
+        char column_letter = (column < 105) ? column + 96 : column + 97;
         string row_str = (to_string(row).length() == 1) ? "0" + to_string(row) : to_string(row);
-        this->vertex = to_string(column) + row_str;
+        this->vertex = to_string(column_letter) + row_str;
     }
 
     operator string()
@@ -191,6 +191,18 @@ template<typename T> struct List
     void append(T item)
     {
         items.push_back(item);
+    }
+
+    void appendAll(vector<T> items)
+    {
+      for (int i = 0; i < items.length(); i++) {
+        this.items.push_back(items[i]);
+      }
+    }
+
+    Boolean includes(T item)
+    {
+      return (std::find(items.begin(), items.end()) != items.end());
     }
 
     operator string ()
