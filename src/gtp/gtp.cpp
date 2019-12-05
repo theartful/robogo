@@ -2,6 +2,7 @@
 #include "entities.h"
 #include <iostream>
 #include<string>
+#include<sstream>
 #include <iterator>
 #include <algorithm>
 #include <map>
@@ -79,10 +80,31 @@ map <string,int> commandsList= {
    return request;
 
  }
+
+ /**
+  * @param   {string}    request     GTP command
+  * @returns {string}    response    string containing GTP response in case of success or GTP error in case of failure
+  */
+  string takeRequest(string request) {
+    vector<string> result;
+    istringstream iss(request);
+    for(string request; iss >> request; )
+    {
+      result.push_back(request);
+    }
+    // To Do
+    // assign command and arg
+    // string command = result[0];
+    // Check if there is an id
+    vector<string> args (result.begin()+1,result.end());
+
+    // call corresponding functions
+  }
  int main()
  {
    vector<string> args = {"w","a15"};
    string request = makeRequest("play",args);
+   takeRequest(request);
    cout<<request<<endl;
    return 0;
  }

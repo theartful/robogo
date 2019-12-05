@@ -2,7 +2,12 @@
 #define GTP_H_
 
 #include "entities.h"
-
+// #include "AdminstrativeCommands.cpp"
+// #include "SetupCommands.cpp"
+// #include "CorePlayCommands.cpp"
+// #include "TournamentCommands.cpp"
+// #include "RegressionCommands.cpp"
+// #include "DebugCommands.cpp"
 
 // Adminstrative Commands
 uint32_t protocol_version();
@@ -16,9 +21,9 @@ void quit();
 void boardsize(uint32_t size);
 void clear_board();
 void komi(float new_komi);
-List<Vertex> fixed_handicap(uint32_t number_of_stones);
-List<Vertex> place_free_handicap(uint32_t number_of_stones);
-List<Vertex> set_free_handicap(uint32_t number_of_stones);
+// List<Vertex> fixed_handicap(uint32_t number_of_stones);
+// List<Vertex> place_free_handicap(uint32_t number_of_stones);
+// List<Vertex> set_free_handicap(uint32_t number_of_stones);
 
 // Core Play Commands
 void play(Move move);
@@ -40,5 +45,6 @@ MultiLineList<List<string>> showboard();
 
 // Handle Requests
 string makeRequest(string command,vector<string> args,int id);
+string takeRequest(string request);
 
 #endif
