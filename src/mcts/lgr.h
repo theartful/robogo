@@ -46,15 +46,15 @@ private:
     static constexpr int32_t UNSET_VALUE = -1;
 
 
-    //I will extend this incrementely to (lgr_2,lgrf_1) and maybe (lgrf_2)
-    //lgr_1[action][i] -> last good reply for player i where other played action
-    std::array<std::array<Action,BoardState::MAX_NUM_CELLS>,2> lgr_1; 
+    //I will extend this incrementely to (lgr2,lgrf_1) and maybe (lgrf_2)
+    //lgr1[action][i] -> last good reply for player i where other played action
+    std::array<std::array<Action,BoardState::MAX_NUM_CELLS>,2> lgr1; 
 
-    std::array<std::array<Action,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> lgr_2; 
+    std::array<std::array<Action,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> lgr2; 
 
-    std::array<std::array<bool,BoardState::MAX_NUM_CELLS>,2> is_set_lgr_1; 
+    std::array<std::array<bool,BoardState::MAX_NUM_CELLS>,2> is_set_lgr1; 
 
-    std::array<std::array<bool,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> is_set_lgr_2; 
+    std::array<std::array<bool,BoardState::MAX_NUM_CELLS*BoardState::MAX_NUM_CELLS>,2> is_set_lgr2; 
 };
 
 }
