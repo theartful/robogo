@@ -2,6 +2,9 @@
 
 #include "engine/utility.h"
 #include "mcts/mcts.h"
+#include <numeric>
+#include <functional>
+
 
 using namespace go;
 using namespace go::engine;
@@ -51,14 +54,19 @@ Action MCTS::run(const GameState& root_state)
 			traj.visit(node_id);
 		}
 
+		Action last_action;
 		// expansion phase
 		if (!is_fully_expanded(node_id) && !is_terminal_state(node_state))
 		{
 			const auto& action_child = expand_node(node_id, node_state);
+			last_action = action_child.first;
 			make_move(node_state, action_child.first);
 			node_id = action_child.second;
 			traj.visit(node_id);
 		}
+
+		std::vector<Action> history;
+		history.push_back(last_action);
 
 		// simulation phase
 		std::uniform_int_distribution<size_t> dist;
@@ -67,11 +75,28 @@ Action MCTS::run(const GameState& root_state)
 		     depth < MAX_SIMULATION_DEPTH && !is_terminal_state(node_state);
 		     depth++)
 		{
-			auto valid_actions = get_valid_actions(node_state);
-			auto random_idx =
-			    dist(prng, dist_range(0, valid_actions.size() - 1));
-			auto random_action = valid_actions[random_idx];
-			make_move(node_state, random_action);
+			if(lgr.is_stored(last_action)){
+				Action next_action = lgr.get_lgr(last_action);
+				if(make_move(node_state,next_action)){ //action may be invalid
+					history.push_back(next_action);
+					last_action = next_action;
+				}
+				else{
+					//default policy
+					auto valid_actions = get_valid_actions(node_state);
+					auto random_idx =
+						dist(prng, dist_range(0, valid_actions.size() - 1));
+					auto random_action = valid_actions[random_idx];
+					make_move(node_state, random_action);
+				}
+			}else{ //default policy
+				auto valid_actions = get_valid_actions(node_state);
+				auto random_idx =
+					dist(prng, dist_range(0, valid_actions.size() - 1));
+				auto random_action = valid_actions[random_idx];
+				make_move(node_state, random_action);
+				history.push_back(random_action);
+			}
 		}
 
 		// calculate score
@@ -88,6 +113,35 @@ Action MCTS::run(const GameState& root_state)
 			my_win = 1;
 		else
 			my_win = -1;
+
+		//update LGR
+		if(!history.empty()){
+
+			uint32_t start_index = 0;
+			if(my_win == 1){ //I won, update my index lgr
+				//first move was mine, first reply is the third
+				if(history[0].player_index == my_id){
+					start_index = 2;
+				}
+				else{ //first move was his, first reply is the secon
+					start_index = 1;
+				}
+			}
+			else{ //he won, update his lgr
+				//first move was his, first reply is the third
+				if(history[0].player_index == his_id){
+					start_index = 2;
+				}
+				else{ //first move was mine, first reply is secon
+					start_index = 1;
+				}
+			}
+
+			for(uint32_t i=start_index;i<history.size();i+=2){
+				lgr.set_lgr(history[i-1],history[i]);
+			}
+			
+		}
 
 		for (NodeId traj_node_id : traj.nodes)
 		{
@@ -197,9 +251,11 @@ ActionChildPair MCTS::select_best_child(const Node& node)
 		return (a.first > b.first) ? a : b;
 	};
 
-	auto best_score_child_pair = std::transform_reduce(
-	    node.children.begin() + 1, node.children.end(),
-	    calc_utc(*node.children.begin()), get_max, calc_utc);
+	auto best_score_child_pair = calc_utc(*node.children.begin());
+
+	for (auto& child:node.children){
+		best_score_child_pair = get_max(best_score_child_pair,calc_utc(child));
+	}
 
 	return best_score_child_pair.second;
 }

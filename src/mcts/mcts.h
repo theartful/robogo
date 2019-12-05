@@ -3,6 +3,7 @@
 
 #include "engine/board.h"
 #include "engine/cluster.h"
+#include "lgr.h"
 #include <memory>
 #include <random>
 
@@ -73,6 +74,9 @@ private:
 
 	std::vector<Node> allocated_nodes;
 	PRNG prng;
+
+	lgr::LGR lgr;
+
 };
 
 } // namespace mcts
