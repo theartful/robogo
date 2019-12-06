@@ -20,6 +20,7 @@ enum class MoveValidity
 
 // Plays a move, if legal, changing the board state and game state
 bool make_move(GameState&, const Action&);
+void force_move(GameState&, const Action&);
 
 MoveValidity
 get_move_validity(const ClusterTable& table, const BoardState&, const Action&);

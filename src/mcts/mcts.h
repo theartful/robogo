@@ -5,6 +5,7 @@
 #include "engine/cluster.h"
 #include "mcts/common.h"
 #include "mcts/playout.h"
+#include <atomic>
 #include <memory>
 
 namespace go
@@ -23,7 +24,6 @@ struct Node
 	uint32_t num_visits;
 	uint32_t num_wins;
 	std::vector<ActionChildPair> children;
-	uint32_t child_to_expand;
 };
 
 struct Trajectory
@@ -43,6 +43,31 @@ struct Trajectory
 	};
 };
 
+struct MCTSStats
+{
+	size_t min_in_tree_depth;
+	size_t max_in_tree_depth;
+	float average_in_tree_depth;
+	size_t play_count;
+	size_t tot_depth;
+
+	MCTSStats()
+	    : min_in_tree_depth{std::numeric_limits<uint32_t>::max()},
+	      max_in_tree_depth{0}, average_in_tree_depth{0}
+	{
+	}
+
+	void update(const Trajectory& traj)
+	{
+		auto depth = traj.nodes.size();
+		play_count++;
+		min_in_tree_depth = std::min(min_in_tree_depth, depth);
+		max_in_tree_depth = std::max(max_in_tree_depth, depth);
+		tot_depth += depth;
+		average_in_tree_depth = float(tot_depth) / play_count;
+	}
+};
+
 class MCTS
 {
 public:
@@ -57,10 +82,9 @@ private:
 	NodeId allocate_root_node();
 	ActionChildPair expand_node(Node&, const engine::GameState&);
 	ActionChildPair expand_node(NodeId, const engine::GameState&);
-	void fill_node_children(Node&, const engine::GameState&);
 	Node& get_node(NodeId);
-	bool is_fully_expanded(const Node&);
-	bool is_fully_expanded(NodeId);
+	bool is_expanded(const Node&);
+	bool is_expanded(NodeId);
 
 	// UCT
 	ActionChildPair select_best_child(const Node&);
@@ -78,6 +102,7 @@ private:
 	std::vector<Node> temporary_space;
 	NodeId root_id;
 	PlayoutPolicy playout_policy;
+	MCTSStats stats;
 };
 
 } // namespace mcts

@@ -38,15 +38,16 @@ void PlayoutPolicy::run_playout(GameState& game_state)
 		last_move = game_state.move_history.back().pos;
 	else
 		last_move = Action::INVALID_ACTION;
-	while (!is_terminal_state(game_state))
+
+	const uint32_t max_playout_length =
+	    BoardState::MAX_NUM_CELLS - game_state.move_history.size();
+	for (uint32_t i = 0;
+	     i < max_playout_length && !is_terminal_state(game_state); i++)
 	{
 		auto action = generate_move(game_state);
 		if (is_invalid(action))
 			break;
-		if (!make_move(game_state, action))
-		{
-			std::cout << "run_playout: INVALID MOVE!!";
-		}
+		force_move(game_state, action);
 		last_move = action.pos;
 	}
 }

@@ -64,7 +64,7 @@ bool go::engine::is_suicide_move(
 		else
 		{
 			// if an enemy cluster will be captured
-			if (get_cluster(table, neighbor).num_liberties == 1)
+			if (in_atari(get_cluster(table, neighbor)))
 			{
 				is_suicide = false;
 				return BREAK;
@@ -107,18 +107,7 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 	BoardState& board_state = game_state.board_state;
 	if (is_valid_move(table, board_state, action))
 	{
-		if (!is_pass(action))
-		{
-			game_state.players[game_state.player_turn].number_alive_stones++;
-			board_state.board[action.pos] = PLAYERS[action.player_index];
-			board_state.ko = get_ko(table, board_state, action.pos);
-			update_clusters(game_state, action);
-		}
-
-		game_state.number_played_moves++;
-		game_state.player_turn = 1 - game_state.player_turn;
-		game_state.move_history.push_back(action);
-
+		force_move(game_state, action);
 		return true;
 	}
 	else
@@ -129,6 +118,24 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 		        get_move_validity(table, board_state, action))]);
 		return false;
 	}
+}
+
+void go::engine::force_move(GameState& game_state, const Action& action)
+{
+	ClusterTable& table = game_state.cluster_table;
+	BoardState& board_state = game_state.board_state;
+
+	if (!is_pass(action))
+	{
+		game_state.players[game_state.player_turn].number_alive_stones++;
+		board_state.board[action.pos] = PLAYERS[action.player_index];
+		board_state.ko = get_ko(table, board_state, action.pos);
+		update_clusters(game_state, action);
+	}
+
+	game_state.number_played_moves++;
+	game_state.player_turn = 1 - game_state.player_turn;
+	game_state.move_history.push_back(action);
 }
 
 void go::engine::calculate_score(

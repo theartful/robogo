@@ -16,9 +16,7 @@ namespace go
 namespace mcts
 {
 
-Node::Node()
-    : num_visits{0}, num_wins{0}, child_to_expand{
-                                      std::numeric_limits<uint32_t>::max()}
+Node::Node() : num_visits{0}, num_wins{0}
 {
 }
 
@@ -88,8 +86,6 @@ bool MCTS::advance_tree(const Action& action1, const Action& action2)
 	for (NodeId it = first; it != last; it++)
 	{
 		temporary_space[it].children.clear();
-		temporary_space[it].child_to_expand =
-		    std::numeric_limits<uint32_t>::max();
 	}
 
 	clear_tree();
@@ -108,6 +104,7 @@ Action MCTS::run(const GameState& root_state)
 {
 	constexpr uint32_t MAX_ITERATIONS = 50000;
 
+	stats = {};
 	root_id = allocate_root_node();
 	Trajectory traj;
 	for (uint32_t iteration = 0; iteration < MAX_ITERATIONS; iteration++)
@@ -118,7 +115,7 @@ Action MCTS::run(const GameState& root_state)
 		auto node_id = root_id;
 
 		// selection phase
-		while (!is_terminal_state(node_state) && is_fully_expanded(node_id))
+		while (!is_terminal_state(node_state) && is_expanded(node_id))
 		{
 			const auto& action_child = select_best_child(node_id);
 			make_move(node_state, action_child.first);
@@ -127,7 +124,7 @@ Action MCTS::run(const GameState& root_state)
 		}
 
 		// expansion phase
-		if (!is_fully_expanded(node_id) && !is_terminal_state(node_state))
+		if (!is_expanded(node_id) && !is_terminal_state(node_state))
 		{
 			const auto& action_child = expand_node(node_id, node_state);
 			make_move(node_state, action_child.first);
@@ -146,7 +143,7 @@ Action MCTS::run(const GameState& root_state)
 		// back propagation
 		const uint32_t my_id = root_state.player_turn;
 		const uint32_t his_id = 1 - my_id;
-		int32_t his_win;
+		uint32_t his_win;
 		if (playout_state.players[my_id].total_score >
 		    playout_state.players[his_id].total_score)
 			his_win = 0;
@@ -157,9 +154,11 @@ Action MCTS::run(const GameState& root_state)
 		{
 			auto& node = get_node(traj_node_id);
 			node.num_visits++;
-			node.num_wins += static_cast<uint32_t>(his_win);
+			node.num_wins += his_win;
 			his_win = 1 - his_win;
 		}
+
+		stats.update(traj);
 	}
 
 	Node& root_node = get_node(root_id);
@@ -179,12 +178,17 @@ Action MCTS::run(const GameState& root_state)
 
 ActionChildPair MCTS::expand_node(Node& node, const GameState& game_state)
 {
-	if (node.children.size() == 0)
-		fill_node_children(node, game_state);
+	for_each_valid_action(game_state, [&](const Action& action) {
+		if (!engine::is_surrounded(game_state.board_state, action.pos))
+			node.children.emplace_back(action, allocate_node());
+	});
 
-	NodeId new_node_id = allocate_node();
-	node.children[node.child_to_expand].second = new_node_id;
-	return node.children[node.child_to_expand++];
+	if (node.children.empty())
+		node.children.emplace_back(
+		    Action{Action::PASS, game_state.player_turn}, allocate_node());
+
+	std::shuffle(node.children.begin(), node.children.end(), prng);
+	return node.children[0];
 }
 
 ActionChildPair MCTS::expand_node(NodeId node_id, const GameState& game_state)
@@ -210,46 +214,38 @@ NodeId MCTS::allocate_root_node()
 		return root_id;
 }
 
-void MCTS::fill_node_children(Node& node, const GameState& game_state)
-{
-	for_each_valid_action(game_state, [&](const Action& action) {
-		if (!engine::is_surrounded(game_state.board_state, action.pos))
-			node.children.emplace_back(action, INVALID_NODE_ID);
-	});
-
-	if (node.children.empty())
-		node.children.emplace_back(
-		    Action{Action::PASS, game_state.player_turn}, INVALID_NODE_ID);
-
-	std::shuffle(node.children.begin(), node.children.end(), prng);
-	node.child_to_expand = 0;
-}
-
 ActionChildPair MCTS::select_best_child(const Node& node)
 {
 	static constexpr auto C = 0.7; // exploration constant
 
-	auto calc_utc = [&](const auto& action_node_pair) {
+	auto calc_uct = [&](const auto& action_node_pair) {
 		const NodeId child_id = action_node_pair.second;
 		Node& child = allocated_nodes[child_id];
-		float exploitation_term =
-		    static_cast<float>(child.num_wins) / child.num_visits;
+		float exploitation_term = 0;
+		if (child.num_visits == 0)
+			exploitation_term = 0;
+		else
+			exploitation_term =
+			    static_cast<float>(child.num_wins) / child.num_visits;
 		float exploration_term = sqrt(
 		    log(static_cast<float>(node.num_visits)) / (child.num_visits + 1));
 
-		return std::make_pair(
-		    exploitation_term + C * exploration_term, action_node_pair);
+		return exploitation_term + C * exploration_term;
 	};
 
-	auto get_max = [](const auto& a, const auto& b) {
-		return (a.first > b.first) ? a : b;
-	};
+	float max_uct_score = calc_uct(node.children.front());
+	uint32_t child_index = 0;
+	for (size_t i = 1; i < node.children.size(); i++)
+	{
+		float uct_score = calc_uct(node.children[i]);
+		if (uct_score > max_uct_score)
+		{
+			max_uct_score = uct_score;
+			child_index = i;
+		}
+	}
 
-	auto best_score_child_pair = std::transform_reduce(
-	    node.children.begin() + 1, node.children.end(),
-	    calc_utc(*node.children.begin()), get_max, calc_utc);
-
-	return best_score_child_pair.second;
+	return node.children[child_index];
 }
 
 ActionChildPair MCTS::select_best_child(NodeId id)
@@ -257,14 +253,14 @@ ActionChildPair MCTS::select_best_child(NodeId id)
 	return select_best_child(get_node(id));
 }
 
-bool MCTS::is_fully_expanded(const Node& node)
+bool MCTS::is_expanded(const Node& node)
 {
-	return node.child_to_expand == node.children.size();
+	return !node.children.empty();
 }
 
-bool MCTS::is_fully_expanded(NodeId id)
+bool MCTS::is_expanded(NodeId id)
 {
-	return is_fully_expanded(get_node(id));
+	return is_expanded(get_node(id));
 }
 
 Node& MCTS::get_node(NodeId node_id)
@@ -303,6 +299,10 @@ void MCTS::show_debugging_info()
 	print_child(most_visited);
 	printf("Most wins to visit ratio:\n");
 	print_child(most_wins_to_visit);
+	printf("Tree size: %lu\n", allocated_nodes.size());
+	printf("Min in tree depth: %lu\n", stats.min_in_tree_depth);
+	printf("Max in tree depth: %lu\n", stats.max_in_tree_depth);
+	printf("Average in tree depth: %f\n", stats.average_in_tree_depth);
 }
 
 } // namespace mcts
