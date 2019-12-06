@@ -6,25 +6,35 @@
 
 using namespace go::engine;
 
+static const char* move_validity_strings[] = {"not empty", "ko", "suicide",
+                                              "invalid action value", "valid"};
+
 static inline uint32_t territory_points(
     const BoardState&, unsigned char&, uint32_t, details::SearchCache&);
+
+MoveValidity go::engine::get_move_validity(
+    const ClusterTable& table, const BoardState& board_state,
+    const Action& action)
+{
+	if (is_pass(action))
+		return MoveValidity::VALID;
+	else if (is_invalid(action))
+		return MoveValidity::INVALID_ACTION_VALUE;
+	else if (!is_empty_cell(board_state, action.pos))
+		return MoveValidity::INVALID_NOT_EMPTY;
+	else if (is_ko(board_state, action))
+		return MoveValidity::INVALID_KO;
+	else if (is_suicide_move(table, board_state, action))
+		return MoveValidity::INVALID_SUICIDE;
+	else
+		return MoveValidity::VALID;
+}
 
 bool go::engine::is_valid_move(
     const ClusterTable& table, const BoardState& board_state,
     const Action& action)
 {
-	if (is_pass(action))
-		return true;
-	else if (is_invalid(action))
-		return false;
-	else if (!is_empty_cell(board_state, action.pos))
-		return false;
-	else if (is_ko(board_state, action))
-		return false;
-	else if (is_suicide_move(table, board_state, action))
-		return false;
-	else
-		return true;
+	return get_move_validity(table, board_state, action) == MoveValidity::VALID;
 }
 
 bool go::engine::is_suicide_move(
@@ -113,7 +123,10 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 	}
 	else
 	{
-		DEBUG_PRINT("engine::make_move: invalid move!\n");
+		printf(
+		    "engine::make_move: invalid move, case: %s\n",
+		    move_validity_strings[static_cast<int>(
+		        get_move_validity(table, board_state, action))]);
 		return false;
 	}
 }

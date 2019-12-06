@@ -198,6 +198,40 @@ void for_each_valid_action(const GameState& state, Lambda&& lambda)
 	});
 }
 
+template <typename Lambda>
+void for_each_liberty(const Cluster& cluster, Lambda&& lambda)
+{
+	auto wrapped_lambda =
+	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
+	uint32_t count = 0;
+	for (uint32_t pos = 0;; pos++)
+	{
+		if (cluster.liberties_map[pos])
+		{
+			if (wrapped_lambda(pos) == BREAK)
+				return;
+			count++;
+		}
+		if (count == cluster.num_liberties)
+			return;
+	}
+}
+
+template <typename Lambda>
+void for_each_cluster(const GameState& game_state, Lambda&& lambda)
+{
+	auto wrapped_lambda =
+	    details::wrap_void_lambda<Cluster&>(std::forward<Lambda>(lambda));
+	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	{
+		auto cluster = game_state.cluster_table.clusters[i];
+		if (i != cluster.parent_idx || !cluster.size)
+			continue;
+		if (wrapped_lambda(cluster) == BREAK)
+			return;
+	}
+}
+
 } // namespace engine
 } // namespace go
 

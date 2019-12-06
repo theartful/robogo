@@ -37,6 +37,23 @@ go::engine::get_cluster(const ClusterTable& table, uint32_t cell_idx)
 	return table.clusters[get_cluster_idx(table, cell_idx)];
 }
 
+static inline uint32_t compute_atari_lib(const Cluster& cluster)
+{
+	uint32_t first_set_bit = 0;
+	for (; !cluster.liberties_map[first_set_bit]; first_set_bit++)
+		;
+	return first_set_bit;
+}
+
+static inline void update_if_atari(Cluster& cluster, ClusterTable& table)
+{
+	if (in_atari(cluster))
+	{
+		table.num_in_atari++;
+		cluster.atari_lib = compute_atari_lib(cluster);
+	}
+}
+
 void go::engine::update_clusters(GameState& game_state, const Action& action)
 {
 	auto& table = game_state.cluster_table;
@@ -45,34 +62,55 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 	// of enemy clusters
 	Cluster* to_merge[4];
 	Cluster* to_capture[4];
+	Cluster* enemy_clusters[4];
 	uint32_t merge_count = 0;
 	uint32_t capture_count = 0;
+	uint32_t enemy_count = 0;
 
 	for_each_neighbor_cluster(
 	    table, board_state, action.pos, [&](auto& cluster) {
-		    cluster.liberties_map.set(action.pos, false);
-		    cluster.num_liberties--;
 		    // if friendly cluster, add it to be merged
 		    if (cluster.player == action.player_index)
+		    {
 			    to_merge[merge_count++] = &cluster;
+			    if (cluster.num_liberties == 1)
+				    table.num_in_atari--;
+		    }
 		    // if enemy cluster with zero liberties, add it to be captured
-		    else if (cluster.num_liberties == 0)
-			    to_capture[capture_count++] = &cluster;
+		    else
+		    {
+			    enemy_clusters[enemy_count++] = &cluster;
+			    cluster.liberties_map.set(action.pos, false);
+			    cluster.num_liberties--;
+			    if (cluster.num_liberties == 0)
+			    {
+				    table.num_in_atari--;
+				    to_capture[capture_count++] = &cluster;
+			    }
+		    }			
 	    });
 
-	Cluster& action_cluster = table.clusters[action.pos];
+	Cluster* new_cluster;
 	if (merge_count == 0)
 	{
+		Cluster& action_cluster = table.clusters[action.pos];
 		init_single_cell_cluster(action_cluster, board_state, action);
+		new_cluster = &action_cluster;
 	}
 	else
 	{
 		Cluster& mega_cluster = *merge_clusters(to_merge, merge_count);
 		merge_cluster_with_cell(mega_cluster, action.pos, table, board_state);
+		new_cluster = &mega_cluster;
 	}
 	// now cleanup dead clusters
 	for (auto it = to_capture; it != to_capture + capture_count; it++)
 		capture_cluster(**it, game_state);
+
+	// update atari status
+	for (auto it = enemy_clusters; it != enemy_clusters + enemy_count; it++)
+		update_if_atari(**it, table);
+	update_if_atari(*new_cluster, table);
 }
 
 static void init_single_cell_cluster(

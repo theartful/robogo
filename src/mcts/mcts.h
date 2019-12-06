@@ -1,10 +1,11 @@
-#ifndef TREE_SEARCH_NODE_H
-#define TREE_SEARCH_NODE_H
+#ifndef SRC_MCTS_MCTS_H
+#define SRC_MCTS_MCTS_H
 
 #include "engine/board.h"
 #include "engine/cluster.h"
+#include "mcts/common.h"
+#include "mcts/playout.h"
 #include <memory>
-#include <random>
 
 namespace go
 {
@@ -13,9 +14,8 @@ namespace mcts
 
 using NodeId = size_t;
 using ActionChildPair = std::pair<engine::Action, NodeId>;
-using PRNG = std::mt19937;
 
-constexpr NodeId INVALID_NODE_ID = ~(0UL);
+constexpr NodeId INVALID_NODE_ID = std::numeric_limits<NodeId>::max();
 
 struct Node
 {
@@ -35,11 +35,11 @@ struct Trajectory
 	{
 		nodes.push_back(id);
 	}
-
-	void reset(const engine::GameState& state_)
+	void reset(const engine::GameState& state_, NodeId root_id)
 	{
 		state = state_;
 		nodes.clear();
+		nodes.push_back(root_id);
 	};
 };
 
@@ -47,8 +47,10 @@ class MCTS
 {
 public:
 	MCTS();
-	engine::Action run(const engine::GameState& root_state);
+	engine::Action run(const engine::GameState&);
+	bool advance_tree(const engine::Action&, const engine::Action&);
 	void clear_tree();
+	void show_debugging_info();
 
 private:
 	NodeId allocate_node();
@@ -59,23 +61,26 @@ private:
 	Node& get_node(NodeId);
 	bool is_fully_expanded(const Node&);
 	bool is_fully_expanded(NodeId);
-	std::vector<engine::Action> get_valid_actions(const engine::GameState&);
 
 	// UCT
-	ActionChildPair select_best_child(const Node& node);
-	ActionChildPair select_best_child(NodeId node_id);
+	ActionChildPair select_best_child(const Node&);
+	ActionChildPair select_best_child(NodeId);
 
 private:
 	static constexpr size_t MAX_NODES_SIZE_IN_BYTES =
 	    1UL * 1024UL * 1024UL * 1024UL; // 2 GB
 	static constexpr size_t MAX_NUM_NODES =
 	    MAX_NODES_SIZE_IN_BYTES / sizeof(Node);
+	static constexpr size_t NUM_REUSE_LEVELS = 2;
 
-	std::vector<Node> allocated_nodes;
 	PRNG prng;
+	std::vector<Node> allocated_nodes;
+	std::vector<Node> temporary_space;
+	NodeId root_id;
+	PlayoutPolicy playout_policy;
 };
 
 } // namespace mcts
 } // namespace go
 
-#endif // TREE_SEARCH_NODE_H
+#endif // SRC_MCTS_MCTS_H
