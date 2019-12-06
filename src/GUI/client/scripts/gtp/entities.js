@@ -1,17 +1,35 @@
 'use strict';
 
-const validTypes = ["number", "Boolean", "string", "Color", "Vertex", "Move", "List", "MultiLineList", "Alternative"];
+const validTypes = ["number", "boolean", "string", "Color", "Vertex", "Move", "List", "MultiLineList", "Alternative"];
+let whichClass = (object) => {
+    if (typeof object == "number" || typeof object == "boolean" || typeof object == "string")
+        return (typeof object);
+
+    if (Color.prototype.isPrototypeOf(object))
+        return "Color";
+    if (Vertex.prototype.isPrototypeOf(object))
+        return "Vertex";
+    if (Move.prototype.isPrototypeOf(object))
+        return "Move";
+    if (List.prototype.isPrototypeOf(object))
+        return "List";
+    if (MultiLineList.prototype.isPrototypeOf(object))
+        return "MultiLineList";
+}
 
 class Color {
     constructor(color) {
         if (typeof color === "string") {
             color = color.toLowerCase();
-            if (color === "w" || color === "white" || color === "b" || color === "black")
-                this.color = color;
+            if (color === "w" || color === "white")
+                this.color = "w";
+            else if (color === "b" || color === "black")
+                this.color = "b";
+            else
+                throw "Parameter is not a color value";
         }
         else
             throw "Parameter is not a color value";
-
     }
 
     toString() {
@@ -30,7 +48,7 @@ class Vertex {
                     throw "invalid vertex value";
 
                 let row = value.slice(1, 3);
-                if (!isNaN(row) && row > 25)
+                if (!(!isNaN(row) && row > 0 && row < 25))
                     throw "Invalid vertex value: protocol doesn't support boards larger than 25x25";
 
                 let columnCharCode = value.charCodeAt(0);
@@ -47,6 +65,23 @@ class Vertex {
         }
         else
             throw "Invalid Vertex Value";
+    }
+
+    static indecies(vertex) {
+        if(!Vertex.prototype.isPrototypeOf(vertex))
+            throw "Invalid Vertex Value";
+        
+        let columnLetter = vertex.toString()[0];
+        let row = parseInt(vertex.toString().slice(1, 3));
+
+        let columnCharCode = columnLetter.charCodeAt(0);
+        let column = 0;
+        if (columnCharCode >= 65 && columnCharCode <= 90)
+            column = (columnCharCode[0] < 73) ? columnCharCode - 64 : columnCharCode - 65;
+        else if (columnCharCode >= 97 && columnCharCode <= 122)
+            column = (columnCharCode < 105) ? columnCharCode - 96 : columnCharCode - 97;
+
+        return {row: row, column: column};
     }
 
     toString() {
@@ -92,15 +127,15 @@ class List {
     }
 
     append(item) {
-        if (typeof item !== this.type)
+        if (whichClass(item) !== this.type)
             throw "Invalid List Type";
-
+        
         this.items.push(item);
     }
 
     appendAll(items) {
         for (index in items) {
-            if (typeof items[index] !== this.type)
+            if (whichClass(items[index]) !== this.type)
                 throw "Invalid List Type";
 
             this.items.push(items[index]);
@@ -137,7 +172,7 @@ class MultiLineList {
     }
 
     append(item) {
-        if (typeof item !== this.type)
+        if (whichClass(item) !== this.type)
             throw "Invalid List Type";
 
         this.items.push(item);
@@ -145,7 +180,7 @@ class MultiLineList {
 
     appendAll(items) {
         for (index in items) {
-            if (typeof items[index] !== this.type)
+            if (whichClass(items[index]) !== this.type)
                 throw "Invalid List Type";
 
             this.items.push(items[index]);

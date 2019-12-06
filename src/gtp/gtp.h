@@ -3,6 +3,7 @@
 
 #include "entities.h"
 #include <map>
+#include <utility>
 using std::map;
 namespace gtp
 {
@@ -47,6 +48,7 @@ Alternative<Vertex, string> reg_genmove(Color color);
 MultiLineList<List<string>> showboard();
 
 string make_request(string command, vector<string> args, int id = -1);
+std::pair<uint32_t, string> parse_response(string response);
 string take_request(string request);
 } // namespace gtp
 

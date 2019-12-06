@@ -1,17 +1,35 @@
 'use strict';
 
-const validTypes = ["number", "Boolean", "string", "Color", "Vertex", "Move", "List", "MultiLineList", "Alternative"];
+const validTypes = ["number", "boolean", "string", "Color", "Vertex", "Move", "List", "MultiLineList", "Alternative"];
+let whichClass = (object) => {
+    if (typeof object == "number" || typeof object == "boolean" || typeof object == "string")
+        return (typeof object);
+
+    if (Color.prototype.isPrototypeOf(object))
+        return "Color";
+    if (Vertex.prototype.isPrototypeOf(object))
+        return "Vertex";
+    if (Move.prototype.isPrototypeOf(object))
+        return "Move";
+    if (List.prototype.isPrototypeOf(object))
+        return "List";
+    if (MultiLineList.prototype.isPrototypeOf(object))
+        return "MultiLineList";
+}
 
 class Color {
     constructor(color) {
         if (typeof color === "string") {
             color = color.toLowerCase();
-            if (color === "w" || color === "white" || color === "b" || color === "black")
-                this.color = color;
+            if (color === "w" || color === "white")
+                this.color = "w";
+            else if (color === "b" || color === "black")
+                this.color = "b";
+            else
+                throw "Parameter is not a color value";
         }
         else
             throw "Parameter is not a color value";
-    
     }
 
     toString() {
@@ -30,7 +48,7 @@ class Vertex {
                     throw "invalid vertex value";
 
                 let row = value.slice(1, 3);
-                if (!isNaN(row) && row > 25)
+                if (!(!isNaN(row) && row > 0 && row < 25))
                     throw "Invalid vertex value: protocol doesn't support boards larger than 25x25";
 
                 let columnCharCode = value.charCodeAt(0);
@@ -49,6 +67,23 @@ class Vertex {
             throw "Invalid Vertex Value";
     }
 
+    static indecies(vertex) {
+        if(!Vertex.prototype.isPrototypeOf(vertex))
+            throw "Invalid Vertex Value";
+        
+        let columnLetter = vertex.toString()[0];
+        let row = parseInt(vertex.toString().slice(1, 3));
+
+        let columnCharCode = columnLetter.charCodeAt(0);
+        let column = 0;
+        if (columnCharCode >= 65 && columnCharCode <= 90)
+            column = (columnCharCode[0] < 73) ? columnCharCode - 64 : columnCharCode - 65;
+        else if (columnCharCode >= 97 && columnCharCode <= 122)
+            column = (columnCharCode < 105) ? columnCharCode - 96 : columnCharCode - 97;
+
+        return {row: row, column: column};
+    }
+
     toString() {
         return this.vertex;
     }
@@ -60,7 +95,7 @@ class Move {
             move = move.split(' ');
             if (move.length !== 2)
                 throw "Invalid Move must be string containing a Color and a Vertex separated by a space";
-    
+
             let color = null;
             let vertex = null;
             try {
@@ -86,21 +121,21 @@ class List {
     constructor(type) {
         if (!validTypes.includes(type))
             throw "Invalid List type";
-        
+
         this.type = type;
         this.items = [];
     }
 
     append(item) {
-        if (typeof item !== this.type)
+        if (whichClass(item) !== this.type)
             throw "Invalid List Type";
-
+        
         this.items.push(item);
     }
 
     appendAll(items) {
         for (index in items) {
-            if (typeof items[index] !== this.type)
+            if (whichClass(items[index]) !== this.type)
                 throw "Invalid List Type";
 
             this.items.push(items[index]);
@@ -130,14 +165,14 @@ class MultiLineList {
     constructor(type) {
         if (!validTypes.includes(type))
             throw "Invalid MultiLineList type";
-        
+
         this.type = type;
         this.items = [];
 
     }
 
     append(item) {
-        if (typeof item !== this.type)
+        if (whichClass(item) !== this.type)
             throw "Invalid List Type";
 
         this.items.push(item);
@@ -145,7 +180,7 @@ class MultiLineList {
 
     appendAll(items) {
         for (index in items) {
-            if (typeof items[index] !== this.type)
+            if (whichClass(items[index]) !== this.type)
                 throw "Invalid List Type";
 
             this.items.push(items[index]);
@@ -166,6 +201,63 @@ class MultiLineList {
         }
     }
 };
+
+let socket = new WebSocket("ws://localhost:9002");
+
+/*
+ * object.watch polyfill
+ *
+ * 2012-04-03
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
+// object.watch
+if (!Object.prototype.watch) {
+	Object.defineProperty(Object.prototype, "watch", {
+		  enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop, handler) {
+			var
+			  oldval = this[prop]
+			, newval = oldval
+			, getter = function () {
+				return newval;
+			}
+			, setter = function (val) {
+				oldval = newval;
+				return newval = handler.call(this, prop, oldval, val);
+			}
+			;
+			
+			if (delete this[prop]) { // can't watch constants
+				Object.defineProperty(this, prop, {
+					  get: getter
+					, set: setter
+					, enumerable: true
+					, configurable: true
+				});
+			}
+		}
+	});
+}
+
+// object.unwatch
+if (!Object.prototype.unwatch) {
+	Object.defineProperty(Object.prototype, "unwatch", {
+		  enumerable: false
+		, configurable: true
+		, writable: false
+		, value: function (prop) {
+			var val = this[prop];
+			delete this[prop]; // remove accessors
+			this[prop] = val;
+		}
+	});
+}
 
 /**
  * @param   {function}  func    Function that is define in ES6 arrow functoin style
@@ -412,20 +504,39 @@ let set_free_handicap = (vertices) => {
  */
 let play = (move) => {
     move = new Move(move.toString());
+    let color = new Color(move.toString().split(' ')[0]).toString();
+    let indecies = Vertex.indecies(new Vertex(move.toString().split(' ')[1]));
+    let row = arraySize - (indecies.row - 1);
+    let column = indecies.column - 1;
+    addPiece(column, row, color);
 }
+
+let genmoveId = 0;
 
 /**
  * @param   {Color}         color   Color for which to generate a move
  * @returns {Vertex|string} vertex  Vertex where the move was played or the string \resign"
  */
-let genmove = (color) => {
-    color = new Color(color.toString());
-
-    let vertex = "resign";
-    // try to genrate of move and if possiple assign the vertex to vertex if not pass
-
-    return vertex;
+let genmove = (c) => {
+    let color = new Color(c.toString());
+    currentPlayer = color.toString();
+    allowMove = true;
+    return "break";
 }
+
+pieceLocation.watch('location', (id, oldval, newval) => {
+    allowMove = false;
+    if (newval.length !== 2)
+        socket.send(`=${genmoveId} resign\n\n`);
+    
+    let row = (arraySize - (newval[1] - 1)).toString();
+    row = (row.length == 1) ? `0${row}` : row;
+    let column = (newval[0] + 1 < 9) ? newval[0] + 97 : newval[0] + 98;
+
+    let columnLetter = String.fromCharCode(column);
+    let vertex = new Vertex(`${columnLetter}${row}`);
+    socket.send(`=${genmoveId} ${vertex.toString()}\n\n`);
+});
 
 /**
  * @param   none
@@ -615,16 +726,15 @@ let parseRequest = (request) => {
     let id = null;
     let command = null;
     let args = null;
-    if (isInt(request[0])) {
-        id = parseInt(request[0], 10);
+    if (parseInt(request[0], 10).toString() === request[0]) {
+        id = toInt(request[0]);
         command = request[1];
         args = request.slice(2);
     }
     else {
-        command = request[1];
-        args = request.slice(2);
+        command = request[0];
+        args = request.slice(1);
     }
-    
     
     return { id: id, command: command, args: args };
 }
@@ -647,30 +757,45 @@ let takeRequest = (request) => {
     let args = parsedRequest.args;
     let errorPrefix = (id !== null) ? `?${id}` : "?";
     let responsePrefix = (id !== null) ? `=${id}` : "=";
-
+    console.log("command: " + command);
     if (!commandsList.includes(command))
         return `${errorPrefix} command doesn't exist\n\n`;
     
+    if (command === "play")
+        args = [args.join(' ')];
+
     let commandArgs = getArrowFunctionArgList(commands[command]);
-    if (commandArgs.length === args.length)
+    if (commandArgs.length !== args.length)
         return `${errorPrefix} ${command} arguments doesn't match\n\n`;
     
     try {
-        return `${responsePrefix} ${(commands[command](...args)).toString()}\n\n`;
+        let response = commands[command](...args);
+        if (response === "break")
+        {
+            genmoveId = (id === null || id === undefined) ? '' : id.toString();
+            return "break";
+        }
+        else if (response !== undefined)
+            return `${responsePrefix} ${response.toString()}\n\n`;
+        else
+            return `${responsePrefix}\n\n`;
     }
     catch(exception) {
         return `? ${exception}\n\n`;
     }
 }
 
-let socket = new WebSocket("ws://localhost:9002");
+// let socket = new WebSocket("ws://localhost:9002");
 
 socket.onopen = function (e) {
     alert("[open] Connection established");
 };
 
 socket.onmessage = function (event) {
-    alert(`[message] Data received from server: ${event.data}`);
+    // alert(`[message] Data received from server: ${event.data}`);
+    let response = takeRequest(event.data);
+    if (response !== "break")
+        socket.send(response);
 };
 
 socket.onclose = function (event) {
@@ -692,60 +817,3 @@ socket.onerror = function (error) {
 //     alert("sending message to server!!!");
 //     socket.send(message);
 // }
-
-var c = document.getElementById("go-canvas");
-var ctx = c.getContext("2d");
-var black = document.getElementById("black");
-var white = document.getElementById("white");
-
-const startOffset = 20;
-const arraySize = 18;
-const endOffset = c.width - startOffset;
-const step = (c.width - 2 * startOffset) / arraySize;
-
-var board = new Array(arraySize + 1)
-    .fill(0)
-    .map(() => new Array(arraySize + 1).fill(0));
-
-const drawBoard = () => {
-    for (let xAxis = startOffset; xAxis <= endOffset; xAxis += step) {
-        ctx.moveTo(xAxis, startOffset);
-        ctx.lineTo(xAxis, endOffset);
-        ctx.stroke();
-    }
-
-    for (let yAxis = startOffset; yAxis <= endOffset; yAxis += step) {
-        ctx.moveTo(startOffset, yAxis);
-        ctx.lineTo(endOffset, yAxis);
-        ctx.stroke();
-    }
-};
-
-const drawAllPieces = () => {
-    let row = 0;
-    for (let xAxis = startOffset - step / 2; xAxis < endOffset; xAxis += step) {
-        let col = 0;
-        for (let yAxis = startOffset - step / 2; yAxis < endOffset; yAxis += step) {
-            if (board[row][col]) {
-                if (board[row][col] == "w") {
-                    ctx.drawImage(white, xAxis, yAxis, step, step);
-                } else {
-                    ctx.drawImage(black, xAxis, yAxis, step, step);
-                }
-            }
-            col++;
-        }
-        row++;
-    }
-};
-
-board[0][0] = "w";
-board[7][12] = "w";
-board[9][13] = "w";
-board[8][16] = "b";
-board[7][17] = "b";
-board[5][16] = "b";
-board[18][18] = "b";
-
-drawBoard();
-drawAllPieces();

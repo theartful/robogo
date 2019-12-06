@@ -68,16 +68,15 @@ let parseRequest = (request) => {
     let id = null;
     let command = null;
     let args = null;
-    if (isInt(request[0])) {
-        id = parseInt(request[0], 10);
+    if (parseInt(request[0], 10).toString() === request[0]) {
+        id = toInt(request[0]);
         command = request[1];
         args = request.slice(2);
     }
     else {
-        command = request[1];
-        args = request.slice(2);
+        command = request[0];
+        args = request.slice(1);
     }
-    
     
     return { id: id, command: command, args: args };
 }
@@ -100,16 +99,27 @@ let takeRequest = (request) => {
     let args = parsedRequest.args;
     let errorPrefix = (id !== null) ? `?${id}` : "?";
     let responsePrefix = (id !== null) ? `=${id}` : "=";
-
     if (!commandsList.includes(command))
         return `${errorPrefix} command doesn't exist\n\n`;
     
+    if (command === "play")
+        args = [args.join(' ')];
+
     let commandArgs = getArrowFunctionArgList(commands[command]);
     if (commandArgs.length !== args.length)
         return `${errorPrefix} ${command} arguments doesn't match\n\n`;
     
     try {
-        return `${responsePrefix} ${(commands[command](...args)).toString()}\n\n`;
+        let response = commands[command](...args);
+        if (response === "break")
+        {
+            genmoveId = (id === null || id === undefined) ? '' : id.toString();
+            return "break";
+        }
+        else if (response !== undefined)
+            return `${responsePrefix} ${response.toString()}\n\n`;
+        else
+            return `${responsePrefix}\n\n`;
     }
     catch(exception) {
         return `? ${exception}\n\n`;

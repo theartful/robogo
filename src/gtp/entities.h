@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <stdexcept>
@@ -112,6 +113,24 @@ struct Vertex
         char column_letter = (column < 105) ? column + 96 : column + 97;
         string row_str = (to_string(row).length() == 1) ? "0" + to_string(row) : to_string(row);
         this->vertex = to_string(column_letter) + row_str;
+    }
+
+    static void indecies(const Vertex& vertex, uint32_t& row, uint32_t& column)
+    {
+        std::stringstream row_stream;
+        row_stream << vertex.vertex.substr(1);
+        row_stream >> row;
+
+        std::stringstream col_stream;
+        int c = vertex.vertex[0];
+        col_stream << to_string(c);
+        uint32_t col;
+        col_stream >> col;
+
+        if (col >= 65 && col <= 90)
+            column = (col < 73) ? col - 64 : col - 65;
+        else if (col >= 97 && col <= 122)
+            column = (col < 105) ? col - 96 : col - 97;
     }
 
     string val()

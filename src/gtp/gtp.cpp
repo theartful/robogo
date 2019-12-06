@@ -72,6 +72,35 @@ string gtp::make_request(string command, vector<string> args, int id)
 	return request;
 }
 
+std::pair<uint32_t, string> gtp::parse_response(string response)
+{
+	response.erase(std::remove(response.begin(), response.end(), '\n'), response.end());
+	if (response[0] == '?')
+		throw std::invalid_argument("recieved error from client " + response.substr(1));
+	
+	response = response.substr(1);
+	uint32_t id = 0;
+	vector<string> result;
+	std::istringstream iss(response);
+	string id_str;
+	iss >> id_str;
+	
+	bool has_id = !id_str.empty() && std::find_if(id_str.begin(), id_str.end(), [](char c) { return !std::isdigit(c); }) == id_str.end();
+	if (!has_id)
+		return std::pair<uint32_t, string>(0, response);
+	
+	std::stringstream id_stream;
+	id_stream << id_str;
+	id_stream >> id;
+
+	string res_args;
+	iss >> res_args;
+	for (string req; iss >> req;)
+		res_args += " " + req;
+
+	return std::pair<uint32_t, string>(id, res_args);
+}
+
 /**
  * @param   {string}    request     GTP command
  * @returns {string}    response    string containing GTP response in case of

@@ -17,7 +17,7 @@ function defaultTask() {
             "./scripts/gtp/protocol/gtpDebugCommands.js",
             "./scripts/gtp/protocol/gtp.js",
             "./scripts/client.js",
-            "./scripts/script.js"
+            // "./scripts/script.js"
         ]
     )
         .pipe(gp_sourcemaps.init())

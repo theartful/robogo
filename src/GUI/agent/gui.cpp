@@ -15,7 +15,7 @@ BoardGUI::BoardGUI(Server* s, char m, std::string c, Agent* a)
     if (!(m == 'h' || m == 'H' || m == 'a' || m == 'A'))
         throw std::invalid_argument("mode must be either h for human or a for agent");
 
-    if ((m == 'a' || m == 'A') && agent == NULL)
+    if ((m == 'a' || m == 'A') && a == NULL)
         throw std::invalid_argument("invalid argment expected Agent but found NULL");
     
     server = s;
@@ -53,8 +53,15 @@ uint32_t BoardGUI::generate_move(const Game& game)
         std::mutex m;
         std::unique_lock<std::mutex> lk(m);
         lock_gen_move.wait(lk, [this]{return !this->waiting();});
-        std::cout << "recived response: " << response << std::endl;
-        return 0;
+        if (response == "resign")
+            return 0;
+
+        Vertex v = Vertex(response);
+        uint32_t row = 0;
+        uint32_t column = 0;
+        Vertex::indecies(v, row, column);
+
+        return row * BOARD_SIZE + column;
     }
 }
 
@@ -68,6 +75,7 @@ void BoardGUI::response_handler(string res)
     if (!wait_response)
         return;
 
+    res = gtp::parse_response(res).second;
     response = res;
     wait_response = false;
     lock_gen_move.notify_one();
