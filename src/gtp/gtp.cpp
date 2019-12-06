@@ -6,9 +6,10 @@
 #include <iterator>
 #include <algorithm>
 #include <map>
+#include <functional>
 using namespace std;
 
-map <string,int> commandsList= {
+map <string,int> commands= {
   {"protocol_version",0},
   {"name",0},
   {"version",0},
@@ -33,6 +34,28 @@ map <string,int> commandsList= {
   {"showboard",0}
  };
 
+  // #define protocol_version function<uint32_t()> protocol_version();
+  // #define name function<List<string>()>
+  // #define version function<List<string>()>
+  // #define known_command function<int(int)>
+  // #define list_commands function<int(int)>
+  // #define quit function<int(int)>
+  // #define boardsize function<int(int)>
+  // #define clear_board function<int(int)>
+  // #define komi function<int(int)>
+  // #define fixed_handicap function<int(int)>
+  // #define place_free_handicap function<int(int)>
+  // #define set_free_handicap function<int(int)>
+  // #define play function<int(int)>
+  // #define genmove function<int(int)>
+  // #define undo function<int(int)>
+  // #define time_settings function<int(int)>
+  // #define time_left function<int(int)>
+  // #define final_score function<int(int)>
+  // #define final_status_list function<int(int)>
+  // #define loadsgf function<int(int)>
+  // #define reg_genmove function<int(int)>
+  // #define showboard function<int(int)>
 /**
  * @param   {string}    command Command Name
  * @param   {Array}     args    Array of objects that contains command arguments
@@ -41,9 +64,7 @@ map <string,int> commandsList= {
 
  string makeRequest(string command,vector<string> args,int id=-1) {
    // Validate Command
-   std::map<string,int>::iterator it;
-   it = commandsList.find(command);
-   if (it == commandsList.end())
+   if (!known_command(command))
    {
      return "Invalid Argument: command doesn't exist";
    }
@@ -55,7 +76,7 @@ map <string,int> commandsList= {
    }
 
    // Validate arguments
-   int required_args = commandsList[command];
+   int required_args = commands[command];
    int given_args = args.size();
    if(given_args != required_args)
    {
@@ -88,23 +109,72 @@ map <string,int> commandsList= {
   string takeRequest(string request) {
     vector<string> result;
     istringstream iss(request);
-    for(string request; iss >> request; )
+    int id = NULL;
+    string command;
+    vector<string> args;
+    try
     {
-      result.push_back(request);
-    }
+      for(string request; iss >> request; )
+      {
+        result.push_back(request);
+      }
+
     // To Do
     // assign command and arg
-    // string command = result[0];
+
     // Check if there is an id
-    vector<string> args (result.begin()+1,result.end());
+
+    try
+    {
+      id = stoi(result[0]);
+      command = result[1];
+      args = vector<string>(result.begin()+2,result.end());
+
+      // Validate ID
+      if(id <= 0)
+      {
+        return "Invalid Argument: id must be a positive integer";
+      }
+    }
+    catch(std::invalid_argument& e)
+    {
+      command = result[0];
+      args = vector<string>(result.begin()+1,result.end());
+    }
+    // cout<<id<<endl<<command<<endl;
+  }
+  catch(exception & ex)
+  {
+    return "? "+(string)ex.what()+"\n\n";
+  }
+
+  // Validate Command
+  if(!known_command(command))
+  {
+    string id_ = (id) ? to_string(id)+" " : " ";
+    return "?"+id_+"command doesn't exist\n\n";
+  }
+
+  // Validate arguments
+  int required_args = commands[command];
+  int given_args = args.size();
+  if(given_args != required_args)
+  {
+    return "Invalid Argument: "+ command + " arguments list should be " + to_string(required_args) + ", however, " + to_string(given_args) + " was provided";
+  }
+
+return "";
 
     // call corresponding functions
   }
  int main()
  {
-   vector<string> args = {"w","a15"};
-   string request = makeRequest("play",args);
-   takeRequest(request);
-   cout<<request<<endl;
+   // vector<string> args = {"w","a15"};
+   // vector<string> args ;
+   // string request = makeRequest("protocol_version",args);
+   string request = "5 protocol_version";
+   string result = takeRequest(request);
+   // cout<<request<<endl;
+   cout<<result<<endl;
    return 0;
  }
