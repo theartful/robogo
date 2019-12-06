@@ -55,7 +55,7 @@ void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
                 index = go::engine::BoardState::INVALID_INDEX;
                 return;
             }
-            index = x*19 + y;
+            index = x*go::engine::BoardState::EXTENDED_BOARD_SIZE + y;
             player = (prop->name  == SGFB)? 1 : 2;
             has_move = true;
             break;
