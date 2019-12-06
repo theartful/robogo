@@ -20,7 +20,7 @@ class BoardGUI : public Agent
 {
 public:
     BoardGUI() = delete;
-	BoardGUI(Server* s, char mode, std::string c, Agent* a=NULL);
+	BoardGUI(Server* s, char m, std::string c, Agent* a=NULL);
 	virtual uint32_t generate_move(const Game& game) override;
 
     bool waiting();

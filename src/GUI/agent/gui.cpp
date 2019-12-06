@@ -7,22 +7,22 @@ using namespace go::gui;
 using namespace go::engine;
 
 
-BoardGUI::BoardGUI(Server* s, char mode, std::string c, Agent* a=NULL)
+BoardGUI::BoardGUI(Server* s, char m, std::string c, Agent* a)
 {
     if (s == NULL)
         throw std::invalid_argument("invalid argment expected Server but found NULL");
 
-    if (!(mode == 'h' || mode == 'H' || mode == 'a' || mode == 'A'))
+    if (!(m == 'h' || m == 'H' || m == 'a' || m == 'A'))
         throw std::invalid_argument("mode must be either h for human or a for agent");
 
-    if ((mode == 'a' || mode == 'A') && agent == NULL)
+    if ((m == 'a' || m == 'A') && agent == NULL)
         throw std::invalid_argument("invalid argment expected Agent but found NULL");
     
     server = s;
     to_lower(c);
     color = Color(c);
     agent = a;
-    mode = (mode == 'h' || mode == 'H') ? 'h' : 'a';
+    mode = (m == 'h' || m == 'H') ? 'h' : 'a';
 
     using std::placeholders::_1;
     std::function<void(std::string)> res_handler = std::bind(&BoardGUI::response_handler, this, _1);
@@ -36,8 +36,8 @@ uint32_t BoardGUI::generate_move(const Game& game)
         uint32_t move = agent->generate_move(game);
         Move m = Move(color, Vertex(move / BOARD_SIZE, move % BOARD_SIZE));
         std::vector<std::string> args;
-        args.push_back((string)m);
-        uint32_t id = ((std::string)color == "w") ? 1 : 2;
+        args.push_back(m.val());
+        int id = (color.val() == "w") ? 1 : 2;
         server->send(gtp::make_request("play", args, id));
 
         return move;
@@ -45,8 +45,8 @@ uint32_t BoardGUI::generate_move(const Game& game)
     else
     {
         std::vector<std::string> args;
-        args.push_back((string)color);
-        uint32_t id = ((std::string)color == "w") ? 1 : 2;
+        args.push_back(color.val());
+        int id = (color.val() == "w") ? 1 : 2;
         server->send(gtp::make_request("genmove", args, id));
         wait_response = true;
 
