@@ -10,6 +10,7 @@ using std::vector;
 using std::to_string;
 using std::invalid_argument;
 using std::out_of_range;
+using namespace std;
 
 struct Color;
 struct Vertex;
@@ -161,6 +162,10 @@ template<> struct List<float>
 template<typename T> struct List
 {
     vector<T> items;
+    List(vector<T> items)
+    {
+      this->items = items;
+    }
 
     void append(T item)
     {
@@ -169,14 +174,14 @@ template<typename T> struct List
 
     void appendAll(vector<T> items)
     {
-      for (int i = 0; i < items.length(); i++) {
-        this.items.push_back(items[i]);
+      for (int i = 0; i < items.size(); i++) {
+        this->items.push_back(items[i]);
       }
     }
 
-    Boolean includes(T item)
+    bool includes(T item)
     {
-      return (std::find(items.begin(), items.end()) != items.end());
+      return (find(this->items.begin(), this->items.end(),item) != this->items.end());
     }
 
     operator string ()
@@ -202,6 +207,8 @@ template<> struct MultiLineList<uint32_t>
     {
         items.push_back(item);
     }
+
+
 
     operator string ()
     {
@@ -239,6 +246,13 @@ template<typename U> struct MultiLineList
     void append(U item)
     {
         items.push_back(item);
+    }
+
+    void appendAll(vector<U> items)
+    {
+      for (int i = 0; i < items.size(); i++) {
+        this->items.push_back(items[i]);
+      }
     }
 
     operator string ()

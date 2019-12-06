@@ -1,7 +1,7 @@
 #include "gtp.h"
 #include "entities.h"
 
-List<string> commandsList= {
+List<string> commandsList= vector<string>{
   "protocol_version",
   "name",
   "version",
@@ -46,9 +46,7 @@ uint32_t protocol_version()
 
 List<string> name()
 {
-  List<string> name;
-  name.append("Go");
-  name.append("Slayer");
+  List<string> name({"Go","Slayer"});
   return name;
 }
 
@@ -60,8 +58,7 @@ List<string> name()
 
 List<string> version()
 {
-  List<string> version;
-  version.append("1.0.0");
+  List<string> version({"1.0.0"});
   return version;
 }
 
@@ -71,7 +68,7 @@ List<string> version()
  * @returns {Boolean}   known           "true" if command is known, "false" otherwise
  */
 
-Boolean known_command(string command_name)
+bool known_command(string command_name)
 {
   return commandsList.includes(command_name);
 }
@@ -84,7 +81,7 @@ Boolean known_command(string command_name)
 MultiLineList<string> list_commands()
 {
   MultiLineList<string> list ;
-  list.appendAll(commandsList);
+  list.appendAll(commandsList.items);
   return list;
 }
 

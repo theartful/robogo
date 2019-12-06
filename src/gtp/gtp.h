@@ -2,7 +2,7 @@
 #define GTP_H_
 
 #include "entities.h"
-// #include "AdminstrativeCommands.cpp"
+#include "AdminstrativeCommands.cpp"
 // #include "SetupCommands.cpp"
 // #include "CorePlayCommands.cpp"
 // #include "TournamentCommands.cpp"
@@ -13,7 +13,7 @@
 uint32_t protocol_version();
 List<string> name();
 List<string> version();
-Boolean known_command(string command_name);
+bool known_command(string command_name);
 MultiLineList<string> list_commands();
 void quit();
 
