@@ -1,5 +1,5 @@
 #include "SGFinterface.h"
-// #include "../engine/board.h"
+
 #define T  84
 
 void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass)
@@ -34,7 +34,7 @@ void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass)
     return;
 }
 
-void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
+void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_move)
 {
     SGFProperty *prop = node->props;
     int x, y;
@@ -55,12 +55,12 @@ void sgf_play_node(SGFNode *node, int& index, int player, bool& has_move)
                 index = go::engine::BoardState::INVALID_INDEX;
                 return;
             }
-            index = x*go::engine::BoardState::EXTENDED_BOARD_SIZE + y;
+            index = go::engine::BoardState::index(static_cast<uint32_t> (x),static_cast<uint32_t> (y));
             player = (prop->name  == SGFB)? 1 : 2;
             has_move = true;
             break;
             default:
-            index = -1;
+            index = go::engine::BoardState::INVALID_INDEX;
             printf("wrong format for attribute\n");
             
         }
@@ -74,14 +74,14 @@ std::vector<go::engine::Action> load_sgf_tree(SGFNode* head)
 {
     std::vector<go::engine::Action> moves;
 
-    int index, player = 0;
+    uint32_t index, player = 0;
     bool has_move = false;
     SGFNode* next = head;
 
     while(next)
     {
         sgf_play_node(next, index, player,has_move);
-        if(index == -1)
+        if(index ==  go::engine::BoardState::INVALID_INDEX)
         {
             next = next->child;
             continue;
