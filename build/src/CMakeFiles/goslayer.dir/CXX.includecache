@@ -13,6 +13,8 @@ engine/board.h
 ../src/controller/game.h
 array
 -
+chrono
+-
 memory
 -
 controller/agent.h
@@ -21,13 +23,15 @@ engine/board.h
 ../src/controller/engine/board.h
 engine/cluster.h
 ../src/controller/engine/cluster.h
+engine/interface.h
+../src/controller/engine/interface.h
 
 ../src/engine/board.h
 array
 -
 assert.h
 -
-chrono
+bitset
 -
 stdint.h
 -
@@ -37,12 +41,6 @@ stdio.h
 -
 
 ../src/engine/cluster.h
-array
--
-bitset
--
-stdint.h
--
 board.h
 ../src/engine/board.h
 
@@ -171,7 +169,7 @@ array
 -
 assert.h
 -
-chrono
+bitset
 -
 stdint.h
 -
@@ -193,12 +191,6 @@ utility.h
 /media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/utility.h
 
 /media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
-array
--
-bitset
--
-stdint.h
--
 board.h
 /media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
 

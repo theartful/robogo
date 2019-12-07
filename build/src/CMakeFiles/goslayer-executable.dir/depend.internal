@@ -5,6 +5,7 @@ src/CMakeFiles/goslayer-executable.dir/main.cpp.o
  ../src/controller/agent.h
  ../src/engine/board.h
  ../src/engine/cluster.h
+ ../src/engine/interface.h
  /media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
  /media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.h
  /media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
