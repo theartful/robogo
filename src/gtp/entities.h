@@ -12,6 +12,7 @@ using std::vector;
 using std::to_string;
 using std::out_of_range;
 using std::invalid_argument;
+using namespace std;
 
 struct Color;
 struct Vertex;
@@ -188,7 +189,7 @@ template<> struct List<uint32_t>
             if (item == *it)
                 return Boolean(true);
         }
-        
+
         return Boolean(false);
     }
 
@@ -238,7 +239,7 @@ template<> struct List<float>
             if (item == *it)
                 return Boolean(true);
         }
-        
+
         return Boolean(false);
     }
 
@@ -293,7 +294,7 @@ template<> struct List<string>
             if (item == *it)
                 return Boolean(true);
         }
-        
+
         return Boolean(false);
     }
 
@@ -331,19 +332,14 @@ template<typename T> struct List
 
     void appendAll(vector<T> values)
     {
-        for(typename vector<T>::iterator it = values.begin(); it != values.end(); ++it)
-            items.push_back(*it);
+      for (int i = 0; i < items.size(); i++) {
+        this->items.push_back(items[i]);
+      }
     }
 
-    Boolean includes(T item)
+    bool includes(T item)
     {
-        for(typename vector<T>::iterator it = items.begin(); it != items.end(); ++it)
-        {
-            if (item.val() == it->val())
-                return Boolean(true);
-        }
-        
-        return Boolean(false);
+      return (find(this->items.begin(), this->items.end(),item) != this->items.end());
     }
 
     string val()
@@ -454,10 +450,11 @@ template<typename U> struct MultiLineList
         items.push_back(item);
     }
 
-    void appendAll(vector<U> values)
+    void appendAll(vector<U> items)
     {
-        for(typename vector<U>::iterator it = values.begin(); it != values.end(); ++it)
-            items.push_back(*it);
+      for (int i = 0; i < items.size(); i++) {
+        this->items.push_back(items[i]);
+      }
     }
 
     string val()

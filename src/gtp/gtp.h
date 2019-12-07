@@ -9,7 +9,7 @@ namespace gtp
 {
 extern const string commands[];
 extern List<string> commands_list;
-extern map<string, int> commands_args;
+// extern map<string, int> commands_args;
 
 
 // Adminstrative Commands
@@ -51,5 +51,12 @@ string make_request(string command, vector<string> args, int id = -1);
 std::pair<uint32_t, string> parse_response(string response);
 string take_request(string request);
 } // namespace gtp
+
+#include "AdminstrativeCommands.cpp"
+#include "SetupCommands.cpp"
+#include "CorePlayCommands.cpp"
+#include "TournamentCommands.cpp"
+#include "RegressionCommands.cpp"
+#include "DebugCommands.cpp"
 
 #endif
