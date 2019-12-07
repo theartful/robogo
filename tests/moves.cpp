@@ -104,7 +104,7 @@ TEST_CASE("Check score ")
 
 TEST_CASE("Check Capture for each player")
 {
-	std::ofstream myfile("out2.txt");
+	//std::ofstream myfile("out2.txt");
 	bool all = true;
 	char const* filename;
 	SGFNode* treeHead;
@@ -116,9 +116,6 @@ TEST_CASE("Check Capture for each player")
 		treeHead = readsgffile(filename);
 
 		actions = load_sgf_tree(treeHead);
-		myfile << "REEEEEEEEEEEEEEEEEEEEEEEEEM" << std ::endl;
-		myfile << game.get_game_state().players[0].number_captured_enemies << std :: endl;
-		myfile << game.get_game_state().players[1].number_captured_enemies << std:: endl;
 		for (unsigned int i = 0; i < actions.size(); i++)
 		{
 			if ((i == 6) || (i == 13) || (i == 15) || (i == 24) || (i == 34))
@@ -128,9 +125,7 @@ TEST_CASE("Check Capture for each player")
 		}
 		REQUIRE(!game.is_game_finished());
 		REQUIRE(all);
-		myfile << "YASSER ASHRAF SALAH"<< std::endl;
-		myfile << game.get_game_state().players[0].number_captured_enemies << std::endl;
-		myfile << game.get_game_state().players[1].number_captured_enemies << std ::endl;
+		
 		REQUIRE(game.get_game_state().players[0].number_captured_enemies == 4);
         REQUIRE(game.get_game_state().players[1].number_captured_enemies == 4);
 	}
