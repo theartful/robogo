@@ -34,11 +34,10 @@ void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass)
     return;
 }
 
-void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_move)
+void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_move, bool& isPass)
 {
     SGFProperty *prop = node->props;
     int x, y;
-    bool isPass;
     for (prop = node->props; prop; prop = prop->next)
     {
 
@@ -49,14 +48,15 @@ void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_mo
             case SGFAB:
             case SGFAW:
             x,y = 0;
+            player = (prop->name  == SGFB)? 1 : 2;
             get_sgf_move(prop, x, y, isPass);
             if(isPass)
             {
-                index = go::engine::BoardState::INVALID_INDEX;
+                // index = go::engine::BoardState::INVALID_INDEX;
+                isPass = true;
                 return;
             }
             index = go::engine::BoardState::index(static_cast<uint32_t> (x),static_cast<uint32_t> (y));
-            player = (prop->name  == SGFB)? 1 : 2;
             has_move = true;
             break;
             default:
@@ -75,12 +75,12 @@ std::vector<go::engine::Action> load_sgf_tree(SGFNode* head)
     std::vector<go::engine::Action> moves;
 
     uint32_t index, player = 0;
-    bool has_move = false;
+    bool has_move, isPass = false;
     SGFNode* next = head;
 
     while(next)
     {
-        sgf_play_node(next, index, player,has_move);
+        sgf_play_node(next, index, player,has_move, isPass);
         if(index ==  go::engine::BoardState::INVALID_INDEX)
         {
             next = next->child;
@@ -92,6 +92,10 @@ std::vector<go::engine::Action> load_sgf_tree(SGFNode* head)
             go::engine::Action move;
             move.player_index = static_cast<uint32_t>(player);
             move.pos = static_cast<uint32_t>(index);
+            if(isPass)
+            {
+                move.pos =  go::engine::Action::PASS;
+            }
             moves.push_back(move);
         }
 
