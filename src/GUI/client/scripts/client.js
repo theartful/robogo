@@ -1,11 +1,14 @@
-let socket = new WebSocket("ws://localhost:9002");
+// let socket = new WebSocket("ws://localhost:9002");
 
 socket.onopen = function (e) {
     alert("[open] Connection established");
 };
 
 socket.onmessage = function (event) {
-    alert(`[message] Data received from server: ${event.data}`);
+    // alert(`[message] Data received from server: ${event.data}`);
+    let response = takeRequest(event.data);
+    if (response !== "break")
+        socket.send(response);
 };
 
 socket.onclose = function (event) {

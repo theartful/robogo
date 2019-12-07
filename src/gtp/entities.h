@@ -1,15 +1,17 @@
 #ifndef ENTITIES_H_
 #define ENTITIES_H_
 
-#include <stdexcept>
-#include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <stdexcept>
 using std::string;
 using std::vector;
 using std::to_string;
-using std::invalid_argument;
 using std::out_of_range;
+using std::invalid_argument;
 using namespace std;
 
 struct Color;
@@ -23,6 +25,10 @@ template <typename Z, typename H> struct Alternative;
 struct Boolean
 {
     string boolean;
+    Boolean()
+    {
+    }
+
     Boolean(bool value)
     {
         this->boolean = (value) ? "true" : "false";
@@ -36,15 +42,19 @@ struct Boolean
         this->boolean = value;
     }
 
-    operator string ()
+    string val()
     {
-        return this->boolean;
+        return boolean;
     }
 };
 
 struct Color
 {
     string color;
+    Color()
+    {
+    }
+
     Color(string value)
     {
         if (!(value == "w" || value == "b" || value == "white" || value == "black"))
@@ -53,15 +63,19 @@ struct Color
         this->color = value;
     }
 
-    operator string ()
+    string val()
     {
-        return this->color;
+        return color;
     }
 };
 
 struct Vertex
 {
     string vertex;
+    Vertex()
+    {
+    }
+
     Vertex(string value)
     {
         if (!(value == "pass"))
@@ -75,40 +89,72 @@ struct Vertex
             if (value[0] == 'i' || value[0] == 'I')
                 throw invalid_argument("invalid vertex value");
 
-            uint32_t row = (value[1] - 48) * 10 + (value[2] - 48);
-            if (row > 25)
+            int row = (value[1] - 48) * 10 + (value[2] - 48);
+            if (row <= 0 || row > 25)
                 throw out_of_range("invalid vertex value: protocol doesn't support boards larger than 25x25");
 
-            uint32_t column = 0;
+            int column = 0;
             if (value[0] >= 65 && value[0] <= 90)
                 column = (value[0] < 73) ? value[0] - 64 : value[0] - 65;
             else if (value[0] >= 97 && value[0] <= 122)
                 column = (value[0] < 105) ? value[0] - 96 : value[0] - 97;
 
-            if (column > 25)
+            if (column <= 0 || column > 25)
                 throw out_of_range("invalid vertex value: protocol doesn't support boards larger than 25x25");
         }
 
         this->vertex = value;
     }
 
-    operator string()
+    Vertex(uint32_t row, uint32_t column)
     {
-        return this->vertex;
+        if (row == 0 || row > 25 || column == 0 || column > 25)
+            throw out_of_range("invalid vertex value: protocol doesn't support boards larger than 25x25");
+
+        char column_letter = (column < 105) ? column + 96 : column + 97;
+        string row_str = (to_string(row).length() == 1) ? "0" + to_string(row) : to_string(row);
+        this->vertex = to_string(column_letter) + row_str;
+    }
+
+    static void indecies(const Vertex& vertex, uint32_t& row, uint32_t& column)
+    {
+        std::stringstream row_stream;
+        row_stream << vertex.vertex.substr(1);
+        row_stream >> row;
+
+        std::stringstream col_stream;
+        int c = vertex.vertex[0];
+        col_stream << to_string(c);
+        uint32_t col;
+        col_stream >> col;
+
+        if (col >= 65 && col <= 90)
+            column = (col < 73) ? col - 64 : col - 65;
+        else if (col >= 97 && col <= 122)
+            column = (col < 105) ? col - 96 : col - 97;
+    }
+
+    string val()
+    {
+        return vertex;
     }
 };
 
 struct Move
 {
     string move;
-    Move(Color color, Vertex vertex)
+    Move()
     {
-        this->move = (string)color + (string)vertex;
     }
 
-    operator string ()
+    Move(Color color, Vertex vertex)
     {
-        return this->move;
+        this->move = color.val() + vertex.val();
+    }
+
+    string val()
+    {
+        return move;
     }
 };
 
@@ -116,15 +162,42 @@ template<> struct List<uint32_t>
 {
     vector<uint32_t> items;
 
+    List()
+    {
+    }
+
+    List(vector<uint32_t> values)
+    {
+        appendAll(values);
+    }
+
     void append(uint32_t item)
     {
         items.push_back(item);
     }
 
-    operator string ()
+    void appendAll(vector<uint32_t> values)
+    {
+        for(vector<uint32_t>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
+
+    Boolean includes(uint32_t item)
+    {
+        for(vector<uint32_t>::iterator it = items.begin(); it != items.end(); ++it)
+        {
+            if (item == *it)
+                return Boolean(true);
+        }
+
+        return Boolean(false);
+    }
+
+    string val()
     {
         string result = "";
-        for(vector<uint32_t>::iterator it = items.begin(); it != items.end(); ++it) {
+        for(vector<uint32_t>::iterator it = items.begin(); it != items.end(); ++it)
+        {
             if (result == "")
                 result = to_string(*it);
             else
@@ -139,12 +212,38 @@ template<> struct List<float>
 {
     vector<float> items;
 
+    List()
+    {
+    }
+
+    List(vector<float> values)
+    {
+        appendAll(values);
+    }
+
     void append(float item)
     {
         items.push_back(item);
     }
 
-    operator string ()
+    void appendAll(vector<float> values)
+    {
+        for(vector<float>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
+
+    Boolean includes(float item)
+    {
+        for(vector<float>::iterator it = items.begin(); it != items.end(); ++it)
+        {
+            if (item == *it)
+                return Boolean(true);
+        }
+
+        return Boolean(false);
+    }
+
+    string val()
     {
         string result = "";
         for(vector<float>::iterator it = items.begin(); it != items.end(); ++it)
@@ -159,12 +258,71 @@ template<> struct List<float>
     }
 };
 
+template<> struct List<string>
+{
+    vector<string> items;
+    List()
+    {
+    }
+
+    List(const string arr[], uint32_t size)
+    {
+        for (uint32_t i = 0; i < size; i++)
+            items.push_back(arr[i]);
+    }
+
+    List(vector<string> values)
+    {
+        appendAll(values);
+    }
+
+    void append(string item)
+    {
+        items.push_back(item);
+    }
+
+    void appendAll(vector<string> values)
+    {
+        for(vector<string>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
+
+    Boolean includes(string item)
+    {
+        for(vector<string>::iterator it = items.begin(); it != items.end(); ++it)
+        {
+            if (item == *it)
+                return Boolean(true);
+        }
+
+        return Boolean(false);
+    }
+
+    string val()
+    {
+        string result = "";
+        for(vector<string>::iterator it = items.begin(); it != items.end(); ++it)
+        {
+            if (result == "")
+                result = *it;
+            else
+                result += " " + *it;
+        }
+
+        return result;
+    }
+};
+
 template<typename T> struct List
 {
     vector<T> items;
-    List(vector<T> items)
+    List()
     {
-      this->items = items;
+    }
+
+    List(vector<T> values)
+    {
+        appendAll(values);
     }
 
     void append(T item)
@@ -172,7 +330,7 @@ template<typename T> struct List
         items.push_back(item);
     }
 
-    void appendAll(vector<T> items)
+    void appendAll(vector<T> values)
     {
       for (int i = 0; i < items.size(); i++) {
         this->items.push_back(items[i]);
@@ -184,15 +342,15 @@ template<typename T> struct List
       return (find(this->items.begin(), this->items.end(),item) != this->items.end());
     }
 
-    operator string ()
+    string val()
     {
         string result = "";
         for(typename vector<T>::iterator it = items.begin(); it != items.end(); ++it)
         {
             if (result == "")
-                result = (string)*it;
+                result = it->val();
             else
-                result += " " + (string)*it;
+                result += " " + it->val();
         }
 
         return result;
@@ -208,9 +366,13 @@ template<> struct MultiLineList<uint32_t>
         items.push_back(item);
     }
 
+    void appendAll(vector<uint32_t> values)
+    {
+        for(vector<uint32_t>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
 
-
-    operator string ()
+    string val()
     {
         string result = "";
         for(vector<uint32_t>::iterator it = items.begin(); it != items.end(); ++it)
@@ -229,11 +391,51 @@ template<> struct MultiLineList<float>
         items.push_back(item);
     }
 
-    operator string ()
+    void appendAll(vector<float> values)
+    {
+        for(vector<float>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
+
+    string val()
     {
         string result = "";
         for(vector<float>::iterator it = items.begin(); it != items.end(); ++it)
             result += to_string(*it) + "\n";
+
+        return result;
+    }
+};
+
+template<> struct MultiLineList<string>
+{
+    vector<string> items;
+    MultiLineList()
+    {
+    }
+
+    MultiLineList(const string arr[], uint32_t size)
+    {
+        for (uint32_t i = 0; i < size; i++)
+            items.push_back(arr[i]);
+    }
+
+    void append(string item)
+    {
+        items.push_back(item);
+    }
+
+    void appendAll(vector<string> values)
+    {
+        for(vector<string>::iterator it = values.begin(); it != values.end(); ++it)
+            items.push_back(*it);
+    }
+
+    string val()
+    {
+        string result = "";
+        for(vector<string>::iterator it = items.begin(); it != items.end(); ++it)
+            result += *it + "\n";
 
         return result;
     }
@@ -255,11 +457,11 @@ template<typename U> struct MultiLineList
       }
     }
 
-    operator string ()
+    string val()
     {
         string result = "";
         for(typename vector<U>::iterator it = items.begin(); it != items.end(); ++it)
-            result += (string)*it + "\n";
+            result += it->val() + "\n";
 
         return result;
     }
@@ -280,9 +482,26 @@ template <typename Z, typename H> struct Alternative
         this->value2 = value;
     }
 
-    operator string()
+    string val()
     {
-        return (is_first) ? (string)this->value1 : (string)this->value2;
+        string v1;
+        string v2;
+
+        if (std::is_same<Z, string>::value)
+            v1 = value1;
+        else if (std::is_same<Z, uint32_t>::value || std::is_same<Z, float>::value)
+            v1 = to_string(value1);
+        else
+            v1 = value1.val();
+
+        if (std::is_same<H, string>::value)
+            v2 = value2;
+        else if (std::is_same<H, uint32_t>::value || std::is_same<H, float>::value)
+            v2 = to_string(value2);
+        else
+            v2 = value2.val();
+
+        return (is_first) ? v1 : v2;
     }
 
     private:
