@@ -24,7 +24,7 @@ TEST_CASE("Invalid move due to existance of Ko ")
 		else
 			all = all && game.make_move(actions[i]);
 	}
-	REQUIRE(!is_game_finished(game.get_game_state()));
+	REQUIRE(!game.is_game_finished());
 	REQUIRE(all);
 	REQUIRE(actions.size() == 35);
 }
@@ -40,13 +40,12 @@ TEST_CASE ("execution of pass correctly "){
     BoardState boardState;
 	for (unsigned int i = 0; i < actions.size(); i++)
 	{  
-        
 		all = all && game.make_move(actions[i]);
         if (i == 3)
             boardState = game.get_board_state();
 	}
 	REQUIRE(all);
-	REQUIRE(!is_game_finished(game.get_game_state()));
+	REQUIRE(!game.is_game_finished());
     for (unsigned int i = 0; i < 19 ; i++)
         for (unsigned int j = 0 ; j < 19 ;j++){
             uint32_t place = BoardState::index(i, j);
@@ -57,6 +56,7 @@ TEST_CASE ("execution of pass correctly "){
 
 TEST_CASE("End of Game due to 2 Passes ")
 {
+	
 	Game game;
 	bool all = true;
 	char const* filename = "sgfFiles/endGame.sgf";
@@ -66,9 +66,10 @@ TEST_CASE("End of Game due to 2 Passes ")
 	for (unsigned int i = 0; i < actions.size(); i++)
 	{
 		all = all && game.make_move(actions[i]);
+
 	}
 	REQUIRE(all);
-	REQUIRE(is_game_finished(game.get_game_state()));
+	REQUIRE(game.is_game_finished());
 }
 
 
@@ -89,7 +90,7 @@ TEST_CASE("alternating turns between players ")
 
         all = all && game.make_move(actions[i]);
     }
-    REQUIRE(!is_game_finished(game.get_game_state()));
+    REQUIRE(!game.is_game_finished());
     REQUIRE(all);
     
 }
@@ -103,7 +104,7 @@ TEST_CASE("Check score ")
 
 TEST_CASE("Check Capture for each player")
 {
-	
+	std::ofstream myfile("out2.txt");
 	bool all = true;
 	char const* filename;
 	SGFNode* treeHead;
@@ -115,6 +116,9 @@ TEST_CASE("Check Capture for each player")
 		treeHead = readsgffile(filename);
 
 		actions = load_sgf_tree(treeHead);
+		myfile << "REEEEEEEEEEEEEEEEEEEEEEEEEM" << std ::endl;
+		myfile << game.get_game_state().players[0].number_captured_enemies << std :: endl;
+		myfile << game.get_game_state().players[1].number_captured_enemies << std:: endl;
 		for (unsigned int i = 0; i < actions.size(); i++)
 		{
 			if ((i == 6) || (i == 13) || (i == 15) || (i == 24) || (i == 34))
@@ -122,8 +126,11 @@ TEST_CASE("Check Capture for each player")
 			else
 				all = all && game.make_move(actions[i]);
 		}
-		REQUIRE(!is_game_finished(game.get_game_state()));
+		REQUIRE(!game.is_game_finished());
 		REQUIRE(all);
+		myfile << "YASSER ASHRAF SALAH"<< std::endl;
+		myfile << game.get_game_state().players[0].number_captured_enemies << std::endl;
+		myfile << game.get_game_state().players[1].number_captured_enemies << std ::endl;
 		REQUIRE(game.get_game_state().players[0].number_captured_enemies == 4);
         REQUIRE(game.get_game_state().players[1].number_captured_enemies == 4);
 	}
@@ -138,7 +145,7 @@ TEST_CASE("Check Capture for each player")
 		{
 			all = all && game.make_move(actions[i]);
 		}
-		REQUIRE(!is_game_finished(game.get_game_state()));
+		REQUIRE(!game.is_game_finished());
 		REQUIRE(all);
        
 		REQUIRE(game.get_game_state().players[0].number_captured_enemies == 3);
@@ -148,14 +155,14 @@ TEST_CASE("Check Capture for each player")
 }
 
 TEST_CASE ("Sucide"){
-    std::ofstream myfile("out.txt");
+     //std::ofstream myfile("out.txt");
     Game game;
 	bool all = true;
 	char const* filename = "sgfFiles/suicide.sgf";
 	SGFNode* treeHead = readsgffile(filename);
-	std::vector<Action> actions = load_sgf_tree(treeHead);
+	std::vector<Action>actions = load_sgf_tree(treeHead);
     bool suicide = true;
-    myfile << actions.size();
+    // myfile << actions.size();
 	for (unsigned int i = 0; i < actions.size(); i++)
 	{
         
@@ -171,16 +178,16 @@ TEST_CASE ("Sucide"){
         }
         
     }
-	REQUIRE(!is_game_finished(game.get_game_state()));
+	REQUIRE(!game.is_game_finished());
 	REQUIRE(all);
-	//REQUIRE(suicide);
+	REQUIRE(suicide);
 }
 
 
 
 
 TEST_CASE("Board moves successfully dismiss Invalid moves ")
-{
+{ 
 	Game game;
 	bool all = true;
 	char const* filename = "sgfFiles/validGame.sgf";
@@ -192,7 +199,7 @@ TEST_CASE("Board moves successfully dismiss Invalid moves ")
 		all = all && game.make_move(actions[i]);
 	}
 	REQUIRE(all);
-	REQUIRE(!is_game_finished(game.get_game_state()));
+	REQUIRE(!game.is_game_finished());
 }
 
 
@@ -208,5 +215,6 @@ TEST_CASE("Board updates")
 		Action action = {place, 1};
 		REQUIRE(game.make_move(action));
 		REQUIRE(game.get_board_state().board[place] == state.board[place]);
+		REQUIRE(!game.is_game_finished());
 	}
 }

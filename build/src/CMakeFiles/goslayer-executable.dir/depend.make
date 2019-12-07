@@ -4,6 +4,7 @@
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/controller/agent.h
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/engine/board.h
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/engine/cluster.h
+src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/engine/interface.h
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/SimpleGUI/simplegui.h
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/controller/game.h
 src/CMakeFiles/goslayer-executable.dir/main.cpp.o: ../src/engine/board.h
