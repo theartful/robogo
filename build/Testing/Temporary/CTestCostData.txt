@@ -1,0 +1,123 @@
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:test 1 0
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:End 0 0
+goslayer-unit-tests:alternating 0 0
+goslayer-unit-tests:Check 0 1
+goslayer-unit-tests:Check 0 0
+goslayer-unit-tests:TEST_CASE 0 0
+goslayer-unit-tests:Board 0 0
+goslayer-unit-tests:Board 0 1
+goslayer-unit-tests:test 1 1
+goslayer-unit-tests:Invalid move due to existance of Ko  1 0.00663996
+goslayer-unit-tests:TEST_CASE (:execution of pass correctly  1 0.008986
+goslayer-unit-tests:End of Game due to 2 Passes  1 0.00451708
+goslayer-unit-tests:alternating turns between players  1 0.00585389
+goslayer-unit-tests:Check score  1 0.0149798
+goslayer-unit-tests:Check Capture for each player 0 0
+goslayer-unit-tests:TEST_CASE (:Sucide 0 0
+goslayer-unit-tests:Board moves successfully dismiss Invalid moves  1 0.013324
+goslayer-unit-tests:Board updates 1 0.00537992
+goslayer-unit-tests:test 1 1 0.00780296
+---
+goslayer-unit-tests:Check Capture for each player
+goslayer-unit-tests:TEST_CASE (:Sucide
