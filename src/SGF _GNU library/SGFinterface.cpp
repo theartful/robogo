@@ -34,7 +34,7 @@ void get_sgf_move(SGFProperty* prop, int& x, int& y, bool& isPass)
     return;
 }
 
-void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_move, bool& isPass)
+void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t& player, bool& has_move, bool& isPass)
 {
     SGFProperty *prop = node->props;
     int x, y;
@@ -48,7 +48,7 @@ void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_mo
             case SGFAB:
             case SGFAW:
             x,y = 0;
-            player = (prop->name  == SGFB)? 1 : 2;
+            player = (prop->name  == SGFB)? 0 : 1;
             get_sgf_move(prop, x, y, isPass);
             if(isPass)
             {
@@ -56,7 +56,7 @@ void sgf_play_node(SGFNode *node, uint32_t& index, uint32_t player, bool& has_mo
                 isPass = true;
                 return;
             }
-            index = go::engine::BoardState::index(static_cast<uint32_t> (x),static_cast<uint32_t> (y));
+            index = go::engine::BoardState::index(static_cast<uint32_t> (y),static_cast<uint32_t> (x));
             has_move = true;
             break;
             default:
