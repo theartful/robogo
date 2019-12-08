@@ -18,11 +18,11 @@
 typedef websocketpp::server<websocketpp::config::asio> server;
 typedef websocketpp::connection_hdl connection_hdl;
 typedef server::message_ptr message_ptr;
-typedef websocketpp::lib::shared_ptr<websocketpp::lib::thread> thread;
+typedef websocketpp::lib::shared_ptr<websocketpp::lib::thread> server_thread;
 
 class Server
 {
-    thread m_thread;
+    server_thread m_thread;
     server s;
     bool client_connected = false;
     connection_hdl client_con;

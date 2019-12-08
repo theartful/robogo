@@ -47,16 +47,16 @@ Alternative<Vertex, string> reg_genmove(Color color);
 // Debug Commands
 MultiLineList<List<string>> showboard();
 
-string make_request(string command, vector<string> args, int id = -1);
+std::string make_request(string command, vector<string> args, int id = -1);
 std::pair<uint32_t, string> parse_response(string response);
-string take_request(string request);
+std::string take_request(string request);
 } // namespace gtp
 
-#include "AdminstrativeCommands.cpp"
-#include "SetupCommands.cpp"
-#include "CorePlayCommands.cpp"
-#include "TournamentCommands.cpp"
-#include "RegressionCommands.cpp"
-#include "DebugCommands.cpp"
+// #include "AdminstrativeCommands.cpp"
+// #include "SetupCommands.cpp"
+// #include "CorePlayCommands.cpp"
+// #include "TournamentCommands.cpp"
+// #include "RegressionCommands.cpp"
+// #include "DebugCommands.cpp"
 
 #endif
