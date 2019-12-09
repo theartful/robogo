@@ -7,4 +7,20 @@ message(${ENGINE_SRC})
 add_library(goslayer ${ENGINE_SRC} ${ENGINE_HEADERS})
 
 add_executable(goslayer-executable main.cpp)
-target_link_libraries(goslayer-executable goslayer)
+
+# use Websocketpp as depandancy
+find_package(Boost REQUIRED COMPONENTS system)
+if(NOT Boost_FOUND)
+  message(FATAL_ERROR)
+endif()
+
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
+find_package(Websocketpp)
+if(NOT Websocketpp_FOUND)
+  message(FATAL_ERROR "websocketpp library not found you can install it from here: https://github.com/zaphoyd/websocketpp.git")
+endif()
+
+target_link_libraries(goslayer-executable goslayer ${Boost_LIBRARIES})
+set_property(TARGET goslayer-executable APPEND PROPERTY INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
