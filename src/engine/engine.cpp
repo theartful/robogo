@@ -41,20 +41,18 @@ bool go::engine::is_suicide_move(
     const ClusterTable& table, const BoardState& board_state,
     const Action& action)
 {
-	bool is_suicide = true;
 	// move is not suicide if:
 	//     1. a neighbor cell is empty, or
 	//     2. a neighbor friend cluster has more than one liberty, or
 	//     3. a neighbor enemy cluster will be captured
+	if (get_empty_count(board_state, action.pos))
+		return false;
+
+	bool is_suicide = true;
 	for_each_neighbor(board_state, action.pos, [&](uint32_t neighbor) {
-		if (is_empty_cell(board_state, neighbor))
+		if (board_state.board[neighbor] == PLAYERS[action.player_index])
 		{
-			is_suicide = false;
-			return BREAK;
-		}
-		else if (board_state.board[neighbor] == PLAYERS[action.player_index])
-		{
-			if (get_cluster(table, neighbor).num_liberties > 1)
+			if (!in_atari(get_cluster(table, neighbor)))
 			{
 				is_suicide = false;
 				return BREAK;
@@ -78,13 +76,15 @@ bool go::engine::is_suicide_move(
 static uint32_t
 get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
 {
-	if (count_liberties(table, action_pos) != 1)
+	if (get_empty_count(state, action_pos) != 1)
+		return BoardState::INVALID_INDEX;
+	if (get_cluster(table, action_pos).size != 1)
 		return BoardState::INVALID_INDEX;
 
 	uint32_t num_captured_stones = 0;
 	uint32_t captured_stone_idx;
 	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
-		if (cluster.num_liberties == 1)
+		if (in_atari(cluster))
 		{
 			num_captured_stones += cluster.size;
 			captured_stone_idx = cluster.parent_idx;
@@ -95,7 +95,7 @@ get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
 	//     1. the previous move captured exactly one stone,
 	//     2. the played stone has exactly one liberty, and
 	//     3. the played stone's cluster consists only of it
-	if (get_cluster(table, action_pos).size == 1 && num_captured_stones == 1)
+	if (num_captured_stones == 1)
 		return captured_stone_idx;
 	else
 		return BoardState::INVALID_INDEX;
@@ -153,7 +153,7 @@ void go::engine::calculate_score(
 	                  // already traversed empty cell
 
 	// Traversing the board to detect any start of any territory
-	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
 		if (!search_cache.is_visited(i) && is_empty_cell(boardState, i))
 		{

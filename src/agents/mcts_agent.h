@@ -34,7 +34,8 @@ public:
 		auto state = game.get_game_state();
 
 		engine::make_move(state, action);
-		simplegui::BoardSimpleGUI::print_board(state.board_state, player_turn);
+		// simplegui::BoardSimpleGUI::print_board(state.board_state,
+		// player_turn);
 		std::cout << simplegui::BoardSimpleGUI::get_alphanumeric_position(
 		                 action.pos)
 		          << '\n';
@@ -45,8 +46,6 @@ public:
 		          << '\n';
 
 		mcts_algo.show_debugging_info();
-		std::string x;
-		std::cin >> x;
 	}
 
 private:

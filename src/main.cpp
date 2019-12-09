@@ -1,3 +1,4 @@
+// #include "SGF_GNU_library/SGFinterface.h"
 #include "SimpleGUI/simplegui.h"
 #include "agents/mcts_agent.h"
 #include "controller/game.h"

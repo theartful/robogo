@@ -58,6 +58,14 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 {
 	auto& table = game_state.cluster_table;
 	auto& board_state = game_state.board_state;
+
+	for_each_neighbor(board_state, action.pos, [&](auto idx) {
+		increment_cell_count(
+		    game_state.board_state, PLAYERS[game_state.player_turn], idx);
+		decrement_empty_count(game_state.board_state, idx);
+	});
+	board_state.num_empty--;
+
 	// obtain a list of neighbor clusters, and update liberties
 	// of enemy clusters
 	Cluster* to_merge[4];
@@ -87,7 +95,7 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 				    table.num_in_atari--;
 				    to_capture[capture_count++] = &cluster;
 			    }
-		    }			
+		    }
 	    });
 
 	Cluster* new_cluster;
@@ -128,6 +136,8 @@ static void init_single_cell_cluster(
 			cluster.num_liberties++;
 		}
 	});
+	// table.next_cell[action.pos] = action.pos;
+	// cluster.tail = action.pos;
 }
 
 static void merge_cluster_with_cell(
@@ -147,6 +157,10 @@ static void merge_cluster_with_cell(
 
 	cluster.num_liberties = cluster.liberties_map.count();
 	cluster.size++;
+
+	// table.next_cell[cluster.tail] = cell_index;
+	// table.next_cell[cell_index] = cluster.parent_idx;
+	// cluster.tail = cell_index;
 }
 
 static Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
@@ -165,6 +179,11 @@ static Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
 	for (auto it = clusters + 1; it != clusters + count; it++)
 	{
 		Cluster* to_merge = *it;
+
+		// table.next_cell[biggest->tail] = to_merge->parent_idx;
+		// table.next_cell[to_merge->tail] = biggest->parent_idx;
+		// biggest->tail = to_merge->tail;
+
 		biggest->size += to_merge->size;
 		to_merge->parent_idx = biggest->parent_idx;
 		biggest->liberties_map |= to_merge->liberties_map;
@@ -177,6 +196,7 @@ static void capture_cluster(Cluster& cluster, GameState& game_state)
 	auto& board_state = game_state.board_state;
 	auto& table = game_state.cluster_table;
 
+	board_state.num_empty += cluster.size;
 	// update player info
 	auto captured_player_idx = cluster.player;
 	auto& captured_player = game_state.players[captured_player_idx];
@@ -193,6 +213,11 @@ static void capture_cluster(Cluster& cluster, GameState& game_state)
 				    neighbor.num_liberties++;
 			    }
 		    });
+		for_each_neighbor(board_state, cell_idx, [&](uint32_t neighbor) {
+			increment_empty_count(board_state, neighbor);
+			decrement_cell_count(
+			    board_state, PLAYERS[cluster.player], neighbor);
+		});
 		board_state.board[cell_idx] = Cell::EMPTY;
 	});
 }

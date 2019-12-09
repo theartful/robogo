@@ -21,10 +21,10 @@ static inline void show_case(
     const char* case_title, const std::vector<Action>& actions_buffer,
     const GameState& game_state);
 
-PlayoutPolicy::PlayoutPolicy()
+PlayoutPolicy::PlayoutPolicy() : last_move{Action::INVALID_ACTION}
 {
 	// seed prng
-	std::array<typename PRNG::result_type, PRNG::state_size> random_data;
+	std::array<PRNG::result_type, PRNG::state_size> random_data;
 	std::random_device source;
 	std::generate(
 	    std::begin(random_data), std::end(random_data), std::ref(source));
@@ -52,27 +52,25 @@ void PlayoutPolicy::run_playout(GameState& game_state)
 	}
 }
 
-Action PlayoutPolicy::generate_move(GameState& game_state)
+Action PlayoutPolicy::generate_move(const GameState& game_state)
 {
 	Action action{Action::INVALID_ACTION, game_state.player_turn};
 	if (last_move < Action::PASS)
 	{
 		if (nearest_atari_capture(game_state))
-			action = choose_action();
-		else if (nearest_atari_defense(game_state))
-			action = choose_action();
-		else if (generate_low_lib(game_state))
-			action = choose_action();
+			action = choose_action(game_state);
+		if (is_invalid(action) && nearest_atari_defense(game_state))
+			action = choose_action(game_state);
+		if (is_invalid(action) && generate_low_lib(game_state))
+			action = choose_action(game_state);
 	}
+	if (is_invalid(action) && general_atari_capture(game_state))
+		action = choose_action(game_state);
 	if (is_invalid(action))
-	{
-		if (general_atari_capture(game_state))
-			action = choose_action();
-		if (generate_all_moves(game_state))
-			action = choose_action();
-		else if (last_move != Action::PASS)
-			action.pos = Action::PASS;
-	}
+		action = generate_random_action(game_state);
+	if (is_invalid(action) && last_move != Action::PASS)
+		action.pos = Action::PASS;
+
 	return action;
 }
 
@@ -119,13 +117,7 @@ bool PlayoutPolicy::nearest_atari_defense(const GameState& game_state)
 		if (cluster.player != game_state.player_turn || !in_atari(cluster))
 			return CONTINUE;
 		uint32_t atari_lib = get_atari_lib(cluster);
-
-		uint32_t num_empty = 0;
-		for_each_neighbor(board, atari_lib, [&](uint32_t neighbor) {
-			if (is_empty_cell(board, neighbor))
-				num_empty++;
-		});
-		if (num_empty > 1)
+		if (get_empty_count(board, atari_lib) > 1)
 		{
 			add_action(atari_lib, game_state);
 			return CONTINUE;
@@ -183,14 +175,35 @@ bool PlayoutPolicy::generate_low_lib(const GameState& state)
 	return !actions_buffer.empty();
 }
 
-bool PlayoutPolicy::generate_all_moves(const GameState& game_state)
+Action PlayoutPolicy::generate_random_action(const GameState& state)
 {
-	for (uint32_t pos = 0; pos < BoardState::MAX_NUM_CELLS; pos++)
+	auto& board = state.board_state;
+	Action action{Action::INVALID_ACTION, state.player_turn};
+
+	using dist_range = decltype(dist)::param_type;
+	auto random_idx = dist(
+	    prng, dist_range{BoardState::BOARD_BEGIN, BoardState::BOARD_END - 1});
+
+	for (uint32_t pos = random_idx; pos < BoardState::BOARD_END; pos++)
 	{
-		if (is_empty_cell(game_state.board_state, pos))
-			add_action(pos, game_state);
+		if (is_empty_cell(board, pos))
+		{
+			action.pos = pos;
+			if (is_acceptable(action, state))
+				return action;
+		}
 	}
-	return !actions_buffer.empty();
+	for (uint32_t pos = BoardState::BOARD_BEGIN; pos < random_idx; pos++)
+	{
+		if (is_empty_cell(board, pos))
+		{
+			action.pos = pos;
+			if (is_acceptable(action, state))
+				return action;
+		}
+	}
+	action.pos = Action::INVALID_ACTION;
+	return action;
 }
 
 void PlayoutPolicy::play_good_libs(
@@ -237,8 +250,7 @@ bool PlayoutPolicy::gains_liberties(
 void PlayoutPolicy::add_action(uint32_t pos, const GameState& state)
 {
 	Action action{pos, state.player_turn};
-	if (is_acceptable(action, state))
-		actions_buffer.push_back(action);
+	actions_buffer.push_back(action);
 }
 
 bool PlayoutPolicy::is_acceptable(const Action& action, const GameState& state)
@@ -247,20 +259,62 @@ bool PlayoutPolicy::is_acceptable(const Action& action, const GameState& state)
 	auto& table = state.cluster_table;
 	if (is_ko(board, action))
 		return false;
-	else if (is_surrounded(board, action.pos))
+	else if (will_be_surrounded(state, action.pos))
 		return false;
 	else if (is_suicide_move(table, board, action))
 		return false;
-	return true;
+	else
+		return true;
 }
 
-Action PlayoutPolicy::choose_action()
+Action PlayoutPolicy::choose_action(const GameState& state)
 {
 	using dist_range = decltype(dist)::param_type;
 	auto random_idx = dist(prng, dist_range{0, actions_buffer.size() - 1});
-	auto random_action = actions_buffer[random_idx];
-	actions_buffer.clear();
-	return random_action;
+	while (!actions_buffer.empty())
+	{
+		auto random_action = actions_buffer[random_idx];
+		if (is_acceptable(random_action, state))
+		{
+			actions_buffer.clear();
+			return random_action;
+		}
+		actions_buffer[random_idx] = actions_buffer.back();
+		actions_buffer.pop_back();
+	}
+	return Action{Action::INVALID_ACTION, state.player_turn};
+}
+
+bool PlayoutPolicy::is_self_atari(const GameState& game_state, uint32_t pos)
+{
+	auto& table = game_state.cluster_table;
+	auto& board = game_state.board_state;
+
+	std::bitset<BoardState::MAX_NUM_CELLS> lib_map;
+
+	if (get_empty_count(board, pos) > 1)
+		return false;
+	else if (get_empty_count(board, pos) == 1)
+	{
+		for_each_neighbor(board, pos, [&](uint32_t neighbor) {
+			if (is_empty_cell(board, neighbor))
+			{
+				lib_map.set(neighbor);
+				return BREAK;
+			}
+			return CONTINUE;
+		});
+	}
+
+	uint32_t capture = 0;
+	for_each_neighbor_cluster(table, board, pos, [&](auto& cluster) {
+		if (cluster.player == game_state.player_turn)
+			lib_map |= cluster.liberties_map;
+		else if (in_atari(cluster))
+			capture++;
+	});
+
+	return (lib_map.count() + capture) <= 2;
 }
 
 static inline void show_case(

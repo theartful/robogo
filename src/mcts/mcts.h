@@ -14,16 +14,29 @@ namespace mcts
 {
 
 using NodeId = size_t;
-using ActionChildPair = std::pair<engine::Action, NodeId>;
 
 constexpr NodeId INVALID_NODE_ID = std::numeric_limits<NodeId>::max();
 
+struct Edge
+{
+	Edge(const engine::Action& action_, NodeId node_id_)
+	    : action{action_}, node_id{node_id_}
+	{
+	}
+	engine::Action action;
+	NodeId node_id;
+	uint32_t count;
+};
+
 struct Node
 {
-	Node();
+	Node(uint32_t num_visits_ = 0, uint32_t num_wins_ = 0)
+	    : num_visits{num_visits_}, num_wins{num_wins_}
+	{
+	}
 	uint32_t num_visits;
 	uint32_t num_wins;
-	std::vector<ActionChildPair> children;
+	std::vector<Edge> children;
 };
 
 struct Trajectory
@@ -80,15 +93,16 @@ public:
 private:
 	NodeId allocate_node();
 	NodeId allocate_root_node();
-	ActionChildPair expand_node(Node&, const engine::GameState&);
-	ActionChildPair expand_node(NodeId, const engine::GameState&);
+	Edge expand_node(Node&, const engine::GameState&);
+	Edge expand_node(NodeId, const engine::GameState&);
 	Node& get_node(NodeId);
 	bool is_expanded(const Node&);
 	bool is_expanded(NodeId);
+	float calculate_uct(const Node&, const Node&);
 
 	// UCT
-	ActionChildPair select_best_child(const Node&);
-	ActionChildPair select_best_child(NodeId);
+	const Edge& select_best_child(const Node&);
+	const Edge& select_best_child(NodeId);
 
 private:
 	static constexpr size_t MAX_NODES_SIZE_IN_BYTES =
@@ -96,6 +110,7 @@ private:
 	static constexpr size_t MAX_NUM_NODES =
 	    MAX_NODES_SIZE_IN_BYTES / sizeof(Node);
 	static constexpr size_t NUM_REUSE_LEVELS = 2;
+	static constexpr uint32_t EXPANSION_THRESHOLD = 1;
 
 	PRNG prng;
 	std::vector<Node> allocated_nodes;
