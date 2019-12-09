@@ -31,6 +31,7 @@ private:
     char mode;
     Color color;
     Agent* agent;
+    uint32_t id;
     const uint32_t BOARD_SIZE = 19;
 
     bool wait_response = false;

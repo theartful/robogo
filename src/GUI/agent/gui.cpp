@@ -21,6 +21,7 @@ BoardGUI::BoardGUI(Server* s, char m, std::string c, Agent* a)
     server = s;
     to_lower(c);
     color = Color(c);
+    id = (color.val() == "b") ? 1u : 2u;
     agent = a;
     mode = (m == 'h' || m == 'H') ? 'h' : 'a';
 
@@ -33,23 +34,21 @@ uint32_t BoardGUI::generate_move(const Game& game)
 {
     if (mode == 'a')
     {
-        uint32_t move = agent->generate_move(game);
-        uint32_t row = BOARD_SIZE - (move / BOARD_SIZE);
-        uint32_t column = (move % BOARD_SIZE) + 1;
-        Move m = Move(color, Vertex(row, column));
-        
+        uint32_t agent_move = agent->generate_move(game);
+        uint32_t row = BOARD_SIZE - (agent_move / BOARD_SIZE);
+        uint32_t column = (agent_move % BOARD_SIZE) + 1;
+        Move move = Move(color, Vertex(row, column));
+
         std::vector<std::string> args;
-        args.push_back(m.val());
-        int id = (color.val() == "w") ? 1 : 2;
+        args.push_back(move.val());
         server->send(gtp::make_request("play", args, id));
 
-        return move;
+        return agent_move;
     }
     else
     {
         std::vector<std::string> args;
         args.push_back(color.val());
-        int id = (color.val() == "w") ? 1 : 2;
         server->send(gtp::make_request("genmove", args, id));
         wait_response = true;
 
@@ -59,12 +58,12 @@ uint32_t BoardGUI::generate_move(const Game& game)
         if (response == "resign")
             return 0;
 
-        Vertex v = Vertex(response);
+        Vertex vertex = Vertex(response);
         uint32_t row = 0;
         uint32_t column = 0;
-        Vertex::indecies(v, row, column);
-
-        return engine::BoardState::index(row-1, column-1);
+        Vertex::indices(vertex, row, column);
+        
+        return engine::BoardState::index(BOARD_SIZE-row, column-1);
     }
 }
 
@@ -78,7 +77,11 @@ void BoardGUI::response_handler(string res)
     if (!wait_response)
         return;
 
-    res = gtp::parse_response(res).second;
+    std::pair<uint32_t, std::string> parsed_response = gtp::parse_response(res);
+    if (parsed_response.first != id)
+        return;
+
+    res = parsed_response.second;
     response = res;
     wait_response = false;
     lock_gen_move.notify_one();

@@ -125,7 +125,7 @@ struct Vertex
 		this->vertex = column_letter + row_str;
 	}
 
-	static void indecies(const Vertex& vertex, uint32_t& row, uint32_t& column)
+	static void indices(const Vertex& vertex, uint32_t& row, uint32_t& column)
 	{
 		std::stringstream row_stream;
 		row_stream << vertex.vertex.substr(1);

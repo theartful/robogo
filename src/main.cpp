@@ -41,8 +41,8 @@ int main(int argc, const char * argv[])
 	Agent* simplegui_agent1 = (mode1 == 'a' || mode1 == 'A') ? new BoardSimpleGUI() : NULL;
 	Agent* simplegui_agent2 = (mode2 == 'a' || mode2 == 'A') ? new BoardSimpleGUI() : NULL;
 
-	auto agent1 = std::make_shared<BoardGUI>(s, mode1, "white", simplegui_agent1);
-	auto agent2 = std::make_shared<BoardGUI>(s, mode2, "black", simplegui_agent2);
+	auto agent1 = std::make_shared<BoardGUI>(s, mode1, "black", simplegui_agent1);
+	auto agent2 = std::make_shared<BoardGUI>(s, mode2, "white", simplegui_agent2);
 
 	agent1->set_player_idx(0);
 	agent2->set_player_idx(1);

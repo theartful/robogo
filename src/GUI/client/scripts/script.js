@@ -8,7 +8,7 @@ const arraySize = 18;
 const endOffset = canvas.width - startOffset;
 const step = (canvas.width - 2 * startOffset) / arraySize;
 
-let currentPlayer = "w";
+let currentPlayer = "b";
 let selectedPiece = null;
 let allowMove = false;
 let pieceLocation = { location: [] };
@@ -33,13 +33,13 @@ const drawBoard = () => {
     }
 };
 
-const drawSelect = (ctx, xAxis, yAxis) => {
-    ctx.beginPath();
-    ctx.arc(xAxis + step / 2, yAxis + step / 2, step / 2, 0, 2 * Math.PI);
-    ctx.strokeStyle = "green";
-    ctx.lineWidth = 5;
-    ctx.stroke();
-};
+// const drawSelect = (ctx, xAxis, yAxis) => {
+//     ctx.beginPath();
+//     ctx.arc(xAxis + step / 2, yAxis + step / 2, step / 2, 0, 2 * Math.PI);
+//     ctx.strokeStyle = "green";
+//     ctx.lineWidth = 5;
+//     ctx.stroke();
+// };
 
 const drawAllPieces = () => {
     let row = 0;
@@ -90,35 +90,35 @@ const clearSelected = () => {
     });
 };
 
-const deselectPiece = (xIndex, yIndex) => {
-    board[xIndex][yIndex].selected = false;
-    selectedPiece = null;
-    draw(ctx, canvas);
-    return;
-};
+// const deselectPiece = (xIndex, yIndex) => {
+//     board[xIndex][yIndex].selected = false;
+//     selectedPiece = null;
+//     draw(ctx, canvas);
+//     return;
+// };
 
-const selectPiece = (xIndex, yIndex) => {
-    board[selectedPiece.xIndex][selectedPiece.yIndex] = null;
-    board[xIndex][yIndex] = {
-        color: selectedPiece.color,
-        selected: false
-    };
-    selectedPiece = null;
-    currentPlayer = changePlayer(currentPlayer);
-    draw(ctx, canvas);
-    return;
-};
+// const selectPiece = (xIndex, yIndex) => {
+//     board[selectedPiece.xIndex][selectedPiece.yIndex] = null;
+//     board[xIndex][yIndex] = {
+//         color: selectedPiece.color,
+//         selected: false
+//     };
+//     selectedPiece = null;
+//     currentPlayer = changePlayer(currentPlayer);
+//     draw(ctx, canvas);
+//     return;
+// };
 
-const movePiece = (xIndex, yIndex) => {
-    clearSelected();
-    board[xIndex][yIndex] = {
-        color: currentPlayer,
-        selected: true
-    };
-    selectedPiece = { xIndex: xIndex, yIndex: yIndex, color: currentPlayer };
-    draw(ctx, canvas);
-    return;
-};
+// const movePiece = (xIndex, yIndex) => {
+//     clearSelected();
+//     board[xIndex][yIndex] = {
+//         color: currentPlayer,
+//         selected: true
+//     };
+//     selectedPiece = { xIndex: xIndex, yIndex: yIndex, color: currentPlayer };
+//     draw(ctx, canvas);
+//     return;
+// };
 
 const addPiece = (xIndex, yIndex, color=currentPlayer) => {
     board[xIndex][yIndex] = { color: color, selected: false };
@@ -134,15 +134,13 @@ $("canvas#go-canvas").on("click", function (event) {
         if (xIndex < 0 || xIndex > arraySize || yIndex < 0 || yIndex > arraySize) {
             return;
         }
-    
-        if (selectedPiece) {
+        else if (selectedPiece) {
             if (selectedPiece.xIndex == xIndex && selectedPiece.yIndex == yIndex) {
                 return deselectPiece(xIndex, yIndex);
             }
             return selectPiece(xIndex, yIndex);
         }
-    
-        if (board[xIndex][yIndex]) {
+        else if (board[xIndex][yIndex]) {
             if (board[xIndex][yIndex].color == currentPlayer) {
                 return movePiece(xIndex, yIndex);
             } else {
@@ -154,9 +152,10 @@ $("canvas#go-canvas").on("click", function (event) {
                 return;
             }
         }
-
-        pieceLocation.location = [xIndex, yIndex];
-        return addPiece(xIndex, yIndex);
+        else {
+            pieceLocation.location = [xIndex, yIndex];
+            return addPiece(xIndex, yIndex);
+        }
     }
 });
 

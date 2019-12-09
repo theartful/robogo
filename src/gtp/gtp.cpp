@@ -12,18 +12,11 @@ using namespace gtp;
  * @param   {Array}     args    Array of objects that contains command arguments
  * @returns {string}    request string containing required request
  */
-string gtp::make_request(string command, vector<string> args, int id)
+string gtp::make_request(string command, vector<string> args, uint32_t id)
 {
 	// Validate Command
 	if (gtp::known_command(command).val() == "false")
-	{
-		return "Invalid Argument: command doesn't exist";
-	}
-
-	// Validate id
-	if (id <= 0 && id != -1)
-		throw std::invalid_argument(
-		    "Invalid Argument: id must be a positive integer");
+		throw std::invalid_argument("Invalid Argument: command doesn't exist");
 
 	// Validate arguments
 	int required_args = commands_args.at(command);

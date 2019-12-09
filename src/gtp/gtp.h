@@ -79,7 +79,7 @@ Alternative<Vertex, string> reg_genmove(Color color);
 // Debug Commands
 MultiLineList<List<string>> showboard();
 
-std::string make_request(string command, vector<string> args, int id = -1);
+std::string make_request(string command, vector<string> args, uint32_t id);
 std::pair<uint32_t, string> parse_response(string response);
 std::string take_request(string request);
 } // namespace gtp

@@ -22,6 +22,7 @@ typedef websocketpp::lib::shared_ptr<websocketpp::lib::thread> server_thread;
 
 class Server
 {
+    static constexpr uint32_t DEFAULT_PORT = 9002;
     server_thread m_thread;
     server s;
     bool client_connected = false;
@@ -33,13 +34,13 @@ class Server
     void on_close(connection_hdl hdl);
     void on_message(connection_hdl hdl, message_ptr msg);
 public:
-    Server(uint32_t port=9002);
+    Server(uint32_t port=DEFAULT_PORT);
     void set_on_open_callback(std::function<void()> cb);
     void add_message_handler(std::function<void(std::string)> handler);
     bool has_client();
     bool send(std::string message);
 
-    static Server* setup(uint32_t port=9002);
+    static Server* setup(uint32_t port=DEFAULT_PORT);
     ~Server();
 };
 
