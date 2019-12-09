@@ -3,33 +3,9 @@
 #include <iterator>
 #include <sstream>
 #include <stdexcept>
-using namespace gtp;
 #include <functional>
-#include <map>
-using namespace std;
+using namespace gtp;
 
-map<string, int> commands_args = {{"protocol_version", 0},
-                                  {"name", 0},
-                                  {"version", 0},
-                                  {"known_command", 1},
-                                  {"list_commands", 0},
-                                  {"quit", 0},
-                                  {"boardsize", 1},
-                                  {"clear_board", 0},
-                                  {"komi", 1},
-                                  {"fixed_handicap", 1},
-                                  {"place_free_handicap", 1},
-                                  {"set_free_handicap", 1},
-                                  {"play", 2},
-                                  {"genmove", 1},
-                                  {"undo", 0},
-                                  {"time_settings", 3},
-                                  {"time_left", 3},
-                                  {"final_score", 0},
-                                  {"final_status_list", 1},
-                                  {"loadsgf", 2},
-                                  {"reg_genmove", 1},
-                                  {"showboard", 0}};
 
 /**
  * @param   {string}    command Command Name
@@ -38,7 +14,6 @@ map<string, int> commands_args = {{"protocol_version", 0},
  */
 string gtp::make_request(string command, vector<string> args, int id)
 {
-
 	// Validate Command
 	if (gtp::known_command(command).val() == "false")
 	{
@@ -51,7 +26,7 @@ string gtp::make_request(string command, vector<string> args, int id)
 		    "Invalid Argument: id must be a positive integer");
 
 	// Validate arguments
-	int required_args = commands_args[command];
+	int required_args = commands_args.at(command);
 	int given_args = args.size();
 	if (given_args != required_args)
 	{
@@ -162,7 +137,7 @@ string gtp::take_request(string request)
 	}
 
 	// Validate arguments
-	int required_args = commands_args[command];
+	int required_args = commands_args.at(command);
 	int given_args = args.size();
 	if (given_args != required_args)
 	{
@@ -256,14 +231,3 @@ string gtp::take_request(string request)
 
 	return "";
 }
-// int main()
-// {
-// 	// vector<string> args = {"w","a15"};
-// 	// vector<string> args ;
-// 	// string request = makeRequest("protocol_version",args);
-// 	string request = "showboard";
-// 	string result = takeRequest(request);
-// 	// cout<<request<<endl;
-// 	cout << result << endl;
-// 	return 0;
-// }

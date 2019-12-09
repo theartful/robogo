@@ -757,7 +757,6 @@ let takeRequest = (request) => {
     let args = parsedRequest.args;
     let errorPrefix = (id !== null) ? `?${id}` : "?";
     let responsePrefix = (id !== null) ? `=${id}` : "=";
-    console.log("command: " + command);
     if (!commandsList.includes(command))
         return `${errorPrefix} command doesn't exist\n\n`;
     
@@ -792,7 +791,7 @@ socket.onopen = function (e) {
 };
 
 socket.onmessage = function (event) {
-    // alert(`[message] Data received from server: ${event.data}`);
+    alert(`[message] Data received from server: ${event.data}`);
     let response = takeRequest(event.data);
     if (response !== "break")
         socket.send(response);

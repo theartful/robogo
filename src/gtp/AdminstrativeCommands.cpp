@@ -1,54 +1,6 @@
 #include "gtp.h"
 using namespace gtp;
 
-const string gtp::commands[] = {"protocol_version",
-                           "name",
-                           "version",
-                           "known_command",
-                           "list_commands",
-                           "quit",
-                           "boardsize",
-                           "clear_board",
-                           "komi",
-                           "fixed_handicap",
-                           "place_free_handicap",
-                           "set_free_handicap",
-                           "play",
-                           "genmove",
-                           "undo",
-                           "time_settings",
-                           "time_left",
-                           "final_score",
-                           "final_status_list",
-                           "loadsgf",
-                           "reg_genmove",
-                           "showboard"};
-List<string> gtp::commands_list(gtp::commands, 22u);
-
-// List<string> commandsList= vector<string>{
-//   "protocol_version",
-//   "name",
-//   "version",
-//   "known_command",
-//   "list_commands",
-//   "quit",
-//   "boardsize",
-//   "clear_board",
-//   "komi",
-//   "fixed_handicap",
-//   "place_free_handicap",
-//   "set_free_handicap",
-//   "play",
-//   "genmove",
-//   "undo",
-//   "time_settings",
-//   "time_left",
-//   "final_score",
-//   "final_status_list",
-//   "loadsgf",
-//   "reg_genmove",
-//   "showboard"
-//  };
 // Adminstrative Commands
 /**
  * @param   none
@@ -65,8 +17,8 @@ uint32_t gtp::protocol_version()
  */
 List<string> gtp::name()
 {
-  List<string> name({"Go","Slayer"});
-  return name;
+	List<string> name({"Go", "Slayer"});
+	return name;
 }
 
 /**
@@ -75,8 +27,8 @@ List<string> gtp::name()
  */
 List<string> gtp::version()
 {
-  List<string> version({"1.0.0"});
-  return version;
+	List<string> version({"1.0.0"});
+	return version;
 }
 
 /**
@@ -85,10 +37,10 @@ List<string> gtp::version()
  * @returns {Boolean}   known           "true" if command is known, "false"
  * otherwise
  */
-
 Boolean gtp::known_command(string command_name)
 {
-	return Boolean(gtp::commands_list.includes(command_name));
+    bool known = std::find(std::begin(gtp::commands), std::end(gtp::commands), command_name) != std::end(gtp::commands);
+	return Boolean(known);
 }
 
 /**
@@ -97,9 +49,6 @@ Boolean gtp::known_command(string command_name)
  */
 MultiLineList<string> gtp::list_commands()
 {
-  // MultiLineList<string> list ;
-  // list.appendAll(commandsList.items);
-  // return list;
 	MultiLineList<string> list(gtp::commands, 22u);
 	return list;
 }
@@ -108,7 +57,6 @@ MultiLineList<string> gtp::list_commands()
  * @param   none
  * @returns {void}
  */
-
 void gtp::quit()
 {
 }

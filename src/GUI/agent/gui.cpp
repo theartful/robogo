@@ -34,7 +34,10 @@ uint32_t BoardGUI::generate_move(const Game& game)
     if (mode == 'a')
     {
         uint32_t move = agent->generate_move(game);
-        Move m = Move(color, Vertex(move / BOARD_SIZE, move % BOARD_SIZE));
+        uint32_t row = BOARD_SIZE - (move / BOARD_SIZE);
+        uint32_t column = (move % BOARD_SIZE) + 1;
+        Move m = Move(color, Vertex(row, column));
+        
         std::vector<std::string> args;
         args.push_back(m.val());
         int id = (color.val() == "w") ? 1 : 2;
@@ -61,7 +64,7 @@ uint32_t BoardGUI::generate_move(const Game& game)
         uint32_t column = 0;
         Vertex::indecies(v, row, column);
 
-        return row * BOARD_SIZE + column;
+        return engine::BoardState::index(row-1, column-1);
     }
 }
 

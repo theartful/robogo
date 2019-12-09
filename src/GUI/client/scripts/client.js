@@ -24,9 +24,3 @@ socket.onclose = function (event) {
 socket.onerror = function (error) {
     alert(`[error] ${error.message}`);
 };
-
-// sendMessage = function() {
-//     let message = document.getElementById("message").value;
-//     alert("sending message to server!!!");
-//     socket.send(message);
-// }

@@ -63,7 +63,7 @@ struct Color
 		      value == "black"))
 			throw invalid_argument("invalid color value");
 
-		this->color = value;
+		this->color = (value == "white" || value == "w") ? "w" : "b";
 	}
 
 	string val()
@@ -118,10 +118,11 @@ struct Vertex
 			throw out_of_range("invalid vertex value: protocol doesn't support "
 			                   "boards larger than 25x25");
 
-		char column_letter = (column < 105) ? column + 96 : column + 97;
+		char column_letter = (column < 9) ? column + 96 : column + 97;
 		string row_str = (to_string(row).length() == 1) ? "0" + to_string(row)
 		                                                : to_string(row);
-		this->vertex = to_string(column_letter) + row_str;
+
+		this->vertex = column_letter + row_str;
 	}
 
 	static void indecies(const Vertex& vertex, uint32_t& row, uint32_t& column)
@@ -157,7 +158,7 @@ struct Move
 
 	Move(Color color, Vertex vertex)
 	{
-		this->move = color.val() + vertex.val();
+		this->move = color.val() + " " + vertex.val();
 	}
 
 	string val()
