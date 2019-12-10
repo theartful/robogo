@@ -18,5 +18,13 @@ int main()
 	agent2->set_player_idx(1);
 	game.register_agent(agent, 0);
 	game.register_agent(agent2, 1);
+	std::cout << "Do you want to initialize the game? Y/N ";
+	char choice;
+	std::cin >> choice;
+	if (choice == 'Y' || choice == 'y') {
+		GameState game_state = game.get_game_state();
+		auto actions = agent->read_moves(game_state);
+		game.force_moves(actions);
+	}
 	game.main_loop();
 }

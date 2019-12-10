@@ -104,6 +104,29 @@ void BoardSimpleGUI::read_position(uint32_t& x, uint32_t& y)
 	get_index(column, row, x, y);
 }
 
+std::vector<go::engine::Action> BoardSimpleGUI::read_moves(const go::engine::GameState& game_state)
+{
+	std::cout << "How many moves are there? ";
+	uint32_t num_moves, x, y;
+	std::cin >> num_moves;
+	std::cout << "Enter all moves played.\n";
+	std::vector<Action> actions;
+	for (uint32_t i = 0; i < num_moves; i++) 
+	{
+		this->read_position(x, y);
+		if (x == UINT32_MAX && y == UINT32_MAX) // pass
+			break;
+		else if (x == UINT32_MAX) // invalid input
+			break;
+		else
+		{
+			Action action = { BoardState::index(x, y), (i + game_state.player_turn) %2 };
+			actions.push_back(action);
+		}
+	}
+	return actions;
+}
+
 void BoardSimpleGUI::to_lower(std::string& str)
 {
 	for_each(str.begin(), str.end(), [](char& c) { c = std::tolower(c); });

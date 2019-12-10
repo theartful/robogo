@@ -138,6 +138,13 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 	game_state.move_history.push_back(action);
 }
 
+void go::engine::force_moves(GameState& game_state, const std::vector<Action>& actions) {
+	// Can be further optimized & refactored.
+	for (auto& action : actions) {
+		force_move(game_state, action);
+	}
+}
+
 void go::engine::calculate_score(
     const BoardState& boardState, Player& black_player, Player& white_player)
 {

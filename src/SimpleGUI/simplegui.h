@@ -29,6 +29,8 @@ public:
 
 	// utility function to get symbol on board
 	static char get_board_symbol(go::engine::Cell cell, uint32_t x, uint32_t y);
+	
+	std::vector<go::engine::Action> read_moves(const go::engine::GameState& game_state);
 
 private:
 	static const uint32_t BOARD_SIZE = 19;
@@ -57,7 +59,7 @@ private:
 	static inline bool is_special(uint32_t idx);
 
 	// transforms string into lower case
-	void to_lower(std::string& str);
+	static void to_lower(std::string& str);
 };
 
 } // namespace simplegui

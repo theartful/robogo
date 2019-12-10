@@ -105,6 +105,8 @@ public:
 	const engine::BoardState& get_board_state() const;
 	const engine::ClusterTable& get_cluster_table() const;
 
+	void force_moves(const std::vector<engine::Action>& actions);
+
 private:
 	engine::GameState game_state;
 	std::array<std::shared_ptr<Agent>, 2> agents;
