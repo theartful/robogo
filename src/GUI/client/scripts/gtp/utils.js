@@ -123,3 +123,30 @@ let isInt = (num) => {
 
 	return false;
 };
+
+/**
+ * 
+ * @param   {number}    num     Variable to check if it's integer or not
+ * @returns {Boolean}   isInt   "true" if num is an integer, "false" otherwise
+ */
+let matchBoards = (map1, map2) => {
+	if (map1.length !== map2.length)
+		return false;
+
+    for (let i = 0; i < map1.length; i++) {
+		if (map1[i].length !== map2[i].length)
+			return false;
+		for (let j = 0; j < map1[i].length; j++) {
+			if (map1[i][j] == null && map2[i][j] == null)
+				continue;
+			
+			if (map1[i][j] == null || map2[i][j] == null)
+				return false;
+			
+			if (map1[i][j].color !== map2[i][j].color)
+				return false;
+		}
+	}
+
+	return true;
+};

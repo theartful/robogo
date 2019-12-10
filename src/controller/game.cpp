@@ -9,6 +9,12 @@ Game::Game()
 {
 }
 
+void Game::set_make_move_callback(std::function<void()> callback)
+{
+	if (callback != NULL)
+		make_move_callback = callback;
+}
+
 bool Game::register_agent(std::shared_ptr<Agent> agent, uint32_t player_idx)
 {
 	if (player_idx > 1)
@@ -86,6 +92,9 @@ void Game::main_loop()
 			if (!engine::make_move(cluster_table, game_state, agent_action))
 				DEBUG_PRINT("INVALID MOVE\n!");
 		}
+
+		if (make_move_callback != NULL)
+			make_move_callback();
 	}
 	engine::calculate_score(
 	    game_state.board_state, game_state.players[0], game_state.players[1]);

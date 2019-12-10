@@ -199,18 +199,6 @@ string gtp::take_request(string request)
 	{
 		return response + final_score() + "\n\n";
 	}
-	else if (command == "loadsgf")
-	{
-		try
-		{
-			loadsgf(args[0], uint32_t(stoi(args[1])));
-			return response + "LoadSGF" + "\n\n";
-		}
-		catch (std::invalid_argument& e)
-		{
-			return "?" + id_ + "Invalid arguments\n\n";
-		}
-	}
 	else if (command == "reg_genmove")
 	{
 		// Same problem as genmove

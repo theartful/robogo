@@ -1,8 +1,11 @@
 #include "Server.h"
 #include <mutex>
+#include <vector>
 #include <condition_variable>
+#include "engine/board.h"
+#include "gtp/gtp.h"
 
-Server* Server::setup(uint32_t port)
+Server* Server::setup(go::Game& game, uint32_t port)
 {
     std::condition_variable cv;
     auto unlock = [&cv]()
@@ -17,7 +20,39 @@ Server* Server::setup(uint32_t port)
     std::unique_lock<std::mutex> lk(m);
     cv.wait(lk, [s]{return s->has_client();});
 
+    game.set_make_move_callback(std::bind(&Server::send_board, s, &game));
+
     return s;
+}
+
+void Server::send_board(go::Game* game)
+{
+    uint32_t size = go::engine::BoardState::MAX_BOARD_SIZE * go::engine::BoardState::MAX_BOARD_SIZE;
+    std::string board_str(size, '.');
+    
+    uint32_t i = 0;
+    auto board = game->get_board_state().board;
+    for(const auto& cell: board)
+    {
+        switch (cell)
+        {
+            case go::engine::Cell::EMPTY:
+                board_str[i++] = '.';
+                break;
+            case go::engine::Cell::BLACK:
+                board_str[i++] = 'b';
+                break;
+            case go::engine::Cell::WHITE:
+                board_str[i++] = 'w';
+                break;
+            default:
+                break;
+        }
+    }
+
+    std::vector<std::string> args;
+    args.push_back(board_str);
+    send(gtp::make_request("setboard", args, 0));
 }
 
 Server::Server(uint32_t port)

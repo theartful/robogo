@@ -327,6 +327,33 @@ let isInt = (num) => {
 
 	return false;
 };
+
+/**
+ * 
+ * @param   {number}    num     Variable to check if it's integer or not
+ * @returns {Boolean}   isInt   "true" if num is an integer, "false" otherwise
+ */
+let matchBoards = (map1, map2) => {
+	if (map1.length !== map2.length)
+		return false;
+
+    for (let i = 0; i < map1.length; i++) {
+		if (map1[i].length !== map2[i].length)
+			return false;
+		for (let j = 0; j < map1[i].length; j++) {
+			if (map1[i][j] == null && map2[i][j] == null)
+				continue;
+			
+			if (map1[i][j] == null || map2[i][j] == null)
+				return false;
+			
+			if (map1[i][j].color !== map2[i][j].color)
+				return false;
+		}
+	}
+
+	return true;
+};
 const commandsList = [
     "protocol_version",
     "name",
@@ -349,7 +376,8 @@ const commandsList = [
     "final_status_list",
     "loadsgf",
     "reg_genmove",
-    "showboard"
+    "showboard",
+    "setboard"
 ];
 
 // Adminstrative Commands
@@ -509,6 +537,33 @@ let play = (move) => {
     let row = arraySize - (indecies.row - 1);
     let column = indecies.column - 1;
     addPiece(column, row, color);
+}
+
+/**
+ * @param   {Board}  board  a board (Color and vertex) to play
+ * @returns {void}
+ */
+let setboard = (newBoard) => {
+    let tempBoard = new Array(19)
+    .fill(null)
+    .map(() => new Array(19).fill(null));
+
+    for (let i = 0; i < 19; i++) {
+        for (let j = 0; j < 19; j++) {
+            let color = (newBoard[i*19+j] === ".") ? null : newBoard[i*19+j];
+            tempBoard[j][i] = { color: color, selected: false };
+        }
+    }
+
+    if (matchBoards(tempBoard, board)) {
+        alert("invalid move!!!");
+        return;
+    }
+
+    board = tempBoard;
+    changePlayer(currentPlayer);
+    currentPlayer = (currentPlayer == "w") ? "b" : "w";
+    draw(ctx, canvas);
 }
 
 let genmoveId = 0;
@@ -678,7 +733,8 @@ let commands = {
     final_status_list: final_status_list,
     loadsgf: loadsgf,
     reg_genmove: reg_genmove,
-    showboard: showboard
+    showboard: showboard,
+    setboard: setboard,
 }
 
 /**

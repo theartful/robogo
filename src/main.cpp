@@ -37,7 +37,7 @@ int main(int argc, const char * argv[])
 	}
 
 	Game game;
-	Server* s = Server::setup();
+	Server* s = Server::setup(game);
 	Agent* simplegui_agent1 = (mode1 == 'a' || mode1 == 'A') ? new BoardSimpleGUI() : NULL;
 	Agent* simplegui_agent2 = (mode2 == 'a' || mode2 == 'A') ? new BoardSimpleGUI() : NULL;
 

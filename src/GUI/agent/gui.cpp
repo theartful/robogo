@@ -33,18 +33,7 @@ BoardGUI::BoardGUI(Server* s, char m, std::string c, Agent* a)
 uint32_t BoardGUI::generate_move(const Game& game)
 {
     if (mode == 'a')
-    {
-        uint32_t agent_move = agent->generate_move(game);
-        uint32_t row = BOARD_SIZE - (agent_move / BOARD_SIZE);
-        uint32_t column = (agent_move % BOARD_SIZE) + 1;
-        Move move = Move(color, Vertex(row, column));
-
-        std::vector<std::string> args;
-        args.push_back(move.val());
-        server->send(gtp::make_request("play", args, id));
-
-        return agent_move;
-    }
+        return agent->generate_move(game);
     else
     {
         std::vector<std::string> args;
@@ -55,8 +44,8 @@ uint32_t BoardGUI::generate_move(const Game& game)
         std::mutex m;
         std::unique_lock<std::mutex> lk(m);
         lock_gen_move.wait(lk, [this]{return !this->waiting();});
-        if (response == "resign")
-            return 0;
+        if (response == "pass")
+            return engine::Action::PASS;
 
         Vertex vertex = Vertex(response);
         uint32_t row = 0;

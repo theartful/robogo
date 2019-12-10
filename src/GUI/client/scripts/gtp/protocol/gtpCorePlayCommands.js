@@ -12,6 +12,33 @@ let play = (move) => {
     addPiece(column, row, color);
 }
 
+/**
+ * @param   {Board}  board  a board (Color and vertex) to play
+ * @returns {void}
+ */
+let setboard = (newBoard) => {
+    let tempBoard = new Array(19)
+    .fill(null)
+    .map(() => new Array(19).fill(null));
+
+    for (let i = 0; i < 19; i++) {
+        for (let j = 0; j < 19; j++) {
+            let color = (newBoard[i*19+j] === ".") ? null : newBoard[i*19+j];
+            tempBoard[j][i] = { color: color, selected: false };
+        }
+    }
+
+    if (matchBoards(tempBoard, board)) {
+        alert("invalid move!!!");
+        return;
+    }
+
+    board = tempBoard;
+    changePlayer(currentPlayer);
+    currentPlayer = (currentPlayer == "w") ? "b" : "w";
+    draw(ctx, canvas);
+}
+
 let genmoveId = 0;
 
 /**

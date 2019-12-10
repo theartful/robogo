@@ -20,7 +20,8 @@ const commandsList = [
     "final_status_list",
     "loadsgf",
     "reg_genmove",
-    "showboard"
+    "showboard",
+    "setboard"
 ];
 
 // Adminstrative Commands

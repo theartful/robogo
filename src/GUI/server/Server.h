@@ -8,6 +8,8 @@
 #include <websocketpp/common/thread.hpp>
 #include <websocketpp/common/memory.hpp>
 
+#include "controller/game.h"
+
 #include <vector>
 #include <string>
 #include <cstdlib>
@@ -33,6 +35,7 @@ class Server
     void on_open(connection_hdl hdl);
     void on_close(connection_hdl hdl);
     void on_message(connection_hdl hdl, message_ptr msg);
+    void send_board(go::Game* game);
 public:
     Server(uint32_t port=DEFAULT_PORT);
     void set_on_open_callback(std::function<void()> cb);
@@ -40,7 +43,7 @@ public:
     bool has_client();
     bool send(std::string message);
 
-    static Server* setup(uint32_t port=DEFAULT_PORT);
+    static Server* setup(go::Game& game, uint32_t port=DEFAULT_PORT);
     ~Server();
 };
 

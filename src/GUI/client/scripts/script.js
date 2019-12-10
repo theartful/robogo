@@ -52,7 +52,7 @@ const drawAllPieces = () => {
                         drawSelect(ctx, xAxis, yAxis);
                     }
                     ctx.drawImage(white, xAxis, yAxis, step, step);
-                } else {
+                } else if (board[row][col].color == "b") {
                     if (board[row][col].selected) {
                         drawSelect(ctx, xAxis, yAxis);
                     }
@@ -134,27 +134,26 @@ $("canvas#go-canvas").on("click", function (event) {
         if (xIndex < 0 || xIndex > arraySize || yIndex < 0 || yIndex > arraySize) {
             return;
         }
-        else if (selectedPiece) {
-            if (selectedPiece.xIndex == xIndex && selectedPiece.yIndex == yIndex) {
-                return deselectPiece(xIndex, yIndex);
-            }
-            return selectPiece(xIndex, yIndex);
-        }
-        else if (board[xIndex][yIndex]) {
-            if (board[xIndex][yIndex].color == currentPlayer) {
-                return movePiece(xIndex, yIndex);
-            } else {
-                $.growl({
-                    title: "Error",
-                    message: "This is not your piece",
-                    style: "error"
-                });
-                return;
-            }
-        }
+        // else if (selectedPiece) {
+        //     if (selectedPiece.xIndex == xIndex && selectedPiece.yIndex == yIndex) {
+        //         return deselectPiece(xIndex, yIndex);
+        //     }
+        //     return selectPiece(xIndex, yIndex);
+        // }
+        // else if (board[xIndex][yIndex]) {
+        //     if (board[xIndex][yIndex].color == currentPlayer ||) {
+        //         return movePiece(xIndex, yIndex);
+        //     } else {
+        //         $.growl({
+        //             title: "Error",
+        //             message: "This is not your piece",
+        //             style: "error"
+        //         });
+        //         return;
+        //     }
+        // }
         else {
             pieceLocation.location = [xIndex, yIndex];
-            return addPiece(xIndex, yIndex);
         }
     }
 });

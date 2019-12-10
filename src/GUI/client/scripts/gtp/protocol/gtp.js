@@ -20,7 +20,8 @@ let commands = {
     final_status_list: final_status_list,
     loadsgf: loadsgf,
     reg_genmove: reg_genmove,
-    showboard: showboard
+    showboard: showboard,
+    setboard: setboard,
 }
 
 /**
