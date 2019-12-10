@@ -65,6 +65,10 @@ bool Game::make_move(const Action& action)
 	return engine::make_move(game_state, action);
 }
 
+void Game::force_moves(const std::vector<Action>& actions) {
+	engine::force_moves(game_state, actions);
+}
+
 void Game::main_loop()
 {
 	while (!is_game_finished())
