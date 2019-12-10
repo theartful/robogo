@@ -10,6 +10,8 @@ before_install:
   - sudo apt-get install g++
   - sudo apt-get install python-dev
   - sudo apt-get install clang-format
+  - sudo apt-get install libwebsocketpp-dev
+  - sudo apt-get install rapidjson-dev
   
 # Enable C++ support
 language: cpp
