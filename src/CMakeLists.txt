@@ -9,17 +9,6 @@ add_library(goslayer ${ENGINE_SRC} ${ENGINE_HEADERS})
 add_executable(goslayer-executable main.cpp)
 
 ### Communication ###
-
 find_package(RapidJSON)
-find_package(Boost REQUIRED COMPONENTS system thread)
-if(NOT Boost_FOUND)
-  message(FATAL_ERROR)
-endif()
-
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
-
-target_link_libraries(goslayer-executable  ${Boost_LIBRARIES})
-set_property(TARGET goslayer-executable  APPEND PROPERTY INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 
 target_link_libraries(goslayer-executable goslayer)
