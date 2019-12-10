@@ -1,7 +1,7 @@
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
 
-#include <iostream>
+#define ASIO_STANDALONE
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
@@ -10,7 +10,7 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
-
+#include <iostream>
 #include "controller/game.h"
 
 using rapidjson::Document;
