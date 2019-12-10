@@ -16,7 +16,10 @@
 using rapidjson::Document;
 using rapidjson::Writer;
 using rapidjson::StringBuffer;
+using rapidjson::PrettyWriter;
 using std::cout;
+using std::string;
+
 
 class GameManager {
     public:
@@ -27,21 +30,23 @@ class GameManager {
 
         void on_open();
         void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg);
-        void on_fail(client* c, const std::string & uri);
-        void on_close(client* c, const std::string & uri);
+        void on_fail(client* c, const string & uri);
+        void on_close(client* c, const string & uri);
         
-        void send_value(rapidjson::Document& value);
+        void send_value(Document& value);
         void send_name();
+
+        void pretty_print(Document  & s);
 
         void run();
 
     private:
         static constexpr int reconnection_wait_time = 4;
-        const std::string server_address = "ws://localhost:8080";
+        const string server_address;
         client end_point;
         websocketpp::connection_hdl connection_handle;
-        rapidjson::Document received_document;
-        std::string player_name = "GoSlayer";
+        Document received_document;
+        string player_name = "GoSlayer";
 };
 
 
