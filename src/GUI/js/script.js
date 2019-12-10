@@ -31,14 +31,6 @@ const drawBoard = () => {
   }
 };
 
-const drawSelect = (ctx, xAxis, yAxis) => {
-  ctx.beginPath();
-  ctx.arc(xAxis + step / 2, yAxis + step / 2, step / 2, 0, 2 * Math.PI);
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 5;
-  ctx.stroke();
-};
-
 const drawAllPieces = () => {
   let row = 0;
   for (let xAxis = startOffset - step / 2; xAxis < endOffset; xAxis += step) {
@@ -73,9 +65,11 @@ $("canvas#go-canvas").on("mousemove", function(event) {
   draw(ctx, canvas);
   ctx.beginPath();
   ctx.arc(xAxis, yAxis, step / 2, 0, 2 * Math.PI);
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  ctx.fillStyle = "rgba(2,2,2,0.2)";
+  ctx.lineWidth = 0;
+  ctx.fill();
+  // ctx.strokeStyle = "rgba(2,2,2,0.2)";
+  // ctx.stroke();
 });
 
 const clearSelected = () => {
@@ -162,7 +156,7 @@ const changePlayer = currentPlayer => {
   }
 };
 
-const draw = (ctv, canvas) => {
+const draw = (ctx, canvas) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawBoard();
   drawAllPieces();

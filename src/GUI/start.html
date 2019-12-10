@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Go Slayer</title>
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css"
+    />
+    <link rel="stylesheet" href="./css/jquery.growl.css" />
+    <link rel="stylesheet" href="./css/start.css" />
+    <link rel="stylesheet" href="./css/animated-text.css" />
+  </head>
+  <body>
+    <div class="music">
+      <a class="btn-3d red text-white rounded muted" style="padding: 1rem 1rem; position: fixed; left: 10px; top: 10px; z-index: 1000;">
+        <i class="fa fa-volume-mute"></i>
+      </a>
+      <a class="btn-3d green text-white rounded up d-none" style="padding: 1rem 1rem; position: fixed; left: 10px; top: 10px; z-index: 1000;">
+        <i class="fa fa-volume-up"></i>
+      </a>
+    </div>
+    <div id="large-header" class="large-header">
+      <canvas id="demo-canvas"></canvas>
+      <h1 class="main-title">
+
+
+        <div class="text-center mb-3">
+          <img src="./images/logo.png" style="width: 150px;" alt="" />
+        </div>
+        <div class="container" style="background-color: transparent;">
+          <div class="neon">GO SLAYER</div>
+          <!-- <div class="flux">Flux </div> -->
+        </div>
+        <a class="btn-3d red text-white rounded start" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-play"></i></a>
+      </h1>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h5 class="modal-title">CHOOSE GAME MODE</h5>
+          </div>
+          <div class="modal-body text-center">
+            <a class="btn-3d green text-white rounded" id="cmp-cmp-btn">
+              <i class="fa fa-laptop"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-laptop"></i>
+            </a>
+            <a class="btn-3d purple text-white rounded" id="human-cmp-btn">
+              <i class="fa fa-user"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-laptop"></i>
+            </a>
+            <a class="btn-3d cyan text-white rounded" id="human-human-btn">
+              <i class="fa fa-user"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-user"></i>
+            </a>
+
+            <div class="human-human d-none">
+              <div class="row mt-3">
+                <div class="col-sm-6">
+                  <input type="text" placeholder="Player 1" autofocus class="input-3d blue">
+                </div>
+                <div class="col-sm-6">
+                  <input type="text" placeholder="Player 2" class="input-3d red">
+                </div>
+              </div>
+  
+              <a class="btn-3d red text-white rounded"><i class="fa fa-play"></i></a>
+            </div>
+            
+            <div class="human-cmp d-none">
+              <div class="row mt-3">
+                <div class="col-sm-6 m-auto">
+                  <input type="text" placeholder="Player 1" autofocus class="input-3d blue">
+                </div>
+              </div>
+  
+              <a class="btn-3d red text-white rounded"><i class="fa fa-play"></i></a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <audio src="./audio/bg-music.mp3" autoplay controls>
+      <p>
+        If you are reading this, it is because your browser does not support the
+        audio element.
+      </p>
+    </audio> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/jquery.growl.js"></script>
+
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/EasePack.min.js"></script>
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/rAF.js"></script>
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/TweenLite.min.js"></script>
+
+    <script src="./js/start.js"></script>
+  </body>
+</html>
