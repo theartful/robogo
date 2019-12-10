@@ -3,7 +3,7 @@
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 
-GameManager::GameManager(const std::string& uri)  
+GameManager::GameManager(const std::string& uri):server_address(uri)
 {
     // clear logging channels
     end_point.clear_access_channels(websocketpp::log::alevel::all);
@@ -20,30 +20,51 @@ GameManager::GameManager(const std::string& uri)
 
 void GameManager::on_open() 
 {
-    std::cout << "GameManager: Connection successfully opened. \n";
+    cout << "GameManager: Connection successfully opened. \n";
 }
 
 void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
 {
-    std::cout << "GameManager: Got a message! \n";
+    cout << "GameManager: Got a message! \n";
     received_document.Parse(msg->get_payload().c_str());
-    std::string mess_type = received_document["type"].GetString();
+    pretty_print(received_document);
+    string message_type = received_document["type"].GetString();
 
-    if (mess_type=="NAME")
+    if (message_type == "NAME")
     {   
-        // send_name();
+        cout << "GameManager: Message type is Main! \n";
+        send_name();
     }
-    else if (mess_type=="START")
+    else if (message_type == "START")
     {
         /*  1. CHECK IF THERE'S A NEED FOR GAME INITIALIZATION    
             2. START A NEW GAME THREAD WITH AN INITIAL CONFIGURATION (IF NEEDED) OR SEND EXTRA MOVES
         */
     }
-    
-    /* TODO: 1. Initialize Game Loop if needed.
+    else if(message_type == "MOVE")
+    {
+        /*  SEND MOVE TO NETAGENT 
+        */
+
+    }
+    else if(message_type == "END")
+    {
+        string end_reason=received_document["reason"].GetString();
+        if(end_reason == "resign" || end_reason == "timeout" || end_reason == "pass")
+        {
+            //end game
+        }
+        else if(end_reason=="pause" || end_reason=="error")
+        {
+            //shouldn't I stop the game?
+        }
+
+    }
+      /* TODO: 1. Initialize Game Loop if needed.
              2. RESET or KILL Game Loop.
              3. Send NetAgent an incoming move.
      */
+  
 }
 
 void GameManager::send_name() 
@@ -57,7 +78,28 @@ void GameManager::send_name()
 
 void GameManager::send_value(Document & value)
 {
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+    value.Accept(writer);
+    cout<<"Sending!\n";
+    pretty_print(value);
+    websocketpp::lib::error_code ec;
+    end_point.send(connection_handle,buffer.GetString(),websocketpp::frame::opcode::text,ec);
+    if (ec) {
+        cout << "Echo failed because: " << ec.message() << "\n";
+    }
 
+}
+
+//for debugging
+void GameManager::pretty_print(Document  & s)
+{ 
+    StringBuffer buffer;
+    PrettyWriter<StringBuffer> writer(buffer);
+    buffer.Clear();
+    writer.Reset(buffer); 
+    s.Accept(writer);
+    cout<<buffer.GetString()<<"\n";
 }
 
 void GameManager::on_fail(client* c, const std::string & uri) 
