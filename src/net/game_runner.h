@@ -18,6 +18,14 @@ namespace go
 
 namespace net
 {
+
+struct ActionMessage
+{
+    bool taken;
+    Action action;
+};
+
+
 class NetGameRunner
 {
     public:
@@ -43,14 +51,14 @@ class NetGameRunner
             force_end = game_end;
         }
 
-        void set_remote_move(Action& action) {
-            remote_move = action;
+        void set_remote_move(const ActionMessage message) {
+            remote_move = message;
         }
 
     private:
         std::atomic_bool force_end;
-        std::atomic<Action> remote_move;
-        std::atomic<Action> local_move;
+        std::atomic<ActionMessage> remote_move;
+        std::atomic<ActionMessage> local_move;
 };
 
 }
