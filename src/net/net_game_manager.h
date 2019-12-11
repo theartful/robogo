@@ -1,5 +1,5 @@
-#ifndef GAME_ENGINE_H
-#define GAME_ENGINE_H
+#ifndef NET_GAME_MANAGER_H
+#define NET_GAME_MANAGER_H
 
 #define ASIO_STANDALONE
 #include <websocketpp/config/asio_no_tls_client.hpp>
@@ -26,9 +26,11 @@ using namespace go::engine;
 namespace go
 {
 
-class GameManager {
+namespace net
+{
+class NetGameManager {
     public:
-        GameManager(const std::string& uri);
+        NetGameManager(const std::string& uri);
         void run();
 
         // Network callbacks.
@@ -47,7 +49,6 @@ class GameManager {
         void pretty_print(Document& s);
 
         std::thread game_loop_thread;
-
         // TODO: wrap network stuff in a struct.
         static constexpr int reconnection_wait_time = 4;
         const string server_address;
@@ -60,4 +61,5 @@ class GameManager {
 
 }
 
-#endif // GAME_ENGINE_H
+}
+#endif // NET_GAME_MANAGER_H
