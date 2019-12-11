@@ -10,5 +10,6 @@ add_executable(goslayer-executable main.cpp)
 
 ### Communication ###
 find_package(RapidJSON)
+find_package(Boost)
 
 target_link_libraries(goslayer-executable goslayer)

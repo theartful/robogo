@@ -5,7 +5,7 @@
 using namespace go;
 using namespace go::engine;
 
-Game::Game()
+Game::Game(std::atomic_bool* force_end) : force_game_end (force_end)
 {
 }
 
