@@ -12,4 +12,4 @@ add_executable(goslayer-executable main.cpp)
 find_package(RapidJSON)
 find_package(Boost)
 
-target_link_libraries(goslayer-executable goslayer)
+target_link_libraries(goslayer-executable goslayer atomic)

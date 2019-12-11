@@ -120,7 +120,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     {
         cout << "GameManager: MOVE received. \n";
         Action action = get_action(received_document, 1 - local_player_index);
-        current_runner->set_remote_move(action);
+        current_runner->set_remote_move({ false, action });
     }
     else if(message_type == "END")
     {
