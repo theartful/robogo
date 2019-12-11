@@ -8,7 +8,7 @@ const arraySize = 18;
 const endOffset = canvas.width - startOffset;
 const step = (canvas.width - 2 * startOffset) / arraySize;
 
-let currentPlayer = "w";
+let currentPlayer = "b";
 let selectedPiece = null;
 
 var board = new Array(arraySize + 1)
@@ -163,3 +163,28 @@ const draw = (ctx, canvas) => {
 };
 
 draw(ctx, canvas);
+
+/**
+ * clock
+ */
+
+$(document).ready(function() {
+  clock = $(".clock").FlipClock(15*60, {
+    clockFace: "MinuteCounter",
+    countdown: true,
+    callbacks: {
+      stop: function() {
+        // $(".message").html("The clock has stopped!");
+      }
+    }
+  });
+  clock = $(".clock2").FlipClock(15*60, {
+    clockFace: "MinuteCounter",
+    countdown: true,
+    callbacks: {
+      stop: function() {
+        // $(".message").html("The clock has stopped!");
+      }
+    }
+  });
+});

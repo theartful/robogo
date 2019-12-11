@@ -72,3 +72,54 @@ body {
   }
 }
 
+@keyframes neon-animation {
+  0%,
+  100% {
+    text-shadow: 0 0 calc(1px*10) #FA1C16, 0 0 calc(3px*10) #FA1C16, 0 0 calc(5px*10) #FA1C16, 0 0 calc(5px*10) #FA1C16, 0 0 calc(.4px*10) #FED128, calc(.2px*10) calc(.2px*10) calc(.1px*10) #806914;
+    color: #FED128;
+  }
+  50% {
+    text-shadow: 0 0 calc(.5px*10) #800E0B, 0 0 calc(1.5px*10) #800E0B, 0 0 calc(5px*10) #800E0B, 0 0 calc(5px*10) #800E0B, 0 0 calc(.2px*10) #800E0B, calc(.2px*10) calc(.2px*10) calc(.1px*10) #40340A;
+    color: #806914;
+  }
+}
+
+@keyframes flux-animation {
+  0%,
+  100% {
+    text-shadow: 0 0 calc(1px*10) #1041FF, 0 0 calc(2px*10) #1041FF, 0 0 calc(5px*10) #1041FF, 0 0 calc(5px*10) #1041FF, 0 0 calc(.2px*10) #8BFDFE, calc(.2px*10) calc(.2px*10) calc(.1px*10) #147280;
+    color: #28D7FE;
+  }
+  50% {
+    text-shadow: 0 0 calc(.5px*10) #082180, 0 0 calc(1.5px*10) #082180, 0 0 calc(2px*10) #082180, 0 0 calc(2px*10) #082180, 0 0 calc(.2px*10) #082180, calc(.2px*10) calc(.2px*10) calc(.1px*10) #0A3940;
+    color: #146C80;
+  }
+}
+.neon-text {
+  font-family: neon;
+  color: #F40A35;
+  font-size: calc(5px*10);
+  line-height: calc(5px*10);
+  text-shadow: 0 0 calc(3px*10) #F40A35;
+}
+
+.flux-text {
+  font-family: neon;
+  color: #426DFB;
+  font-size: calc(5px*10);
+  line-height: calc(5px*10);
+  text-shadow: 0 0 calc(3px*10) #2356FF;
+}
+
+.neon-animation {
+  animation: neon-animation 1s ease infinite;
+  -moz-animation: neon-animation 1s ease infinite;
+  -webkit-animation: neon-animation 1s ease infinite;
+}
+
+.flux-animation {
+  animation: flux-animation 1s linear infinite;
+  -moz-animation: flux-animation 1s linear infinite;
+  -webkit-animation: flux-animation 1s linear infinite;
+  -o-animation: flux-animation 1s linear infinite;
+}
