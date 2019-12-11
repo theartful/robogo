@@ -38,19 +38,6 @@ void GameManager::on_open()
     cout << "GameManager: Connection successfully opened. \n";
 }
 
-void GameManager::run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end)
-{
-    Game game (force_end);
-    auto net_agent = std::make_shared<go:: simplegui::BoardSimpleGUI>();
-    auto mcts_agent = std::make_shared<MCTSAgent>();
-    net_agent->set_player_idx(netagent_color);
-    mcts_agent->set_player_idx(1 - netagent_color);
-    game.register_agent(net_agent, netagent_color);
-    game.register_agent(mcts_agent, 1 - netagent_color);
-    game.force_moves(init_actions);
-    game.main_loop();
-}
-
 Action GameManager::get_action(rapidjson::Value& move, uint32_t player)
 {
     string move_type = move["move"]["type"].GetString();
