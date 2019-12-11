@@ -205,13 +205,21 @@ var bgSound = new Audio("./audio/bg-music.mp3");
 bgSound.loop = true;
 
 $(".muted").on("click", function(event) {
-  $(this).removeClass("d-block").addClass("d-none");
-  $(".up").removeClass("d-none").addClass("d-block");
+  $(this)
+    .removeClass("d-block")
+    .addClass("d-none");
+  $(".up")
+    .removeClass("d-none")
+    .addClass("d-block");
   bgSound.play();
 });
 $(".up").on("click", function(event) {
-  $(this).removeClass("d-block").addClass("d-none");
-  $(".muted").removeClass("d-none").addClass("d-block");
+  $(this)
+    .removeClass("d-block")
+    .addClass("d-none");
+  $(".muted")
+    .removeClass("d-none")
+    .addClass("d-block");
   bgSound.pause();
 });
 
@@ -239,4 +247,33 @@ $("#cmp-cmp-btn").on("click", function(event) {
   $(".human-human")
     .removeClass("d-block")
     .addClass("d-none");
+});
+
+$("#human-human-start").on("click", function(event) {
+  player1 = $("#human-human-player1-input").val()
+  player2 = $("#human-human-player2-input").val()
+  if (player1 && player2) {
+    window.location =
+      `./index.html?player1=human&player2=human&player1_name=${player1}&player2_name=${player2}`;
+  } else {
+    $.growl({
+      title: "Error",
+      message: "Enter Players name",
+      style: "error"
+    });
+  }
+});
+
+$("#human-cmp-start").on("click", function(event) {
+  player1 = $("#human-cmp-player1-input").val()
+  if (player1) {
+    window.location =
+      `./index.html?player1=human&player2=cmp&player1_name=${player1}&player2_name=CMP`;
+  } else {
+    $.growl({
+      title: "Error",
+      message: "Enter Player name",
+      style: "error"
+    });
+  }
 });

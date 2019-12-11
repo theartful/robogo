@@ -112,14 +112,14 @@ body {
 }
 
 .neon-animation {
-  animation: neon-animation 1s ease infinite;
-  -moz-animation: neon-animation 1s ease infinite;
-  -webkit-animation: neon-animation 1s ease infinite;
+  animation: neon-animation 2s ease infinite;
+  -moz-animation: neon-animation 2s ease infinite;
+  -webkit-animation: neon-animation 2s ease infinite;
 }
 
 .flux-animation {
-  animation: flux-animation 1s linear infinite;
-  -moz-animation: flux-animation 1s linear infinite;
-  -webkit-animation: flux-animation 1s linear infinite;
-  -o-animation: flux-animation 1s linear infinite;
+  animation: flux-animation 2s linear infinite;
+  -moz-animation: flux-animation 2s linear infinite;
+  -webkit-animation: flux-animation 2s linear infinite;
+  -o-animation: flux-animation 2s linear infinite;
 }

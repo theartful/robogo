@@ -32,21 +32,21 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-3 mt-3 text-center">
-          <h1><span class="flux-text flux-animation">Hady</span></h1>
-          <h1 class="flux-text mt-5" style="font-size: 120px;">100</h1>
+          <h1><span class="flux-text flux-animation" id="player1_name">Hady</span></h1>
+          <h1 class="flux-text mt-5" style="font-size: 120px;" id="player1_score">100</h1>
           <div class="clock mt-5"></div>
           <h4 class="bebas-font">
-            Captured stones: <span class="flux-text">0</span>
+            Captured stones: <span class="flux-text" id="player1_stones">0</span>
           </h4>
 
           <div>
             <a
-              class="btn-3d rounded text-white bebas-font purple pass"
+              class="btn-3d rounded text-white bebas-font purple pass player1-controls"
               style="padding: 1rem 2rem;"
               >Pass</a
             >
             <a
-              class="btn-3d rounded text-white bebas-font red resign"
+              class="btn-3d rounded text-white bebas-font red resign player1-controls"
               style="padding: 1rem 2rem;"
               >Resign</a
             >
@@ -62,20 +62,20 @@
           ></canvas>
         </div>
         <div class="col-3 mt-3 text-center">
-          <h1><span class="neon-text neon-animation">Mohammed</span></h1>
-          <h1 class="neon-text mt-5" style="font-size: 120px;">100</h1>
+          <h1><span class="neon-text" id="player2_name">Mohammed</span></h1>
+          <h1 class="neon-text mt-5" style="font-size: 120px;" id="player2_score">100</h1>
           <div class="clock2 mt-5"></div>
           <h4 class="bebas-font">
-            Captured stones: <span class="neon-text">0</span>
+            Captured stones: <span class="neon-text" id="player2_stones">0</span>
           </h4>
           <div>
             <a
-              class="btn-3d rounded text-white bebas-font purple pass"
+              class="btn-3d rounded text-white bebas-font purple pass player2-controls disabled"
               style="padding: 1rem 2rem;"
               >Pass</a
-            >
-            <a
-              class="btn-3d rounded text-white bebas-font red resign"
+              >
+              <a
+              class="btn-3d rounded text-white bebas-font red resign player2-controls disabled"
               style="padding: 1rem 2rem;"
               >Resign</a
             >
@@ -112,6 +112,8 @@
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
     <script src="./js/jquery.growl.js"></script>
     <script src="./js/flipclock.min.js"></script>
 

@@ -1,8 +1,27 @@
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(
+    m,
+    key,
+    value
+  ) {
+    vars[key] = value;
+  });
+  return vars;
+}
+
+var urlParams = getUrlVars();
+
+var winner = urlParams["winner"] ? urlParams["winner"] : "Player";
+var score = urlParams["score"] ? urlParams["score"] : "0";
+
 var w = (c.width = window.innerWidth),
   h = (c.height = window.innerHeight),
   ctx = c.getContext("2d"),
   fireworks = [],
   tick = 0;
+
+var bgImage = document.getElementById("bg-image");
 
 ctx.fillStyle = "#111";
 ctx.fillRect(0, 0, w, h);
@@ -21,12 +40,14 @@ const drawTest = (text, first = false) => {
 };
 
 function anim() {
+  // ctx.drawImage(bgImage, 0, 0, w, h);
+
   ctx.font = "160px Bebas Neue";
-  var text = "500";
+  var text = score;
   drawTest(text, true);
 
   ctx.font = "60px Bebas Neue";
-  var text = "Hady is the winner";
+  var text = `${winner} is the winner`;
   drawTest(text);
 
   window.requestAnimationFrame(anim);

@@ -344,6 +344,10 @@ button[class*="btn"] {
   box-shadow: 0 0 0 1px #c63702 inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset,
     0 0 0 1px rgba(0, 0, 0, 0.4);
 }
+.btn-3d.red.disabled {
+  background-color: #ffb0a8;
+  box-shadow: none;
+}
 
 .btn-3d.blue {
   background-color: #6da2d9;
@@ -376,6 +380,10 @@ button[class*="btn"] {
 .btn-3d.purple:active {
   box-shadow: 0 0 0 1px #cb99c5 inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset,
     0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+.btn-3d.purple.disabled {
+  background-color: #ffc8f8;
+  box-shadow: none;
 }
 
 .btn-3d.cyan {
