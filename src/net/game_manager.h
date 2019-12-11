@@ -42,7 +42,6 @@ class GameManager {
         void send_name();
     private:
         void start_game(Document& document);
-        void run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end);
         void pretty_print(Document& s);
         Action get_action(rapidjson::Value& move, uint32_t player);
 
