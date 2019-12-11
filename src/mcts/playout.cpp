@@ -42,7 +42,7 @@ void PlayoutPolicy::run_playout(GameState& game_state)
 		last_move = Action::INVALID_ACTION;
 
 	const uint32_t max_playout_length =
-	    BoardState::MAX_NUM_CELLS - game_state.move_history.size();
+	    2 * BoardState::MAX_NUM_CELLS - game_state.move_history.size();
 	for (uint32_t i = 0;
 	     i < max_playout_length && !is_terminal_state(game_state); i++)
 	{

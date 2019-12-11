@@ -45,7 +45,7 @@ struct BoardState
 	    MAX_BOARD_SIZE * EXTENDED_BOARD_SIZE + MAX_BOARD_SIZE + 1;
 
 	std::array<Cell, MAX_NUM_CELLS> board;
-	std::array<uint32_t, MAX_NUM_CELLS> neighbor_count;
+	std::array<uint16_t, MAX_NUM_CELLS> neighbor_count;
 	uint32_t ko;
 	uint32_t num_empty;
 
@@ -112,23 +112,23 @@ inline void decrement_empty_count(BoardState& state, uint32_t idx)
 }
 inline void increment_cell_count(BoardState& state, Cell cell, uint32_t idx)
 {
-	state.neighbor_count[idx] += (1UL << (3 * static_cast<uint32_t>(cell)));
+	state.neighbor_count[idx] += (1UL << (3 * static_cast<uint16_t>(cell)));
 }
 inline void decrement_cell_count(BoardState& state, Cell cell, uint32_t idx)
 {
-	state.neighbor_count[idx] -= (1UL << (3 * static_cast<uint32_t>(cell)));
+	state.neighbor_count[idx] -= (1UL << (3 * static_cast<uint16_t>(cell)));
 }
-inline uint32_t get_white_count(const BoardState& state, uint32_t idx)
+inline uint16_t get_white_count(const BoardState& state, uint32_t idx)
 {
-	return (state.neighbor_count[idx] & uint32_t(0b000111000)) >> 3;
+	return (state.neighbor_count[idx] & uint16_t(0b000111000)) >> 3;
 }
-inline uint32_t get_black_count(const BoardState& state, uint32_t idx)
+inline uint16_t get_black_count(const BoardState& state, uint32_t idx)
 {
-	return (state.neighbor_count[idx] & uint32_t(0b111000000)) >> 6;
+	return (state.neighbor_count[idx] & uint16_t(0b111000000)) >> 6;
 }
-inline uint32_t get_empty_count(const BoardState& state, uint32_t idx)
+inline uint16_t get_empty_count(const BoardState& state, uint32_t idx)
 {
-	return (state.neighbor_count[idx] & uint32_t(0b000000111));
+	return (state.neighbor_count[idx] & uint16_t(0b000000111));
 }
 
 struct Action

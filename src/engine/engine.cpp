@@ -73,32 +73,32 @@ bool go::engine::is_suicide_move(
 	return is_suicide;
 }
 
-static uint32_t
-get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
+static uint32_t get_ko(
+    const ClusterTable& table, const BoardState& state, uint32_t action_pos,
+    uint32_t num_captured_stones)
 {
-	if (get_empty_count(state, action_pos) != 1)
-		return BoardState::INVALID_INDEX;
-	if (get_cluster(table, action_pos).size != 1)
-		return BoardState::INVALID_INDEX;
-
-	uint32_t num_captured_stones = 0;
-	uint32_t captured_stone_idx;
-	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
-		if (in_atari(cluster))
-		{
-			num_captured_stones += cluster.size;
-			captured_stone_idx = cluster.parent_idx;
-		}
-	});
-
 	// there is a ko if:
 	//     1. the previous move captured exactly one stone,
 	//     2. the played stone has exactly one liberty, and
 	//     3. the played stone's cluster consists only of it
-	if (num_captured_stones == 1)
-		return captured_stone_idx;
-	else
+	if (num_captured_stones != 1)
 		return BoardState::INVALID_INDEX;
+
+	auto& action_cluster = get_cluster(table, action_pos);
+	if (in_atari(action_cluster) && action_cluster.size == 1)
+	{
+		uint32_t captured_stone_idx;
+		for_each_neighbor(state, action_pos, [&](auto neighbor) {
+			if (is_empty_cell(state, neighbor))
+			{
+				captured_stone_idx = neighbor;
+				return BREAK;
+			}
+			return CONTINUE;
+		});
+		return captured_stone_idx;
+	}
+	return BoardState::INVALID_INDEX;
 }
 
 bool go::engine::make_move(GameState& game_state, const Action& action)
@@ -130,8 +130,9 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 	{
 		game_state.players[game_state.player_turn].number_alive_stones++;
 		board_state.board[action.pos] = PLAYERS[action.player_index];
-		board_state.ko = get_ko(table, board_state, action.pos);
-		update_clusters(game_state, action);
+		uint32_t num_captured_stones = update_clusters(game_state, action);
+		board_state.ko =
+		    get_ko(table, board_state, action.pos, num_captured_stones);
 	}
 
 	game_state.number_played_moves++;

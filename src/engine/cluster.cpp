@@ -54,10 +54,12 @@ static inline void update_if_atari(Cluster& cluster, ClusterTable& table)
 	}
 }
 
-void go::engine::update_clusters(GameState& game_state, const Action& action)
+uint32_t
+go::engine::update_clusters(GameState& game_state, const Action& action)
 {
 	auto& table = game_state.cluster_table;
 	auto& board_state = game_state.board_state;
+	uint32_t num_captured_stones = 0;
 
 	for_each_neighbor(board_state, action.pos, [&](auto idx) {
 		increment_cell_count(
@@ -94,6 +96,7 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 			    {
 				    table.num_in_atari--;
 				    to_capture[capture_count++] = &cluster;
+				    num_captured_stones += cluster.size;
 			    }
 		    }
 	    });
@@ -119,6 +122,8 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 	for (auto it = enemy_clusters; it != enemy_clusters + enemy_count; it++)
 		update_if_atari(**it, table);
 	update_if_atari(*new_cluster, table);
+
+	return num_captured_stones;
 }
 
 static void init_single_cell_cluster(

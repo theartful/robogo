@@ -32,7 +32,7 @@ auto wrap_void_lambda(Lambda&& lambda)
 	if constexpr (!is_same_v<decltype(lambda(declval<Arg>())), void>)
 		return lambda;
 	else
-		return [lambda](auto&& val) {
+		return [lambda{std::forward<Lambda>(lambda)}](auto&& val) {
 			lambda(val);
 			return policy;
 		};
@@ -222,7 +222,7 @@ void for_each_liberty(const Cluster& cluster, Lambda&& lambda)
 	auto wrapped_lambda =
 	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
 	uint32_t count = 0;
-	for (uint32_t pos = 0;; pos++)
+	for (uint32_t pos = BoardState::BOARD_BEGIN;; pos++)
 	{
 		if (cluster.liberties_map[pos])
 		{
