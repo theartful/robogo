@@ -2,7 +2,7 @@
 #include "controller/game.h"
 #include "engine/board.h"
 #include "GUI/server/Server.h"
-#include "GUI/agent/gui.h"
+#include "GUI/agent/agent.h"
 #include <memory>
 
 using namespace go::engine;
@@ -38,12 +38,28 @@ int main(int argc, const char * argv[])
 
 	Game game;
 	Server* s = Server::setup(game);
-	Agent* simplegui_agent1 = (mode1 == 'a' || mode1 == 'A') ? new BoardSimpleGUI() : NULL;
-	Agent* simplegui_agent2 = (mode2 == 'a' || mode2 == 'A') ? new BoardSimpleGUI() : NULL;
 
-	auto agent1 = std::make_shared<BoardGUI>(s, mode1, "black", simplegui_agent1);
-	auto agent2 = std::make_shared<BoardGUI>(s, mode2, "white", simplegui_agent2);
+	std::shared_ptr<Agent> agent1;
+	std::shared_ptr<Agent> agent2;
 
+	if (mode1 == 'h')
+		agent1 = std::make_shared<HumanAgent>(s, "black");
+	else if (mode1 == 'a')
+		agent1 = std::make_shared<BoardSimpleGUI>();
+	else if (mode1 == 'r')
+		agent1 = std::make_shared<BoardSimpleGUI>();
+	else
+		throw std::invalid_argument("invalid player 1 mode");
+
+	if (mode2 == 'h')
+		agent2 = std::make_shared<HumanAgent>(s, "white");
+	else if (mode2 == 'a')
+		agent2 = std::make_shared<BoardSimpleGUI>();
+	else if (mode1 == 'r')
+		agent2 = std::make_shared<BoardSimpleGUI>();
+	else
+		throw std::invalid_argument("invalid player 2 mode");
+	
 	agent1->set_player_idx(0);
 	agent2->set_player_idx(1);
 	game.register_agent(agent1, 0);

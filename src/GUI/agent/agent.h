@@ -16,11 +16,11 @@ namespace go
 namespace gui
 {
 
-class BoardGUI : public Agent
+class HumanAgent : public Agent
 {
 public:
-    BoardGUI() = delete;
-	BoardGUI(Server* s, char m, std::string c, Agent* a=NULL);
+    HumanAgent() = delete;
+	HumanAgent(Server* s, std::string c);
 	virtual uint32_t generate_move(const Game& game) override;
 
     bool waiting();
@@ -28,9 +28,7 @@ public:
 
 private:
     Server* server;
-    char mode;
     Color color;
-    Agent* agent;
     uint32_t id;
     const uint32_t BOARD_SIZE = 19;
 
