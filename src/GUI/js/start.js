@@ -204,6 +204,14 @@
 var bgSound = new Audio("./audio/bg-music.mp3");
 bgSound.loop = true;
 
+var sound = new Howl({
+  src: ['./audio/bg-music.ogg','./audio/bg-music.mp3'],
+  // autoplay: true,
+  loop: true,
+});
+
+sound.play();
+
 $(".muted").on("click", function(event) {
   $(this)
     .removeClass("d-block")
