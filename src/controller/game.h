@@ -10,6 +10,8 @@
 #include "engine/cluster.h"
 #include "engine/interface.h"
 
+#include <atomic>
+
 namespace go
 {
 

@@ -12,10 +12,9 @@
 #include <rapidjson/prettywriter.h>
 #include <iostream>
 #include "controller/game.h"
-#include <boost/lockfree/queue.hpp>
 #include <atomic>
+#include "game_runner.h"
 
-#define MAX_NUM_GAMES 100
 
 using rapidjson::Document;
 using std::string;
@@ -28,9 +27,9 @@ namespace go
 
 namespace net
 {
-class NetGameManager {
+class GameManager {
     public:
-        NetGameManager(const std::string& uri);
+        GameManager(const std::string& uri);
         void run();
 
         // Network callbacks.
@@ -47,10 +46,8 @@ class NetGameManager {
         void pretty_print(Document& s);
         Action get_action(rapidjson::Value& move, uint32_t player);
 
+        NetGameRunner* current_runner;
         std::thread game_loop_thread;
-        boost::lockfree::queue<Action> remote_agent_plays;
-        boost::lockfree::queue<Action> local_agent_plays;
-        std::array<std::atomic_bool, MAX_NUM_GAMES> force_ends;
         uint current_game = 0;
         // TODO: wrap network stuff in a struct.
         static constexpr int reconnection_wait_time = 4;

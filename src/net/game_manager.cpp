@@ -1,6 +1,7 @@
-#include "net_game_manager.h"
+#include "game_manager.h"
 #include "../SimpleGUI/simplegui.h"
 #include "../agents/mcts_agent.h"
+#include "game_runner.h"
 using namespace go;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -15,7 +16,7 @@ namespace go
 namespace net
 {
 
-NetGameManager::NetGameManager(const std::string& uri):server_address(uri)
+GameManager::GameManager(const std::string& uri):server_address(uri)
 {
     // clear logging channels
     end_point.clear_access_channels(websocketpp::log::alevel::all);
@@ -24,18 +25,20 @@ NetGameManager::NetGameManager(const std::string& uri):server_address(uri)
 
     // set event handlers
     using websocketpp::lib::bind;
-    end_point.set_message_handler(bind(&NetGameManager::on_message,this,&end_point,_1,_2));
-    end_point.set_fail_handler(bind(&NetGameManager::on_fail,this,&end_point,server_address));
-    end_point.set_close_handler(bind(&NetGameManager::on_close,this,&end_point,server_address));
-    end_point.set_open_handler(bind(&NetGameManager::on_open,this));
+    end_point.set_message_handler(bind(&GameManager::on_message,this,&end_point,_1,_2));
+    end_point.set_fail_handler(bind(&GameManager::on_fail,this,&end_point,server_address));
+    end_point.set_close_handler(bind(&GameManager::on_close,this,&end_point,server_address));
+    end_point.set_open_handler(bind(&GameManager::on_open,this));
+
+    current_runner = nullptr;
 }
 
-void NetGameManager::on_open() 
+void GameManager::on_open() 
 {
-    cout << "NetGameManager: Connection successfully opened. \n";
+    cout << "GameManager: Connection successfully opened. \n";
 }
 
-void NetGameManager::run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end)
+void GameManager::run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end)
 {
     Game game (force_end);
     auto net_agent = std::make_shared<go:: simplegui::BoardSimpleGUI>();
@@ -48,7 +51,7 @@ void NetGameManager::run_game(uint32_t netagent_color, std::vector<Action> init_
     game.main_loop();
 }
 
-Action NetGameManager::get_action(rapidjson::Value& move, uint32_t player)
+Action GameManager::get_action(rapidjson::Value& move, uint32_t player)
 {
     string move_type = move["move"]["type"].GetString();
     Action action;
@@ -72,7 +75,7 @@ Action NetGameManager::get_action(rapidjson::Value& move, uint32_t player)
     return action;
 }
 
-void NetGameManager::start_game(Document& document)
+void GameManager::start_game(Document& document)
 {
     string color = document["color"].GetString();
     local_player_index = (color == "B") ? 0 : 1;
@@ -87,24 +90,26 @@ void NetGameManager::start_game(Document& document)
         actions.push_back(get_action(move, current_player));
         current_player = (current_player + 1) % 2;
     }
-    game_loop_thread = std::thread{ &NetGameManager::run_game, this, 1 - local_player_index, actions, &force_ends[current_game] };
+    NetGameRunner runner;
+    current_runner = &runner;
+    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner, 1 - local_player_index, actions };
 }
 
-void NetGameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
+void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
 {
-    cout << "NetGameManager: Got a message! \n";
+    cout << "GameManager: Got a message! \n";
     received_document.Parse(msg->get_payload().c_str());
     pretty_print(received_document);
     string message_type = received_document["type"].GetString();
 
     if (message_type == "NAME")
     {   
-        cout << "NetGameManager: NAME received. \n";
+        cout << "GameManager: NAME received. \n";
         send_name();
     }
     else if (message_type == "START")
     {
-        cout << "NetGameManager: START received. \n";
+        cout << "GameManager: START received. \n";
         start_game(received_document);
 
         /*  1. CHECK IF THERE'S A NEED FOR GAME INITIALIZATION    
@@ -113,25 +118,20 @@ void NetGameManager::on_message(client* c, websocketpp::connection_hdl hdl, mess
     }
     else if(message_type == "MOVE")
     {
-        cout << "NetGameManager: MOVE received. \n";
+        cout << "GameManager: MOVE received. \n";
         Action action = get_action(received_document, 1 - local_player_index);
-        bool push_successful = remote_agent_plays.push(action);
-        if (!push_successful) {
-            cout << "Push unsuccessful!\n";
-            // TODO: throw an exception.
-        }
+        current_runner->set_remote_move(action);
     }
     else if(message_type == "END")
     {
         string end_reason=received_document["reason"].GetString();
-        cout << "NetGameManager: END reached. Reason: " << end_reason << "\n";
-        force_ends[current_game] = true;
+        cout << "GameManager: END reached. Reason: " << end_reason << "\n";
+        current_runner->set_game_end(true);
         game_loop_thread.detach();
-        current_game = (current_game + 1) % MAX_NUM_GAMES;
     }
 }
 
-void NetGameManager::send_name() 
+void GameManager::send_name() 
 {
     rapidjson::Document name_document;
     name_document.SetObject();
@@ -140,7 +140,7 @@ void NetGameManager::send_name()
     send_value(name_document);
 }
 
-void NetGameManager::send_value(Document & value)
+void GameManager::send_value(Document & value)
 {
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
@@ -156,7 +156,7 @@ void NetGameManager::send_value(Document & value)
 }
 
 //for debugging
-void NetGameManager::pretty_print(Document  & s)
+void GameManager::pretty_print(Document  & s)
 { 
     StringBuffer buffer;
     PrettyWriter<StringBuffer> writer(buffer);
@@ -166,7 +166,7 @@ void NetGameManager::pretty_print(Document  & s)
     cout << buffer.GetString() << "\n";
 }
 
-void NetGameManager::on_fail(client* c, const std::string & uri) 
+void GameManager::on_fail(client* c, const std::string & uri) 
 {
     std::cout << "Connection failed!!, trying to reconnect! \n";
     // try to reconnect very reconnection_wait_time seconds.
@@ -182,7 +182,7 @@ void NetGameManager::on_fail(client* c, const std::string & uri)
     c->connect(connection);
 }
 
-void NetGameManager::on_close(client* c, const std::string& uri) 
+void GameManager::on_close(client* c, const std::string& uri) 
 {
     std::cout << "Connection closed, will try to reconnect. \n";
     websocketpp::lib::error_code ec;
@@ -192,7 +192,7 @@ void NetGameManager::on_close(client* c, const std::string& uri)
 }
 
 
-void NetGameManager::run()
+void GameManager::run()
 {
     websocketpp::lib::error_code ec;
     client::connection_ptr connection = end_point.get_connection(server_address, ec);
