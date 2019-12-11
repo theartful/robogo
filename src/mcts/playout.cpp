@@ -21,7 +21,8 @@ static inline void show_case(
     const char* case_title, const std::vector<Action>& actions_buffer,
     const GameState& game_state);
 
-PlayoutPolicy::PlayoutPolicy() : last_move{Action::INVALID_ACTION}
+PlayoutPolicy::PlayoutPolicy(const lgr::LGR& lgr_)
+    : last_move{Action::INVALID_ACTION}, lgr(lgr_)
 {
 	// seed prng
 	std::array<PRNG::result_type, PRNG::state_size> random_data;
@@ -34,6 +35,7 @@ PlayoutPolicy::PlayoutPolicy() : last_move{Action::INVALID_ACTION}
 
 void PlayoutPolicy::run_playout(GameState& game_state)
 {
+	playout_history.clear();
 	if (!game_state.move_history.empty())
 		last_move = game_state.move_history.back().pos;
 	else
@@ -47,12 +49,48 @@ void PlayoutPolicy::run_playout(GameState& game_state)
 		auto action = generate_move(game_state);
 		if (is_invalid(action))
 			break;
-		force_move(game_state, action);
+		playout_history.push_back(action);
+
+		make_move(game_state, action);
+
 		last_move = action.pos;
+		
 	}
 }
 
 Action PlayoutPolicy::generate_move(const GameState& game_state)
+{
+	auto lgr_action = apply_lgr(game_state);
+
+	if (lgr_action.pos != Action::INVALID_ACTION)
+		return lgr_action;
+	else
+		return apply_default_policy(game_state);
+}
+
+Action PlayoutPolicy::apply_lgr(const GameState& game_state)
+{
+
+	Action action{Action::INVALID_ACTION, game_state.player_turn};
+	
+	if (game_state.move_history.empty())
+		return action;
+
+	auto last_action = game_state.move_history.back();
+
+	if (lgr.is_stored(last_action))
+	{
+		action = lgr.get_lgr(last_action);
+		if (!is_empty_cell(game_state.board_state,action.pos) ||!is_acceptable(action,game_state))
+		{
+			action.pos = Action::INVALID_ACTION;
+		}
+	}
+
+	return action;
+}
+
+Action PlayoutPolicy::apply_default_policy(const GameState& game_state)
 {
 	Action action{Action::INVALID_ACTION, game_state.player_turn};
 	if (last_move < Action::PASS)
@@ -64,12 +102,16 @@ Action PlayoutPolicy::generate_move(const GameState& game_state)
 		if (is_invalid(action) && generate_low_lib(game_state))
 			action = choose_action(game_state);
 	}
+
 	if (is_invalid(action) && general_atari_capture(game_state))
 		action = choose_action(game_state);
+
 	if (is_invalid(action))
 		action = generate_random_action(game_state);
+
 	if (is_invalid(action) && last_move != Action::PASS)
 		action.pos = Action::PASS;
+
 
 	return action;
 }
@@ -315,6 +357,11 @@ bool PlayoutPolicy::is_self_atari(const GameState& game_state, uint32_t pos)
 	});
 
 	return (lib_map.count() + capture) <= 2;
+}
+
+const std::vector<engine::Action>& PlayoutPolicy::get_playout_history()
+{
+	return playout_history;
 }
 
 static inline void show_case(

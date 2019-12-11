@@ -3,6 +3,7 @@
 
 #include "engine/board.h"
 #include "mcts/common.h"
+#include "mcts/lgr.h"
 
 namespace go
 {
@@ -20,11 +21,13 @@ enum class PlayoutHeuristicType
 class PlayoutPolicy
 {
 public:
-	PlayoutPolicy();
+	PlayoutPolicy(const lgr::LGR& lgr_);
 	void run_playout(engine::GameState& game_state);
 	engine::Action generate_move(const engine::GameState& game_state);
-
+	const std::vector<engine::Action>& get_playout_history();
 private:
+	engine::Action apply_lgr(const engine::GameState& game_state);
+	engine::Action apply_default_policy(const engine::GameState& game_state);
 	bool nearest_atari_capture(const engine::GameState& game_state);
 	bool general_atari_capture(const engine::GameState& game_state);
 	bool nearest_atari_defense(const engine::GameState& game_state);
@@ -48,6 +51,9 @@ private:
 
 	std::vector<engine::Action> actions_buffer;
 	uint32_t last_move;
+
+	const lgr::LGR& lgr;
+	std::vector<engine::Action> playout_history;
 };
 
 } // namespace mcts

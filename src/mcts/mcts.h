@@ -43,16 +43,19 @@ struct Trajectory
 {
 	engine::GameState state;   // game state at the leaf node
 	std::vector<NodeId> nodes; // nodes along the trajectory;
+	std::vector<Action> pre_playout_history;
 
-	void visit(NodeId id)
+	void visit(NodeId id,const Action& action)
 	{
 		nodes.push_back(id);
+		// pre_playout_history.push_back(action);
 	}
 	void reset(const engine::GameState& state_, NodeId root_id)
 	{
 		state = state_;
 		nodes.clear();
 		nodes.push_back(root_id);
+		pre_playout_history.clear();
 	};
 };
 
@@ -118,6 +121,8 @@ private:
 	NodeId root_id;
 	PlayoutPolicy playout_policy;
 	MCTSStats stats;
+
+	lgr::LGR lgr;
 };
 
 } // namespace mcts

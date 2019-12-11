@@ -16,7 +16,7 @@ namespace go
 namespace mcts
 {
 
-MCTS::MCTS() : root_id{INVALID_NODE_ID}
+MCTS::MCTS() : root_id{INVALID_NODE_ID}, playout_policy(lgr)
 {
 	allocated_nodes.reserve(MAX_NUM_NODES);
 	temporary_space.reserve(
@@ -98,7 +98,7 @@ void MCTS::clear_tree()
 
 Action MCTS::run(const GameState& root_state)
 {
-	constexpr uint32_t MAX_ITERATIONS = 50000;
+	constexpr uint32_t MAX_ITERATIONS = 50e3;
 
 	stats = {};
 	root_id = allocate_root_node();
@@ -118,7 +118,7 @@ Action MCTS::run(const GameState& root_state)
 			const auto& action_child = select_best_child(node_id);
 			make_move(node_state, action_child.action);
 			node_id = action_child.node_id;
-			traj.visit(node_id);
+			traj.visit(node_id,action_child.action);
 		}
 
 		// expansion phase
@@ -128,12 +128,13 @@ Action MCTS::run(const GameState& root_state)
 			const auto& action_child = expand_node(node_id, node_state);
 			make_move(node_state, action_child.action);
 			node_id = action_child.node_id;
-			traj.visit(node_id);
+			traj.visit(node_id,action_child.action);
 		}
 
 		auto& playout_state = node_state;
 
 		playout_policy.run_playout(playout_state);
+
 
 		// calculate score
 		calculate_score(
@@ -144,11 +145,52 @@ Action MCTS::run(const GameState& root_state)
 		const uint32_t my_id = root_state.player_turn;
 		const uint32_t his_id = 1 - my_id;
 		uint32_t his_win;
+		uint32_t winner_idx = 0;
 		if (playout_state.players[my_id].total_score >
 		    playout_state.players[his_id].total_score)
+		{
+			winner_idx = my_id;
 			his_win = 0;
+		}
 		else
+		{
+			winner_idx = his_id;
 			his_win = 1;
+		}
+
+
+		const auto& playout_history = playout_policy.get_playout_history();
+		const auto& pre_playout_history = traj.pre_playout_history;
+
+		for (uint32_t i = 1; i < pre_playout_history.size(); ++i)
+		{
+			if (pre_playout_history[i].player_index == winner_idx)
+			{
+				lgr.set_lgr(pre_playout_history[i - 1], pre_playout_history[i]);
+			}
+		}
+
+		for (uint32_t i = 0; i < playout_history.size(); ++i)
+		{
+			if (i == 0)
+			{
+				if (!pre_playout_history.empty() &&
+				    playout_history[i].player_index == winner_idx)
+				{
+					lgr.set_lgr(pre_playout_history.back(), playout_history[i]);
+				}
+				if(playout_history[i].player_index != winner_idx)
+					lgr.remove_lgr(playout_history[i]);
+			}
+			else
+			{
+				if (playout_history[i].player_index == winner_idx)
+					lgr.set_lgr(playout_history[i - 1], playout_history[i]);
+				else
+					lgr.remove_lgr(playout_history[i]);
+			}
+		}
+
 
 		for (NodeId traj_node_id : traj.nodes)
 		{
