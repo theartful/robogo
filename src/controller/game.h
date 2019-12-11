@@ -70,7 +70,7 @@ private:
 class Game
 {
 public:
-	Game();
+	Game(std::atomic_bool* force_end = nullptr);
 	void main_loop();
 	bool make_move(const engine::Action& action);
 	bool register_agent(std::shared_ptr<Agent> agent, uint32_t player_idx);
@@ -91,11 +91,13 @@ public:
 	    uint32_t player_idx);
 	bool is_game_finished() const
 	{
-		if (engine::is_terminal_state(game_state))
+		if (force_game_end != nullptr && force_game_end->load())
 			return true;
 		else if (agents_time_info[0].is_overtime())
 			return true;
 		else if (agents_time_info[1].is_overtime())
+			return true;
+		else if (engine::is_terminal_state(game_state))
 			return true;
 		else
 			return false;
@@ -111,6 +113,7 @@ private:
 	engine::GameState game_state;
 	std::array<std::shared_ptr<Agent>, 2> agents;
 	std::array<AgentTime, 2> agents_time_info;
+	std::atomic_bool* force_game_end;
 };
 
 } // namespace go

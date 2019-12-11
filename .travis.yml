@@ -15,6 +15,7 @@ install:
   - sudo apt-get install libwebsocketpp-dev
   - sudo apt-get install rapidjson-dev
   - sudo apt-get install libasio-dev
+  - sudo apt-get install libboost-dev
   
 # Enable C++ support
 language: cpp

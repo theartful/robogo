@@ -12,15 +12,15 @@
 #include <rapidjson/prettywriter.h>
 #include <iostream>
 #include "controller/game.h"
+#include <boost/lockfree/queue.hpp>
+#include <atomic>
+
+#define MAX_NUM_GAMES 100
 
 using rapidjson::Document;
-using rapidjson::Writer;
-using rapidjson::StringBuffer;
-using rapidjson::PrettyWriter;
-using std::cout;
 using std::string;
-typedef websocketpp::client<websocketpp::config::asio_client> client;
-typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
+using client = websocketpp::client<websocketpp::config::asio_client>;
+using message_ptr = websocketpp::config::asio_client::message_type::ptr;
 using namespace go::engine;
 
 namespace go
@@ -43,12 +43,15 @@ class NetGameManager {
         void send_name();
     private:
         void start_game(Document& document);
-        void run_game(uint32_t netagent_color, std::vector<Action> init_actions);
-        
-        // Utility Functions
+        void run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end);
         void pretty_print(Document& s);
+        Action get_action(rapidjson::Value& move, uint32_t player);
 
         std::thread game_loop_thread;
+        boost::lockfree::queue<Action> remote_agent_plays;
+        boost::lockfree::queue<Action> local_agent_plays;
+        std::array<std::atomic_bool, MAX_NUM_GAMES> force_ends;
+        uint current_game = 0;
         // TODO: wrap network stuff in a struct.
         static constexpr int reconnection_wait_time = 4;
         const string server_address;
@@ -56,7 +59,7 @@ class NetGameManager {
         websocketpp::connection_hdl connection_handle;
         Document received_document;
         string player_name = "GoSlayer";
-        string player_color;
+        uint32_t local_player_index;
 };
 
 }

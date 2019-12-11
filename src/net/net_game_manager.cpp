@@ -4,6 +4,10 @@
 using namespace go;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
+using rapidjson::PrettyWriter;
+using std::cout;
 
 namespace go
 {
@@ -31,9 +35,9 @@ void NetGameManager::on_open()
     cout << "NetGameManager: Connection successfully opened. \n";
 }
 
-void NetGameManager::run_game(uint32_t netagent_color, std::vector<Action> init_actions)
+void NetGameManager::run_game(uint32_t netagent_color, std::vector<Action> init_actions, std::atomic_bool* force_end)
 {
-    Game game;
+    Game game (force_end);
     auto net_agent = std::make_shared<go:: simplegui::BoardSimpleGUI>();
     auto mcts_agent = std::make_shared<MCTSAgent>();
     net_agent->set_player_idx(netagent_color);
@@ -44,10 +48,34 @@ void NetGameManager::run_game(uint32_t netagent_color, std::vector<Action> init_
     game.main_loop();
 }
 
+Action NetGameManager::get_action(rapidjson::Value& move, uint32_t player)
+{
+    string move_type = move["move"]["type"].GetString();
+    Action action;
+    // TODO: Handle deltaTime.
+    if (move_type == "place") 
+    {
+        uint row = move["move"]["point"]["row"].GetUint();
+        uint column = move["move"]["point"]["column"].GetUint();
+        action = { engine::BoardState::index(row, column), player };
+        cout << "\tMove: " << player << " places at [" << row << ", " << column << "].\n";
+    }
+    else if (move_type == "pass")
+    {
+        action = { engine::Action::PASS, player };
+        cout << "\tMove: " << player << " passes.\n";
+    }
+    else
+    {
+        // Resign or undefined state. Handle later.
+    }
+    return action;
+}
+
 void NetGameManager::start_game(Document& document)
 {
     string color = document["color"].GetString();
-    uint32_t player_index = (color == "B") ? 0 : 1;
+    local_player_index = (color == "B") ? 0 : 1;
     Document configuration;
     configuration.CopyFrom(document["configuration"], document.GetAllocator());
     auto num_moves = configuration["moveLog"].Size();
@@ -56,30 +84,10 @@ void NetGameManager::start_game(Document& document)
     // Can he give an initial state AND a move log?
     uint32_t current_player = 0;
     for (auto& move : moves) { 
-        string move_type = move["move"]["type"].GetString();
-        // TODO: Handle deltaTime.
-        if (move_type == "place") 
-        {
-            uint row = move["move"]["point"]["row"].GetUint();
-            uint column = move["move"]["point"]["column"].GetUint();
-            engine::Action action = { engine::BoardState::index(row, column), current_player };
-            actions.push_back(action);
-            cout << "\tMove: Place at [" << row << ", " << column << "]!\n";
-        }
-        else if (move_type == "pass")
-        {
-            engine::Action action = { engine::Action::PASS, current_player };
-            actions.push_back(action);
-            cout << "\tMove: Pass.\n";
-        }
-        else
-        {
-            // Resign or undefined state. Handle later.
-        }
+        actions.push_back(get_action(move, current_player));
         current_player = (current_player + 1) % 2;
     }
-    // Need to actually start the game now.
-    game_loop_thread = std::thread{ &NetGameManager::run_game, this, 1 - player_index, actions };
+    game_loop_thread = std::thread{ &NetGameManager::run_game, this, 1 - local_player_index, actions, &force_ends[current_game] };
 }
 
 void NetGameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
@@ -105,22 +113,22 @@ void NetGameManager::on_message(client* c, websocketpp::connection_hdl hdl, mess
     }
     else if(message_type == "MOVE")
     {
-        cout << "NetGameManager: should MOVE the NetAgent! \n";
-        /*  SEND MOVE TO NETAGENT 
-        */
-
+        cout << "NetGameManager: MOVE received. \n";
+        Action action = get_action(received_document, 1 - local_player_index);
+        bool push_successful = remote_agent_plays.push(action);
+        if (!push_successful) {
+            cout << "Push unsuccessful!\n";
+            // TODO: throw an exception.
+        }
     }
     else if(message_type == "END")
     {
         string end_reason=received_document["reason"].GetString();
         cout << "NetGameManager: END reached. Reason: " << end_reason << "\n";
-        game_loop_thread.join();    
+        force_ends[current_game] = true;
+        game_loop_thread.detach();
+        current_game = (current_game + 1) % MAX_NUM_GAMES;
     }
-      /* TODO: 1. Initialize Game Loop if needed.
-             2. RESET or KILL Game Loop.
-             3. Send NetAgent an incoming move.
-     */
-  
 }
 
 void NetGameManager::send_name() 
