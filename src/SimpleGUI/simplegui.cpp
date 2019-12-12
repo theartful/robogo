@@ -66,14 +66,11 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 		}
 		else if (command == "score")
 		{
-			GameState game_state = game.get_game_state();
-			engine::calculate_score(
-			    game_state.board_state, game_state.players[0],
-			    game_state.players[1]);
-			std::cout << "Black total score: "
-			          << game_state.players[0].total_score << '\n';
-			std::cout << "White total score: "
-			          << game_state.players[1].total_score << '\n';
+			const GameState& game_state = game.get_game_state();
+			auto [black_score, white_score] =
+			    engine::calculate_score(game_state);
+			std::cout << "Black total score: " << black_score << '\n';
+			std::cout << "White total score: " << white_score << '\n';
 		}
 		else if (command == "mvv")
 		{
@@ -223,10 +220,6 @@ void BoardSimpleGUI::print_game_state(const Game& game)
 	          << game_state.players[0].number_alive_stones;
 	std::cout << "\t\t\tNumber of Alive: "
 	          << game_state.players[1].number_alive_stones << std::endl;
-
-	std::cout << "Total Score: " << game_state.players[0].total_score;
-	std::cout << "\t\t\t\tTotal Score: " << game_state.players[1].total_score
-	          << std::endl;
 }
 
 void BoardSimpleGUI::print_liberties(const Cluster& cluster)

@@ -184,10 +184,8 @@ struct Player
 {
 	uint32_t number_captured_enemies;
 	uint32_t number_alive_stones;
-	float total_score;
 
-	Player()
-	    : number_captured_enemies{0}, number_alive_stones{0}, total_score{0}
+	Player() : number_captured_enemies{0}, number_alive_stones{0}
 	{
 	}
 };

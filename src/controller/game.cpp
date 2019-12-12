@@ -84,6 +84,4 @@ void Game::main_loop()
 				DEBUG_PRINT("INVALID MOVE\n!");
 		}
 	}
-	engine::calculate_score(
-	    game_state.board_state, game_state.players[0], game_state.players[1]);
 }
