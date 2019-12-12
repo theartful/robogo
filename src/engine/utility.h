@@ -32,7 +32,7 @@ auto wrap_void_lambda(Lambda&& lambda)
 	if constexpr (!is_same_v<decltype(lambda(declval<Arg>())), void>)
 		return lambda;
 	else
-		return [lambda](auto&& val) {
+		return [lambda{std::forward<Lambda>(lambda)}](auto&& val) {
 			lambda(val);
 			return policy;
 		};
@@ -168,14 +168,32 @@ void for_each_cluster_cell(
 	});
 }
 
+/*
+template <typename Lambda>
+void for_each_cluster_cell(
+    const Cluster& cluster, const ClusterTable& table, Lambda&& lambda)
+{
+    auto wrapped_lambda = details::wrap_void_lambda<uint32_t, EXPAND>(
+        std::forward<Lambda>(lambda));
+
+    uint32_t index = cluster.parent_idx;
+    do
+    {
+        if (wrapped_lambda(index) == BREAK)
+            return;
+        index = table.next_cell[index];
+    } while (index != cluster.parent_idx);
+}
+*/
+
 template <typename Lambda>
 void for_each_empty_cell(const BoardState& state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
 	    details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
-	for (uint32_t i = 0; i < static_cast<uint32_t>(state.board.size()); i++)
+	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
-		if (state.board[i] == Cell::EMPTY)
+		if (is_empty_cell(state, i))
 			if (wrapped_lambda(i) == BREAK)
 				return;
 	}
@@ -196,6 +214,40 @@ void for_each_valid_action(const GameState& state, Lambda&& lambda)
 			return wrapped_lambda(action);
 		return CONTINUE;
 	});
+}
+
+template <typename Lambda>
+void for_each_liberty(const Cluster& cluster, Lambda&& lambda)
+{
+	auto wrapped_lambda =
+	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
+	uint32_t count = 0;
+	for (uint32_t pos = BoardState::BOARD_BEGIN;; pos++)
+	{
+		if (cluster.liberties_map[pos])
+		{
+			if (wrapped_lambda(pos) == BREAK)
+				return;
+			count++;
+		}
+		if (count == cluster.num_liberties)
+			return;
+	}
+}
+
+template <typename Lambda>
+void for_each_cluster(const GameState& game_state, Lambda&& lambda)
+{
+	auto wrapped_lambda =
+	    details::wrap_void_lambda<Cluster&>(std::forward<Lambda>(lambda));
+	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	{
+		auto cluster = game_state.cluster_table.clusters[i];
+		if (i != cluster.parent_idx || !cluster.size)
+			continue;
+		if (wrapped_lambda(cluster) == BREAK)
+			return;
+	}
 }
 
 } // namespace engine

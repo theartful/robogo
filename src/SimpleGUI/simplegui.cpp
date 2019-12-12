@@ -133,7 +133,7 @@ void BoardSimpleGUI::get_index(
 void BoardSimpleGUI::clear_screen()
 {
 	// Hacky solution, but crossplatform :D
-	std::cout << "\x1B[2J\x1B[H";
+	// std::cout << "\x1B[2J\x1B[H";
 }
 
 inline bool BoardSimpleGUI::is_special(uint32_t idx)
@@ -141,7 +141,7 @@ inline bool BoardSimpleGUI::is_special(uint32_t idx)
 	return idx == 3 || idx == 9 || idx == 15;
 }
 
-inline char BoardSimpleGUI::get_board_symbol(Cell cell, uint32_t x, uint32_t y)
+char BoardSimpleGUI::get_board_symbol(Cell cell, uint32_t x, uint32_t y)
 {
 
 	if (cell == Cell::WHITE)
@@ -173,7 +173,6 @@ void BoardSimpleGUI::print_board(const BoardState& board, uint32_t player_turn)
 
 	for (uint32_t i = 0; i < BOARD_SIZE; ++i)
 	{
-
 		std::cout << "\t  \t";
 		if (BOARD_SIZE - i < LAST_TWO_DIGIT_NUMBER)
 			std::cout << " ";
@@ -310,11 +309,16 @@ void BoardSimpleGUI::print_cluster_info(
 	std::cout << "]" << std::endl;
 }
 
-inline std::string
-BoardSimpleGUI::get_alphanumeric_position(uint32_t x, uint32_t y)
+std::string BoardSimpleGUI::get_alphanumeric_position(uint32_t x, uint32_t y)
 {
 	uint32_t row = BOARD_SIZE - x;
 	char column = 'A' + y;
+	if (column >= 'I')
+		column++;
+	return column + std::to_string(row);
+}
 
-	return std::to_string(row) + column;
+std::string BoardSimpleGUI::get_alphanumeric_position(uint32_t pos)
+{
+	return get_alphanumeric_position((pos / 21) - 1, pos % 21 - 1);
 }

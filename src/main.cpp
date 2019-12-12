@@ -1,4 +1,6 @@
+// #include "SGF_GNU_library/SGFinterface.h"
 #include "SimpleGUI/simplegui.h"
+#include "agents/mcts_agent.h"
 #include "controller/game.h"
 #include "engine/board.h"
 #include "GUI/server/Server.h"
@@ -25,18 +27,18 @@ int main(int argc, const char * argv[])
 	if (mode1 == 'h')
 		agent1 = std::make_shared<HumanAgent>(s, "black");
 	else if (mode1 == 'a')
-		agent1 = std::make_shared<BoardSimpleGUI>();
+		agent1 = std::make_shared<MCTSAgent>();
 	else if (mode1 == 'r')
-		agent1 = std::make_shared<BoardSimpleGUI>();
+		agent1 = std::make_shared<MCTSAgent>();
 	else
 		throw std::invalid_argument("invalid player 1 mode");
 
 	if (mode2 == 'h')
 		agent2 = std::make_shared<HumanAgent>(s, "white");
 	else if (mode2 == 'a')
-		agent2 = std::make_shared<BoardSimpleGUI>();
+		agent2 = std::make_shared<MCTSAgent>();
 	else if (mode1 == 'r')
-		agent2 = std::make_shared<BoardSimpleGUI>();
+		agent2 = std::make_shared<MCTSAgent>();
 	else
 		throw std::invalid_argument("invalid player 2 mode");
 	
