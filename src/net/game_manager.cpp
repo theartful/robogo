@@ -1,7 +1,6 @@
 #include "game_manager.h"
 #include "../SimpleGUI/simplegui.h"
 #include "../agents/mcts_agent.h"
-#include "game_runner.h"
 using namespace go;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
@@ -107,6 +106,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     {
         cout << "GameManager: MOVE received. \n";
         Action action = get_action(received_document, 1 - local_player_index);
+
         current_runner->set_remote_move({ false, action });
     }
     else if(message_type == "END")
@@ -115,6 +115,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
         cout << "GameManager: END reached. Reason: " << end_reason << "\n";
         current_runner->set_game_end(true);
         game_loop_thread.detach();
+        current_runner = nullptr;
     }
 }
 
