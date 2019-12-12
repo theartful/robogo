@@ -116,7 +116,6 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 		    "engine::make_move: invalid move, case: %s\n",
 		    move_validity_strings[static_cast<int>(
 		        get_move_validity(table, board_state, action))]);
-		exit(0);
 		return false;
 	}
 }
