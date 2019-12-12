@@ -12,7 +12,7 @@ init_single_cell_cluster(Cluster&, const BoardState&, const Action&);
 static Cluster* merge_clusters(Cluster**, uint32_t);
 static void
 merge_cluster_with_cell(Cluster&, uint32_t, ClusterTable&, const BoardState&);
-static void capture_cluster(Cluster&, ClusterTable&, BoardState&);
+static void capture_cluster(Cluster&, GameState&);
 
 uint32_t
 go::engine::get_cluster_idx(const ClusterTable& table, uint32_t cell_idx)
@@ -37,9 +37,10 @@ go::engine::get_cluster(const ClusterTable& table, uint32_t cell_idx)
 	return table.clusters[get_cluster_idx(table, cell_idx)];
 }
 
-void go::engine::update_clusters(
-    ClusterTable& table, BoardState& state, const Action& action)
+void go::engine::update_clusters(GameState& game_state, const Action& action)
 {
+	auto& table = game_state.cluster_table;
+	auto& board_state = game_state.board_state;
 	// obtain a list of neighbor clusters, and update liberties
 	// of enemy clusters
 	Cluster* to_merge[4];
@@ -47,41 +48,42 @@ void go::engine::update_clusters(
 	uint32_t merge_count = 0;
 	uint32_t capture_count = 0;
 
-	for_each_neighbor_cluster(table, state, action.pos, [&](Cluster& cluster) {
-		cluster.liberties_map.set(action.pos, false);
-		cluster.num_liberties--;
-		// if friendly cluster, add it to be merged
-		if (cluster.player == action.player_index)
-			to_merge[merge_count++] = &cluster;
-		// if enemy cluster with zero liberties, add it to be captured
-		else if (cluster.num_liberties == 0)
-			to_capture[capture_count++] = &cluster;
-	});
+	for_each_neighbor_cluster(
+	    table, board_state, action.pos, [&](auto& cluster) {
+		    cluster.liberties_map.set(action.pos, false);
+		    cluster.num_liberties--;
+		    // if friendly cluster, add it to be merged
+		    if (cluster.player == action.player_index)
+			    to_merge[merge_count++] = &cluster;
+		    // if enemy cluster with zero liberties, add it to be captured
+		    else if (cluster.num_liberties == 0)
+			    to_capture[capture_count++] = &cluster;
+	    });
 
 	Cluster& action_cluster = table.clusters[action.pos];
 	if (merge_count == 0)
 	{
-		init_single_cell_cluster(action_cluster, state, action);
+		init_single_cell_cluster(action_cluster, board_state, action);
 	}
 	else
 	{
 		Cluster& mega_cluster = *merge_clusters(to_merge, merge_count);
-		merge_cluster_with_cell(mega_cluster, action.pos, table, state);
+		merge_cluster_with_cell(mega_cluster, action.pos, table, board_state);
 	}
 	// now cleanup dead clusters
 	for (auto it = to_capture; it != to_capture + capture_count; it++)
-		capture_cluster(**it, table, state);
+		capture_cluster(**it, game_state);
 }
 
 static void init_single_cell_cluster(
     Cluster& cluster, const BoardState& state, const Action& action)
 {
-	cluster.parent_idx = action.pos;
 	cluster.player = action.player_index;
+	cluster.parent_idx = action.pos;
 	cluster.size = 1;
 	cluster.liberties_map.reset();
 	cluster.num_liberties = 0;
-	for_each_neighbor(action.pos, [&](uint32_t neighbor) {
+	for_each_neighbor(state, action.pos, [&](uint32_t neighbor) {
 		if (is_empty_cell(state, neighbor))
 		{
 			cluster.liberties_map.set(neighbor, true);
@@ -99,11 +101,12 @@ static void merge_cluster_with_cell(
 	// add the effects of the single cell cluster:
 	//     1. Remove the liberty where it's played
 	//     2. Add its own liberties
-	cluster.liberties_map.set(cell_index, false);
-	for_each_neighbor(cell_index, [&](uint32_t neighbor) {
+	for_each_neighbor(state, cell_index, [&](uint32_t neighbor) {
 		if (is_empty_cell(state, neighbor))
 			cluster.liberties_map.set(neighbor, true);
 	});
+	cluster.liberties_map.set(cell_index, false);
+
 	cluster.num_liberties = cluster.liberties_map.count();
 	cluster.size++;
 }
@@ -131,19 +134,28 @@ static Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
 	return biggest;
 }
 
-static void
-capture_cluster(Cluster& cluster, ClusterTable& table, BoardState& state)
+static void capture_cluster(Cluster& cluster, GameState& game_state)
 {
-	for_each_cluster_cell(cluster, state, [&](uint32_t cell_idx) {
+	auto& board_state = game_state.board_state;
+	auto& table = game_state.cluster_table;
+
+	// update player info
+	auto captured_player_idx = cluster.player;
+	auto& captured_player = game_state.players[captured_player_idx];
+	captured_player.number_alive_stones -= cluster.size;
+	auto& other_player = game_state.players[1 - captured_player_idx];
+	other_player.number_captured_enemies += cluster.size;
+
+	for_each_cluster_cell(cluster, board_state, [&](uint32_t cell_idx) {
 		for_each_neighbor_cluster(
-		    table, state, cell_idx, [&](Cluster& neighbor) {
+		    table, board_state, cell_idx, [&](Cluster& neighbor) {
 			    if (&neighbor != &cluster)
 			    {
 				    neighbor.liberties_map.set(cell_idx, true);
 				    neighbor.num_liberties++;
 			    }
 		    });
-		state.board[cell_idx] = Cell::EMPTY;
+		board_state.board[cell_idx] = Cell::EMPTY;
 	});
 }
 

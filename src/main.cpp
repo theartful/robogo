@@ -4,6 +4,7 @@
 #include "GUI/server/Server.h"
 #include "GUI/agent/agent.h"
 #include <memory>
+#include <time.h>
 
 using namespace go::engine;
 using namespace go;
@@ -45,4 +46,5 @@ int main(int argc, const char * argv[])
 	game.register_agent(agent2, 1);
 	game.main_loop();
 	s->end_game(game);
+	sleep(2);
 }

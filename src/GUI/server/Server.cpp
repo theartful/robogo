@@ -169,8 +169,8 @@ bool Server::send(std::string message)
 
 void Server::end_game(const go::Game& game)
 {
-    uint32_t player_1_score = game.get_game_state().players[0].total_score;
-	uint32_t player_2_score = game.get_game_state().players[1].total_score;
+    float player_1_score = game.get_game_state().players[0].total_score;
+	float player_2_score = game.get_game_state().players[1].total_score;
 
     if (player_1_score > player_2_score)
         send("end b " + to_string(player_1_score));

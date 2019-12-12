@@ -32,7 +32,7 @@ private:
 	void get_index(char column, uint32_t row, uint32_t& x, uint32_t& y);
 
 	// prints info of game state (Board, turn, players score)
-	void print_game_state(const go::engine::GameState& game_state);
+	void print_game_state(const Game& game);
 
 	// prints board to console
 	void print_board(const go::engine::BoardState& board, uint32_t player_turn);
