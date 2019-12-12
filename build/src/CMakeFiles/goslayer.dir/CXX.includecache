@@ -1,0 +1,402 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/GUI/server/Server.h
+websocketpp/config/asio_no_tls.hpp
+-
+websocketpp/server.hpp
+-
+websocketpp/common/thread.hpp
+-
+websocketpp/common/memory.hpp
+-
+vector
+-
+string
+-
+cstdlib
+-
+iostream
+-
+functional
+-
+
+../src/controller/agent.h
+engine/board.h
+../src/controller/engine/board.h
+
+../src/controller/game.h
+array
+-
+chrono
+-
+memory
+-
+controller/agent.h
+../src/controller/controller/agent.h
+engine/board.h
+../src/controller/engine/board.h
+engine/cluster.h
+../src/controller/engine/cluster.h
+engine/interface.h
+../src/controller/engine/interface.h
+
+../src/engine/board.h
+array
+-
+assert.h
+-
+bitset
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+../src/engine/cluster.h
+board.h
+../src/engine/board.h
+
+../src/engine/interface.h
+board.h
+../src/engine/board.h
+
+../src/engine/utility.h
+algorithm
+-
+array
+-
+type_traits
+-
+board.h
+../src/engine/board.h
+cluster.h
+../src/engine/cluster.h
+interface.h
+../src/engine/interface.h
+
+../src/gtp/entities.h
+algorithm
+-
+iostream
+-
+sstream
+-
+stdexcept
+-
+string
+-
+vector
+-
+
+../src/gtp/gtp.h
+entities.h
+../src/gtp/entities.h
+map
+-
+utility
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/CMakeFiles/3.10.2/CompilerIdCXX/CMakeCXXCompilerId.cpp
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gui.cpp
+gui.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gui.h
+mutex
+-
+vector
+-
+stdexcept
+-
+functional
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gui.h
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/controller/agent.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/controller/game.h
+gtp/gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gtp/gtp.h
+GUI/server/Server.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/GUI/server/Server.h
+string
+-
+condition_variable
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/server/Server.cpp
+Server.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/server/Server.h
+mutex
+-
+condition_variable
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/server/Server.h
+websocketpp/config/asio_no_tls.hpp
+-
+websocketpp/server.hpp
+-
+websocketpp/common/thread.hpp
+-
+websocketpp/common/memory.hpp
+-
+vector
+-
+string
+-
+cstdlib
+-
+iostream
+-
+functional
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/SGFinterface.cpp
+SGFinterface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/SGFinterface.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/SGFinterface.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/engine/board.h
+sgftree.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.h
+cstring
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgf_properties.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgf_utils.cpp
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+ctype.h
+-
+sgftree.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgfnode.cpp
+config.h
+-
+stdio.h
+-
+stdlib.h
+-
+ctype.h
+-
+string.h
+-
+assert.h
+-
+SGFinterface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/SGFinterface.h
+sys/time.h
+-
+time.h
+-
+sys/time.h
+-
+time.h
+-
+stdarg.h
+-
+sgftree.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.cpp
+assert.h
+-
+sgftree.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgftree.h
+stdio.h
+-
+sgf_properties.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SGF _GNU library/sgf_properties.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.cpp
+simplegui.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+engine/utility.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/utility.h
+algorithm
+-
+iostream
+-
+stdint.h
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/agent.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/game.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/board.h
+engine/cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/cluster.h
+string
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.cpp
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/controller/game.h
+config.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/config.h
+engine/interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/interface.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+array
+-
+assert.h
+-
+bitset
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.cpp
+algorithm
+-
+cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
+interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/interface.h
+liberties.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/liberties.h
+utility.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/utility.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
+board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/engine.cpp
+cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
+interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/interface.h
+liberties.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/liberties.h
+utility.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/utility.h
+cmath
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/interface.h
+board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/liberties.cpp
+array
+-
+board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
+interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/interface.h
+liberties.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/liberties.h
+utility.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/utility.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/liberties.h
+stdint.h
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/utility.h
+algorithm
+-
+array
+-
+type_traits
+-
+board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/cluster.h
+interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/interface.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/AdminstrativeCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/CorePlayCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/DebugCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/RegressionCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/SetupCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/TournamentCommands.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/entities.h
+algorithm
+-
+iostream
+-
+sstream
+-
+stdexcept
+-
+string
+-
+vector
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.cpp
+gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+algorithm
+-
+iterator
+-
+sstream
+-
+stdexcept
+-
+functional
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/gtp.h
+entities.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/gtp/entities.h
+map
+-
+utility
+-
+
+src/config.h
+

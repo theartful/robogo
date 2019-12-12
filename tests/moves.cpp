@@ -12,7 +12,7 @@ using namespace go::engine;
 
 TEST_CASE("Invalid move due to existance of Ko ")
 {
-	//std::ofstream myfile("Out.txt");
+	std::ofstream myfile("Out.txt");
 	Game game;
 	bool all = true;
 	char const* filename = "sgfFiles/ko.sgf";
@@ -24,14 +24,13 @@ TEST_CASE("Invalid move due to existance of Ko ")
 		
 		if ((i == 6) || (i == 13) || (i == 16) || (i == 25) || (i == 35))
 			all = all && !(game.make_move(actions[i]));
-			//myfile << game.make_move(actions[i]) << " ";
+			
 		else
 			all = all && game.make_move(actions[i]);
-			//myfile << game.make_move(actions[i]) << " ";
 	}
-	//REQUIRE(!game.is_game_finished());
+	REQUIRE(!game.is_game_finished());
 	REQUIRE(all);
-	REQUIRE(actions.size() == 36);
+	REQUIRE(actions.size() == 35);
 }
 
 
@@ -58,25 +57,42 @@ TEST_CASE ("execution of pass correctly "){
         }
 }
 
-
-TEST_CASE("End of Game due to 2 Passes ")
-{
-	
-	Game game;
-	bool all = true;
-	char const* filename = "sgfFiles/endGame.sgf";
-	SGFNode* treeHead = readsgffile(filename);
-	std::vector<Action> actions = load_sgf_tree(treeHead);
-
-	for (unsigned int i = 0; i < actions.size(); i++)
+TEST_CASE("Check passes action"){
+	SECTION("End of Game due to 2 Passes ")
 	{
-		all = all && game.make_move(actions[i]);
+		Game game;
+		bool all = true;
+		char const* filename = "sgfFiles/endGame.sgf";
+		SGFNode* treeHead = readsgffile(filename);
+		std::vector<Action> actions = load_sgf_tree(treeHead);
 
+		for (unsigned int i = 0; i < actions.size(); i++)
+		{
+			all = all && game.make_move(actions[i]);
+
+		}
+		REQUIRE(all);
+		REQUIRE(game.is_game_finished());
 	}
-	REQUIRE(all);
-	REQUIRE(game.is_game_finished());
-}
+	SECTION(" check end game due to accumulative pass only ")
+	{
+		
+		Game game;
+		bool all = true;
+		char const* filename = "sgfFiles/pass.sgf";
+		SGFNode* treeHead = readsgffile(filename);
+		std::vector<Action> actions = load_sgf_tree(treeHead);
 
+		for (unsigned int i = 0; i < actions.size(); i++)
+		{
+			all = all && game.make_move(actions[i]);
+
+		}
+		REQUIRE(all);
+		REQUIRE(!game.is_game_finished());
+	}
+	
+}
 
 TEST_CASE("alternating turns between players ")
 {
@@ -103,7 +119,8 @@ TEST_CASE("alternating turns between players ")
 
 TEST_CASE("Check score ")
 {
-	//std :: ofstream myfile("outt.txt"); 
+	SECTION("Simple score calculation"){
+	
 	bool all = true;
     Game game ;
     char const* filename = "sgfFiles/score.sgf";
@@ -125,9 +142,39 @@ TEST_CASE("Check score ")
 	GameState game_state = game.get_game_state();
 	calculate_score(
 	    game.get_game_state().board_state, game_state.players[0], game_state.players[1]);
-	//myfile << game_state.players[0].total_score << " " << game_state.players[1].total_score << std::endl;
-	REQUIRE (game_state.players[0].total_score == 10);
-	REQUIRE (game_state.players[1].total_score == 16.5);
+	
+	REQUIRE (game_state.players[0].total_score == 40);
+	REQUIRE (game_state.players[1].total_score == 45.5);
+	}
+
+	SECTION("complicated score calculation"){
+	 
+	bool all = true;
+    Game game ;
+    char const* filename = "sgfFiles/score2.sgf";
+    SGFNode* treeHead = readsgffile(filename);
+    std::vector<Action> actions = load_sgf_tree(treeHead);
+    REQUIRE (game.get_game_state().player_turn == 0);
+    for (unsigned int i = 0; i < actions.size(); i++)
+    {
+        
+        all = all && game.make_move(actions[i]);
+    }
+    // REQUIRE(!game.is_game_finished());
+    REQUIRE(all);
+
+	
+	REQUIRE(game.get_game_state().players[0].number_captured_enemies == 33);
+    REQUIRE(game.get_game_state().players[1].number_captured_enemies == 26);
+	
+	GameState game_state = game.get_game_state();
+	calculate_score(
+	    game.get_game_state().board_state, game_state.players[0], game_state.players[1]);
+	
+	REQUIRE (game_state.players[0].total_score == 137);
+	REQUIRE (game_state.players[1].total_score == 123.5);
+	}
+	
     
 }
 
@@ -159,7 +206,6 @@ TEST_CASE("Check Capture for each player")
 	}
 	SECTION("Capture of only more than one stone at time ")
 	{
-		//std:: ofstream myfile ("out1.txt");
         Game game;
 		filename = "sgfFiles/capture2.sgf";
 		treeHead = readsgffile(filename);
@@ -178,9 +224,8 @@ TEST_CASE("Check Capture for each player")
 	engine::calculate_score(
 	    game.get_game_state().board_state, game_state.players[0], game_state.players[1]);
 
-	//myfile << game_state.players[0].total_score << " " << game_state.players[1].total_score << std::endl;
-	REQUIRE (game_state.players[0].total_score == 4);
-	REQUIRE (game_state.players[1].total_score == 8);
+	REQUIRE (game_state.players[0].total_score == 28);
+	REQUIRE (game_state.players[1].total_score == 40.5);
         
 	}
 }
@@ -194,15 +239,17 @@ TEST_CASE ("Sucide"){
 		SGFNode* treeHead = readsgffile(filename);
 		std::vector<Action>actions = load_sgf_tree(treeHead);
 	
-
+		//std:: ofstream myfile("out.txt");
 		bool suicide = true;
+		
 		for (unsigned int i = 0; i < actions.size(); i++)
 		{
-			
-			if (i == 22)
+				
+			if ((i == 20) || (i == 22))
 			{
 				suicide = suicide && is_suicide_move(game.get_cluster_table(),game.get_board_state(),actions[i]);
 				all = all && !game.make_move(actions[i]);
+				//myfile << game.make_move(actions[i]) << " for i = " << i<< std::endl;
 				
 			}
 			else
@@ -210,6 +257,7 @@ TEST_CASE ("Sucide"){
 				
 				suicide = suicide && !is_suicide_move(game.get_cluster_table(),game.get_board_state(),actions[i]);
 				all = all && game.make_move(actions[i]);
+				//myfile << game.make_move(actions[i]) << " for i = " << i<< std::endl;
 				
 			}
 			
@@ -217,7 +265,7 @@ TEST_CASE ("Sucide"){
 
 		REQUIRE(!game.is_game_finished());
 		REQUIRE(all);
-		//REQUIRE(suicide);
+		REQUIRE(suicide);
 	}
 	SECTION("Suicide2"){
 		Game game;
@@ -242,7 +290,7 @@ TEST_CASE ("Sucide"){
 		}
 		REQUIRE(!game.is_game_finished());
 		REQUIRE(all);
-		//REQUIRE(suicide);
+		REQUIRE(suicide);
 
 		}
 }
@@ -374,3 +422,5 @@ TEST_CASE(" Testing SGF is working Correctly"){
 		REQUIRE (actions[i].player_index== manActions[i].player_index);
 	}
 }
+
+

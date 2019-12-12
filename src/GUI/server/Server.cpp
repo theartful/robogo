@@ -2,6 +2,8 @@
 #include <mutex>
 #include <condition_variable>
 
+
+// this is to wait for GUI connection
 Server* Server::setup(uint32_t port)
 {
     std::condition_variable cv;

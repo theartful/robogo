@@ -1,0 +1,859 @@
+Start testing: Dec 11 23:01 EET
+----------------------------------------------------------
+1/12 Testing: goslayer-unit-tests:Invalid move due to existance of Ko 
+1/12 Test: goslayer-unit-tests:Invalid move due to existance of Ko 
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Invalid move due to existance of Ko "
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Invalid move due to existance of Ko " start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Invalid move due to existance of Ko
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(1,18)
+(x,y):(1,17)
+(x,y):(0,17)
+(x,y):(0,16)
+(x,y):(3,15)
+(x,y):(0,18)
+(x,y):(0,17)
+(x,y):(8,18)
+(x,y):(8,17)
+(x,y):(9,17)
+(x,y):(9,16)
+(x,y):(10,18)
+(x,y):(10,17)
+(x,y):(3,15)
+(x,y):(9,18)
+(x,y):(9,17)
+(x,y):(3,10)
+(x,y):(3,7)
+(x,y):(3,8)
+(x,y):(2,8)
+(x,y):(2,9)
+(x,y):(4,8)
+(x,y):(4,9)
+(x,y):(3,9)
+(x,y):(3,8)
+(x,y):(11,4)
+(x,y):(10,2)
+(x,y):(10,3)
+(x,y):(11,3)
+(x,y):(12,3)
+(x,y):(12,2)
+(x,y):(5,2)
+(x,y):(11,1)
+(x,y):(11,2)
+(x,y):(11,3)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+goslayer-unit-tests is a Catch v2.10.0 host application.
+Run with -? for options
+
+-------------------------------------------------------------------------------
+Invalid move due to existance of Ko 
+-------------------------------------------------------------------------------
+/media/reem/Data/4th years projects/MI - Project/RoboGo/tests/moves.cpp:13
+...............................................................................
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/tests/moves.cpp:32: FAILED:
+  REQUIRE( all )
+with expansion:
+  false
+
+===============================================================================
+test cases: 1 | 1 failed
+assertions: 2 | 1 passed | 1 failed
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Failed.
+"goslayer-unit-tests:Invalid move due to existance of Ko " end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Invalid move due to existance of Ko " time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/12 Testing: goslayer-unit-tests:TEST_CASE (:execution of pass correctly 
+2/12 Test: goslayer-unit-tests:TEST_CASE (:execution of pass correctly 
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "execution of pass correctly "
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:TEST_CASE (:execution of pass correctly " start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: execution of pass correctly
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(3,3)
+(x,y):(3,2)
+(x,y):(2,4)
+(x,y):(4,4)
+it's a pass move
+(x,y):(-97,-180)
+===============================================================================
+All tests passed (363 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:TEST_CASE (:execution of pass correctly " end time: Dec 11 23:01 EET
+"goslayer-unit-tests:TEST_CASE (:execution of pass correctly " time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/12 Testing: goslayer-unit-tests:Check passes action
+3/12 Test: goslayer-unit-tests:Check passes action
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Check passes action"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Check passes action" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Check passes action
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(9,9)
+(x,y):(8,8)
+(x,y):(11,8)
+(x,y):(10,10)
+it's a pass move
+(x,y):(-97,-84)
+it's a pass move
+(x,y):(-97,-97)
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+it's a pass move
+(x,y):(-97,-85)
+(x,y):(3,2)
+(x,y):(2,4)
+(x,y):(4,4)
+(x,y):(3,3)
+it's a pass move
+(x,y):(-97,-85)
+(x,y):(4,4)
+(x,y):(5,5)
+it's a pass move
+(x,y):(-97,-85)
+(x,y):(5,4)
+(x,y):(2,2)
+(x,y):(3,5)
+it's a pass move
+(x,y):(-97,-85)
+===============================================================================
+All tests passed (4 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Check passes action" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Check passes action" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/12 Testing: goslayer-unit-tests:alternating turns between players 
+4/12 Test: goslayer-unit-tests:alternating turns between players 
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "alternating turns between players "
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:alternating turns between players " start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: alternating turns between players
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(3,3)
+(x,y):(9,3)
+(x,y):(9,2)
+(x,y):(3,2)
+(x,y):(2,4)
+(x,y):(4,4)
+(x,y):(8,7)
+(x,y):(3,9)
+(x,y):(9,9)
+(x,y):(10,9)
+(x,y):(8,6)
+(x,y):(9,8)
+(x,y):(4,5)
+(x,y):(8,9)
+(x,y):(3,6)
+(x,y):(9,10)
+===============================================================================
+All tests passed (19 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:alternating turns between players " end time: Dec 11 23:01 EET
+"goslayer-unit-tests:alternating turns between players " time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/12 Testing: goslayer-unit-tests:Check score 
+5/12 Test: goslayer-unit-tests:Check score 
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Check score "
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Check score " start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Check score
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(0,0)
+(x,y):(9,3)
+(x,y):(9,4)
+(x,y):(0,1)
+(x,y):(8,3)
+(x,y):(1,0)
+(x,y):(9,2)
+(x,y):(3,9)
+(x,y):(10,3)
+(x,y):(3,8)
+(x,y):(1,1)
+(x,y):(3,7)
+(x,y):(2,0)
+(x,y):(3,6)
+(x,y):(2,1)
+(x,y):(14,12)
+(x,y):(1,9)
+(x,y):(14,9)
+(x,y):(1,8)
+(x,y):(18,0)
+(x,y):(1,7)
+(x,y):(9,5)
+(x,y):(1,6)
+(x,y):(10,5)
+(x,y):(2,5)
+(x,y):(10,2)
+(x,y):(3,5)
+(x,y):(8,2)
+(x,y):(4,6)
+(x,y):(10,4)
+(x,y):(4,7)
+(x,y):(8,4)
+(x,y):(4,8)
+(x,y):(11,3)
+(x,y):(4,9)
+(x,y):(7,3)
+(x,y):(3,10)
+(x,y):(9,1)
+(x,y):(2,10)
+(x,y):(8,10)
+(x,y):(14,8)
+(x,y):(4,5)
+(x,y):(15,9)
+(x,y):(5,6)
+(x,y):(14,10)
+(x,y):(5,7)
+(x,y):(13,10)
+(x,y):(5,8)
+(x,y):(13,9)
+(x,y):(5,9)
+(x,y):(15,12)
+(x,y):(4,10)
+(x,y):(14,11)
+(x,y):(3,15)
+(x,y):(13,12)
+(x,y):(3,14)
+(x,y):(14,13)
+(x,y):(14,7)
+(x,y):(3,13)
+(x,y):(13,8)
+(x,y):(3,16)
+(x,y):(15,8)
+(x,y):(2,15)
+(x,y):(3,1)
+(x,y):(2,14)
+(x,y):(2,2)
+(x,y):(4,14)
+(x,y):(1,2)
+(x,y):(4,15)
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(8,3)
+(x,y):(7,4)
+(x,y):(3,9)
+(x,y):(9,4)
+(x,y):(8,5)
+(x,y):(15,7)
+(x,y):(13,7)
+(x,y):(16,7)
+(x,y):(12,7)
+(x,y):(16,8)
+(x,y):(12,8)
+(x,y):(16,9)
+(x,y):(12,9)
+(x,y):(15,9)
+(x,y):(13,9)
+(x,y):(14,9)
+(x,y):(14,7)
+(x,y):(13,8)
+(x,y):(14,8)
+(x,y):(8,11)
+(x,y):(15,8)
+(x,y):(2,13)
+(x,y):(7,13)
+(x,y):(2,14)
+(x,y):(7,14)
+(x,y):(2,15)
+(x,y):(7,15)
+(x,y):(2,16)
+(x,y):(1,13)
+(x,y):(7,12)
+(x,y):(3,13)
+(x,y):(6,13)
+(x,y):(1,14)
+(x,y):(6,14)
+(x,y):(1,15)
+(x,y):(6,15)
+(x,y):(1,16)
+(x,y):(8,13)
+(x,y):(2,17)
+(x,y):(8,14)
+(x,y):(3,14)
+(x,y):(8,15)
+(x,y):(3,15)
+(x,y):(7,16)
+(x,y):(7,13)
+(x,y):(3,16)
+(x,y):(7,14)
+(x,y):(3,17)
+(x,y):(3,18)
+(x,y):(7,15)
+(x,y):(4,18)
+(x,y):(4,12)
+(x,y):(4,17)
+(x,y):(8,6)
+(x,y):(4,16)
+(x,y):(12,6)
+(x,y):(2,12)
+(x,y):(13,6)
+(x,y):(9,11)
+(x,y):(14,6)
+(x,y):(9,13)
+(x,y):(11,7)
+(x,y):(6,12)
+(x,y):(11,8)
+(x,y):(5,13)
+(x,y):(11,9)
+(x,y):(5,14)
+(x,y):(12,10)
+(x,y):(8,12)
+(x,y):(13,10)
+(x,y):(7,13)
+(x,y):(14,10)
+(x,y):(7,6)
+(x,y):(11,6)
+(x,y):(6,5)
+(x,y):(15,6)
+(x,y):(6,7)
+(x,y):(16,6)
+(x,y):(11,10)
+(x,y):(5,5)
+(x,y):(10,9)
+(x,y):(5,6)
+(x,y):(10,8)
+(x,y):(5,7)
+(x,y):(10,7)
+(x,y):(6,8)
+(x,y):(10,6)
+(x,y):(6,4)
+(x,y):(11,5)
+(x,y):(7,3)
+(x,y):(12,5)
+(x,y):(9,3)
+(x,y):(13,5)
+(x,y):(17,15)
+(x,y):(14,5)
+(x,y):(15,15)
+(x,y):(15,5)
+(x,y):(2,11)
+(x,y):(16,5)
+(x,y):(1,12)
+(x,y):(17,6)
+(x,y):(0,13)
+(x,y):(17,7)
+(x,y):(0,14)
+(x,y):(17,8)
+(x,y):(0,15)
+(x,y):(17,9)
+(x,y):(0,16)
+(x,y):(15,10)
+(x,y):(0,17)
+(x,y):(16,10)
+(x,y):(1,18)
+(x,y):(14,11)
+(x,y):(2,18)
+(x,y):(13,11)
+(x,y):(3,12)
+(x,y):(12,11)
+(x,y):(17,5)
+(x,y):(5,4)
+(x,y):(16,4)
+(x,y):(4,5)
+(x,y):(15,4)
+(x,y):(4,6)
+(x,y):(14,4)
+(x,y):(4,7)
+(x,y):(13,4)
+(x,y):(5,8)
+(x,y):(12,4)
+(x,y):(6,9)
+(x,y):(11,4)
+(x,y):(7,8)
+(x,y):(10,5)
+(x,y):(6,6)
+(x,y):(9,6)
+(x,y):(16,15)
+(x,y):(17,10)
+(x,y):(9,14)
+(x,y):(16,11)
+(x,y):(9,15)
+(x,y):(15,11)
+(x,y):(8,16)
+(x,y):(14,12)
+(x,y):(6,16)
+(x,y):(13,12)
+(x,y):(7,17)
+(x,y):(12,12)
+(x,y):(5,15)
+(x,y):(11,11)
+(x,y):(5,16)
+(x,y):(10,10)
+(x,y):(5,12)
+(x,y):(9,9)
+(x,y):(3,11)
+(x,y):(9,8)
+(x,y):(4,11)
+(x,y):(9,7)
+(x,y):(17,16)
+(x,y):(18,6)
+(x,y):(18,15)
+(x,y):(18,7)
+(x,y):(18,16)
+(x,y):(18,9)
+(x,y):(16,16)
+(x,y):(18,8)
+(x,y):(15,16)
+(x,y):(17,11)
+(x,y):(14,15)
+(x,y):(12,10)
+(x,y):(15,12)
+(x,y):(13,10)
+(x,y):(14,13)
+(x,y):(14,10)
+(x,y):(12,13)
+(x,y):(15,9)
+(x,y):(11,13)
+(x,y):(16,9)
+(x,y):(11,12)
+(x,y):(16,8)
+(x,y):(10,11)
+(x,y):(16,7)
+(x,y):(13,13)
+(x,y):(16,6)
+(x,y):(18,10)
+(x,y):(15,6)
+(x,y):(15,14)
+(x,y):(14,6)
+(x,y):(17,14)
+(x,y):(13,6)
+(x,y):(2,10)
+(x,y):(12,6)
+(x,y):(1,11)
+(x,y):(11,6)
+(x,y):(0,12)
+(x,y):(11,7)
+(x,y):(18,11)
+(x,y):(11,8)
+(x,y):(18,12)
+(x,y):(11,9)
+(x,y):(17,12)
+(x,y):(14,14)
+(x,y):(16,12)
+(x,y):(13,14)
+(x,y):(10,4)
+(x,y):(12,14)
+(x,y):(11,3)
+(x,y):(11,14)
+(x,y):(13,3)
+(x,y):(0,0)
+(x,y):(1,0)
+(x,y):(14,16)
+(x,y):(15,7)
+(x,y):(11,10)
+(x,y):(16,10)
+(x,y):(14,9)
+(x,y):(17,9)
+(x,y):(15,10)
+(x,y):(18,0)
+(x,y):(3,4)
+it's a pass move
+(x,y):(-97,-69)
+(x,y):(1,1)
+(x,y):(3,5)
+(x,y):(12,2)
+(x,y):(11,2)
+(x,y):(7,1)
+(x,y):(12,15)
+(x,y):(14,2)
+(x,y):(13,15)
+(x,y):(13,2)
+(x,y):(11,15)
+(x,y):(14,3)
+(x,y):(10,14)
+it's a pass move
+(x,y):(-97,-69)
+===============================================================================
+All tests passed (13 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Check score " end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Check score " time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/12 Testing: goslayer-unit-tests:Check Capture for each player
+6/12 Test: goslayer-unit-tests:Check Capture for each player
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Check Capture for each player"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Check Capture for each player" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Check Capture for each player
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(5,7)
+(x,y):(14,6)
+(x,y):(5,6)
+(x,y):(14,5)
+(x,y):(5,5)
+(x,y):(14,4)
+(x,y):(13,4)
+(x,y):(5,4)
+(x,y):(14,3)
+(x,y):(4,5)
+(x,y):(15,4)
+(x,y):(5,8)
+(x,y):(13,6)
+(x,y):(4,6)
+(x,y):(15,5)
+(x,y):(4,7)
+(x,y):(15,6)
+(x,y):(4,8)
+(x,y):(15,3)
+(x,y):(6,7)
+(x,y):(13,5)
+(x,y):(6,6)
+(x,y):(13,3)
+(x,y):(6,5)
+(x,y):(14,7)
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(3,3)
+(x,y):(9,9)
+(x,y):(9,8)
+(x,y):(3,2)
+(x,y):(8,9)
+(x,y):(2,3)
+(x,y):(9,10)
+(x,y):(3,4)
+(x,y):(10,9)
+(x,y):(4,3)
+(x,y):(0,18)
+(x,y):(0,17)
+(x,y):(11,17)
+(x,y):(1,18)
+(x,y):(11,16)
+(x,y):(10,14)
+(x,y):(15,7)
+(x,y):(11,14)
+(x,y):(15,6)
+(x,y):(12,14)
+(x,y):(4,4)
+(x,y):(12,16)
+(x,y):(5,2)
+(x,y):(12,17)
+(x,y):(5,1)
+(x,y):(11,18)
+(x,y):(5,3)
+(x,y):(10,17)
+(x,y):(4,1)
+(x,y):(10,16)
+(x,y):(0,16)
+(x,y):(9,15)
+(x,y):(1,17)
+(x,y):(12,15)
+(x,y):(11,15)
+(x,y):(9,14)
+(x,y):(13,13)
+(x,y):(3,9)
+(x,y):(2,10)
+(x,y):(9,7)
+(x,y):(4,10)
+(x,y):(10,8)
+(x,y):(3,8)
+(x,y):(8,8)
+(x,y):(2,9)
+(x,y):(14,7)
+(x,y):(2,8)
+(x,y):(15,8)
+(x,y):(3,10)
+(x,y):(16,7)
+(x,y):(4,9)
+(x,y):(14,6)
+(x,y):(1,3)
+(x,y):(15,5)
+(x,y):(12,13)
+(x,y):(16,6)
+===============================================================================
+All tests passed (10 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Check Capture for each player" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Check Capture for each player" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/12 Testing: goslayer-unit-tests:TEST_CASE (:Sucide
+7/12 Test: goslayer-unit-tests:TEST_CASE (:Sucide
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Sucide"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:TEST_CASE (:Sucide" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Sucide
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(8,6)
+(x,y):(8,7)
+(x,y):(7,7)
+(x,y):(8,8)
+(x,y):(7,8)
+(x,y):(9,6)
+(x,y):(7,9)
+(x,y):(9,8)
+(x,y):(8,9)
+(x,y):(10,8)
+(x,y):(9,9)
+(x,y):(10,7)
+(x,y):(10,9)
+(x,y):(15,5)
+(x,y):(11,9)
+(x,y):(12,5)
+(x,y):(11,8)
+(x,y):(13,3)
+(x,y):(11,7)
+(x,y):(16,2)
+(x,y):(9,7)
+(x,y):(10,2)
+(x,y):(9,7)
+engine::make_move: invalid move!
+engine::make_move: invalid move!
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(5,7)
+(x,y):(14,6)
+(x,y):(5,6)
+(x,y):(14,5)
+(x,y):(5,5)
+(x,y):(14,4)
+(x,y):(13,4)
+(x,y):(5,4)
+(x,y):(14,3)
+(x,y):(4,5)
+(x,y):(15,4)
+(x,y):(5,8)
+(x,y):(13,6)
+(x,y):(4,6)
+(x,y):(15,5)
+(x,y):(4,7)
+(x,y):(15,6)
+(x,y):(4,8)
+(x,y):(15,3)
+(x,y):(6,7)
+(x,y):(13,5)
+(x,y):(6,6)
+(x,y):(13,3)
+(x,y):(6,5)
+(x,y):(14,7)
+(x,y):(7,8)
+(x,y):(8,12)
+(x,y):(7,11)
+(x,y):(3,9)
+(x,y):(7,13)
+(x,y):(3,8)
+(x,y):(9,11)
+(x,y):(3,6)
+(x,y):(9,13)
+(x,y):(3,4)
+(x,y):(10,12)
+(x,y):(4,3)
+(x,y):(10,11)
+(x,y):(6,3)
+(x,y):(7,12)
+(x,y):(5,3)
+(x,y):(8,13)
+(x,y):(7,4)
+(x,y):(8,11)
+(x,y):(9,12)
+(x,y):(2,15)
+engine::make_move: invalid move!
+===============================================================================
+All tests passed (6 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:TEST_CASE (:Sucide" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:TEST_CASE (:Sucide" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/12 Testing: goslayer-unit-tests:Board moves successfully dismiss Invalid moves 
+8/12 Test: goslayer-unit-tests:Board moves successfully dismiss Invalid moves 
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Board moves successfully dismiss Invalid moves "
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Board moves successfully dismiss Invalid moves " start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Board moves successfully dismiss Invalid moves
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(3,9)
+(x,y):(5,9)
+(x,y):(3,10)
+(x,y):(3,8)
+(x,y):(1,9)
+(x,y):(0,0)
+(x,y):(18,0)
+(x,y):(18,18)
+(x,y):(0,18)
+(x,y):(9,15)
+(x,y):(11,15)
+(x,y):(9,13)
+(x,y):(8,15)
+(x,y):(17,1)
+(x,y):(9,16)
+(x,y):(16,1)
+(x,y):(10,13)
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Board moves successfully dismiss Invalid moves " end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Board moves successfully dismiss Invalid moves " time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/12 Testing: goslayer-unit-tests:Board updates
+9/12 Test: goslayer-unit-tests:Board updates
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Board updates"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Board updates" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Board updates
+===============================================================================
+All tests passed (3 assertions in 1 test case)
+
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Board updates" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Board updates" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/12 Testing: goslayer-unit-tests:Testing Capture manually
+10/12 Test: goslayer-unit-tests:Testing Capture manually
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "Testing Capture manually"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:Testing Capture manually" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Testing Capture manually
+===============================================================================
+All tests passed (2 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:Testing Capture manually" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:Testing Capture manually" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/12 Testing: goslayer-unit-tests: Testing SGF is working Correctly
+11/12 Test: goslayer-unit-tests: Testing SGF is working Correctly
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" " Testing SGF is working Correctly"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests: Testing SGF is working Correctly" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: Testing SGF is working Correctly
+wrong format for attribute
+wrong format for attribute
+wrong format for attribute
+(x,y):(0,18)
+(x,y):(2,18)
+(x,y):(4,18)
+(x,y):(3,15)
+(x,y):(9,15)
+(x,y):(9,9)
+(x,y):(18,0)
+===============================================================================
+All tests passed (21 assertions in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests: Testing SGF is working Correctly" end time: Dec 11 23:01 EET
+"goslayer-unit-tests: Testing SGF is working Correctly" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/12 Testing: goslayer-unit-tests:test 1
+12/12 Test: goslayer-unit-tests:test 1
+Command: "/media/reem/Data/4th years projects/MI - Project/RoboGo/build/bin/goslayer-unit-tests" "test 1"
+Directory: /media/reem/Data/4th years projects/MI - Project/RoboGo/build/tests
+"goslayer-unit-tests:test 1" start time: Dec 11 23:01 EET
+Output:
+----------------------------------------------------------
+Filters: test 1
+===============================================================================
+All tests passed (1 assertion in 1 test case)
+
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"goslayer-unit-tests:test 1" end time: Dec 11 23:01 EET
+"goslayer-unit-tests:test 1" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Dec 11 23:01 EET
+
+goslayer-unit-tests =   0.08 sec*proc
+
+tags =   0.01 sec*proc
+

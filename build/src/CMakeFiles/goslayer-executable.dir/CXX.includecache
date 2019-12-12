@@ -1,0 +1,146 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/controller/agent.h
+engine/board.h
+../src/controller/engine/board.h
+
+../src/engine/board.h
+array
+-
+assert.h
+-
+bitset
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+../src/engine/cluster.h
+board.h
+../src/engine/board.h
+
+../src/engine/interface.h
+board.h
+../src/engine/board.h
+
+../src/gtp/entities.h
+algorithm
+-
+iostream
+-
+sstream
+-
+stdexcept
+-
+string
+-
+vector
+-
+
+../src/gtp/gtp.h
+entities.h
+../src/gtp/entities.h
+map
+-
+utility
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gui.h
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/controller/agent.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/controller/game.h
+gtp/gtp.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gtp/gtp.h
+GUI/server/Server.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/GUI/server/Server.h
+string
+-
+condition_variable
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/server/Server.h
+websocketpp/config/asio_no_tls.hpp
+-
+websocketpp/server.hpp
+-
+websocketpp/common/thread.hpp
+-
+websocketpp/common/memory.hpp
+-
+vector
+-
+string
+-
+cstdlib
+-
+iostream
+-
+functional
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/agent.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/controller/game.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/board.h
+engine/cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/engine/cluster.h
+string
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.h
+array
+-
+chrono
+-
+memory
+-
+controller/agent.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/controller/agent.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/board.h
+engine/cluster.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/cluster.h
+engine/interface.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/engine/interface.h
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+array
+-
+assert.h
+-
+bitset
+-
+stdint.h
+-
+vector
+-
+stdio.h
+-
+
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/main.cpp
+SimpleGUI/simplegui.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/SimpleGUI/simplegui.h
+controller/game.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/controller/game.h
+engine/board.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/engine/board.h
+GUI/server/Server.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/server/Server.h
+GUI/agent/gui.h
+/media/reem/Data/4th years projects/MI - Project/RoboGo/src/GUI/agent/gui.h
+memory
+-
+
