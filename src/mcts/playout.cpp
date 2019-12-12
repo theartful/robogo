@@ -54,7 +54,6 @@ void PlayoutPolicy::run_playout(GameState& game_state)
 		make_move(game_state, action);
 
 		last_move = action.pos;
-		
 	}
 }
 
@@ -72,7 +71,7 @@ Action PlayoutPolicy::apply_lgr(const GameState& game_state)
 {
 
 	Action action{Action::INVALID_ACTION, game_state.player_turn};
-	
+
 	if (game_state.move_history.empty())
 		return action;
 
@@ -81,7 +80,8 @@ Action PlayoutPolicy::apply_lgr(const GameState& game_state)
 	if (lgr.is_stored(last_action))
 	{
 		action = lgr.get_lgr(last_action);
-		if (!is_empty_cell(game_state.board_state,action.pos) ||!is_acceptable(action,game_state))
+		if (!is_empty_cell(game_state.board_state, action.pos) ||
+		    !is_acceptable(action, game_state))
 		{
 			action.pos = Action::INVALID_ACTION;
 		}
@@ -111,7 +111,6 @@ Action PlayoutPolicy::apply_default_policy(const GameState& game_state)
 
 	if (is_invalid(action) && last_move != Action::PASS)
 		action.pos = Action::PASS;
-
 
 	return action;
 }
@@ -251,7 +250,7 @@ Action PlayoutPolicy::generate_random_action(const GameState& state)
 void PlayoutPolicy::play_good_libs(
     const Cluster& cluster, const GameState& state)
 {
-	for_each_liberty(cluster, [&](uint32_t lib) {
+	for_each_liberty(state.board_state, cluster, [&](uint32_t lib) {
 		if (!is_self_atari(state, lib) && gains_liberties(lib, cluster, state))
 			add_action(lib, state);
 	});
@@ -275,7 +274,7 @@ bool PlayoutPolicy::gains_liberties(
 			auto& c = get_cluster(table, neighbor);
 			if (c.parent_idx == cluster.parent_idx)
 				return CONTINUE;
-			for_each_liberty(c, [&](uint32_t c_lib) {
+			for_each_liberty(state.board_state, c, [&](uint32_t c_lib) {
 				if (!is_cluster_lib(cluster, c_lib))
 					if (++gain >= 2)
 						return BREAK;

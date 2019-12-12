@@ -6,6 +6,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+cmake_policy(SET CMP0069 NEW)
+# Enable Link-Time Optimization, AKA Inter-Procedure Optimization
+if(NOT ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"))
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT LTOAvailable)
+endif()
+if(LTOAvailable)
+    message("Link-time optimization enabled")
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
+
 # set default build type
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "DEBUG" CACHE STRING

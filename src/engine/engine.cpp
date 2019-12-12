@@ -116,7 +116,6 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 		    "engine::make_move: invalid move, case: %s\n",
 		    move_validity_strings[static_cast<int>(
 		        get_move_validity(table, board_state, action))]);
-		exit(0);
 		return false;
 	}
 }
@@ -140,9 +139,11 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 	game_state.move_history.push_back(action);
 }
 
-void go::engine::calculate_score(
-    const BoardState& boardState, Player& black_player, Player& white_player)
+std::pair<float, float> go::engine::calculate_score(const GameState& state)
 {
+	auto& board_state = state.board_state;
+	auto& black_player = state.players[0];
+	auto& white_player = state.players[1];
 	uint32_t white_territory_score = 0, black_territory_score = 0,
 	         score_temp = 0;
 
@@ -157,11 +158,11 @@ void go::engine::calculate_score(
 	// Traversing the board to detect any start of any territory
 	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
-		if (!search_cache.is_visited(i) && is_empty_cell(boardState, i))
+		if (!search_cache.is_visited(i) && is_empty_cell(board_state, i))
 		{
 			territory_type = 0;
 			score_temp =
-			    territory_points(boardState, territory_type, i, search_cache);
+			    territory_points(board_state, territory_type, i, search_cache);
 			// ANDing the territory_type to figure out the output of the
 			// traversed territory
 			if ((territory_type & static_cast<unsigned char>(Cell::BLACK)) == 0)
@@ -172,13 +173,14 @@ void go::engine::calculate_score(
 		}
 	}
 
-	// Updating scores
-	white_player.total_score =
-	    white_territory_score + white_player.number_alive_stones +
-	    white_player.number_captured_enemies + Rules::KOMI;
-	black_player.total_score = black_territory_score +
-	                           black_player.number_alive_stones +
-	                           black_player.number_captured_enemies;
+	float white_score = white_territory_score +
+	                    white_player.number_alive_stones +
+	                    white_player.number_captured_enemies + Rules::KOMI;
+	float black_score = black_territory_score +
+	                    black_player.number_alive_stones +
+	                    black_player.number_captured_enemies;
+
+	return {black_score, white_score};
 }
 
 static inline uint32_t territory_points(

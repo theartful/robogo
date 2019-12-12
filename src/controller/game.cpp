@@ -97,6 +97,4 @@ void Game::main_loop()
 		if (make_move_callback != NULL)
 			make_move_callback(valid_move);
 	}
-	engine::calculate_score(
-	    game_state.board_state, game_state.players[0], game_state.players[1]);
 }
