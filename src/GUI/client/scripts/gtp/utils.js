@@ -129,24 +129,34 @@ let isInt = (num) => {
  * @param   {number}    num     Variable to check if it's integer or not
  * @returns {Boolean}   isInt   "true" if num is an integer, "false" otherwise
  */
-let matchBoards = (map1, map2) => {
-	if (map1.length !== map2.length)
-		return false;
+let matchBoards = (oldBoard, newBoard) => {
+	let action = "nothing";
+	if (oldBoard.length !== newBoard.length)
+		return action;
 
-    for (let i = 0; i < map1.length; i++) {
-		if (map1[i].length !== map2[i].length)
+    for (let i = 0; i < oldBoard.length; i++) {
+		if (oldBoard[i].length !== newBoard[i].length)
 			return false;
-		for (let j = 0; j < map1[i].length; j++) {
-			if (map1[i][j] == null && map2[i][j] == null)
+		for (let j = 0; j < oldBoard[i].length; j++) {
+			if (oldBoard[i][j] == null && newBoard[i][j] == null)
 				continue;
 			
-			if (map1[i][j] == null || map2[i][j] == null)
-				return false;
+			if (oldBoard[i][j] == null && newBoard[i][j] != null) {
+				action = "add";
+				continue;
+			}
+
+			if (oldBoard[i][j] != null && newBoard[i][j] == null) {
+				action = "remove";
+				break;
+			}
 			
-			if (map1[i][j].color !== map2[i][j].color)
-				return false;
+			if (oldBoard[i][j].color !== newBoard[i][j].color) {
+				action = "remove";
+				break;
+			}
 		}
 	}
 
-	return true;
+	return action;
 };

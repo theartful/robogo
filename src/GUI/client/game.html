@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <title>Go Slayer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./css/jquery.growl.css" />
+    <link rel="stylesheet" href="./css/flipclock.css" />
+    <link rel="stylesheet" href="./css/animated-text.css" />
+    <link rel="stylesheet" href="./css/start.css" />
+    <style>
+        .bebas-font {
+            font-family: "Bebas Neue", cursive;
+        }
+    </style>
+</head>
+
+<body
+    style="background-image: url('./images/logo.png'); background-attachment: fixed; background-repeat: no-repeat; background-position: center center;">
+    <div class="container-fluid" style="display: flex; align-items: center; height: 100vh; justify-content: center;">
+        <div class="row text-center" style="width: 100%;">
+            <div class="col-3 mt-3 text-center">
+                <h1><span class="flux-text flux-animation" id="player1_name">Hady</span></h1>
+                <!-- <h1 class="flux-text mt-5" style="font-size: 120px;" id="player1_score">0</h1> -->
+                <div class="clock mt-5 ml-auto mr-auto"></div>
+                <h4 class="bebas-font">
+                    Captured stones: <span class="flux-text" id="player1_stones">0</span>
+                </h4>
+
+                <div>
+                    <a class="btn-3d rounded text-white bebas-font purple pass player1-controls"
+                        style="width: 100%; padding: 1rem 2rem;">Pass</a>
+                    <!-- <a
+              class="btn-3d rounded text-white bebas-font red resign player1-controls"
+              style="padding: 1rem 2rem;"
+              >Resign</a> -->
+                </div>
+            </div>
+            <div class="col-6">
+                <canvas id="go-canvas" class="mr-auto ml-auto d-block mt-3"
+                    style="background-color: #E3BC53; border-radius: 10px; opacity: 0.9;" width="580"
+                    height="580"></canvas>
+            </div>
+            <div class="col-3 mt-3 text-center">
+                <h1><span class="neon-text" id="player2_name">Mohammed</span></h1>
+                <!-- <h1 class="neon-text mt-5" style="font-size: 120px;" id="player2_score">0</h1> -->
+                <div style="display: flex; text-align: center;">
+                    <div class="clock2 mt-5"></div>
+                </div>
+                <h4 class="bebas-font">
+                    Captured stones: <span class="neon-text" id="player2_stones">0</span>
+                </h4>
+                <div>
+                    <a class="btn-3d rounded text-white bebas-font purple pass player2-controls disabled"
+                        style="width: 100%; padding: 1rem 2rem;">Pass</a>
+                    <!-- <a
+              class="btn-3d rounded text-white bebas-font red resign player2-controls disabled"
+              style="padding: 1rem 2rem;"
+              >Resign</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <img src="./images/black.png" alt="" class="d-none" style="width: 20px;" id="black" />
+    <img src="./images/white.png" alt="" class="d-none" style="width: 20px;" id="white" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+    <script src="./js/jquery.growl.js"></script>
+    <script src="./js/flipclock.min.js"></script>
+
+    <script src="./scripts/script.js"></script>
+    <script src="./scripts/main.min.js"></script>
+</body>
+
+</html>

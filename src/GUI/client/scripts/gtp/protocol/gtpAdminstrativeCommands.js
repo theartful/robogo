@@ -5,23 +5,14 @@ const commandsList = [
     "known_command",
     "list_commands",
     "quit",
-    "boardsize",
-    "clear_board",
-    "komi",
-    "fixed_handicap",
-    "place_free_handicap",
-    "set_free_handicap",
     "play",
+    "setboard",
     "genmove",
     "undo",
     "time_settings",
     "time_left",
     "final_score",
     "final_status_list",
-    "loadsgf",
-    "reg_genmove",
-    "showboard",
-    "setboard"
 ];
 
 // Adminstrative Commands

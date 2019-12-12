@@ -17,7 +17,7 @@ class Game
 public:
 	Game();
 	void main_loop();
-	void set_make_move_callback(std::function<void()> callback);
+	void set_make_move_callback(std::function<void(bool)> callback);
 	bool make_move(const engine::Action& action);
 	bool register_agent(std::shared_ptr<Agent> agent, uint32_t player_idx);
 	bool unregister_agent(uint32_t player_idx);
@@ -36,7 +36,7 @@ private:
 	engine::GameState game_state;
 	engine::ClusterTable cluster_table;
 	std::array<std::shared_ptr<Agent>, 2> agents;
-	std::function<void()> make_move_callback = NULL;
+	std::function<void(bool)> make_move_callback = NULL;
 };
 
 } // namespace go

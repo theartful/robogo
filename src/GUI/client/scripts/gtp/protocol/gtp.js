@@ -5,23 +5,14 @@ let commands = {
     known_command: known_command,
     list_commands: list_commands,
     quit: quit,
-    boardsize: boardsize,
-    clear_board: clear_board,
-    komi: komi,
-    fixed_handicap: fixed_handicap,
-    place_free_handicap: place_free_handicap,
-    set_free_handicap: set_free_handicap,
     play: play,
+    setboard: setboard,
     genmove: genmove,
     undo: undo,
     time_settings: time_settings,
     time_left: time_left,
     final_score: final_score,
-    final_status_list: final_status_list,
-    loadsgf: loadsgf,
-    reg_genmove: reg_genmove,
-    showboard: showboard,
-    setboard: setboard,
+    final_status_list: final_status_list
 }
 
 /**
@@ -103,7 +94,7 @@ let takeRequest = (request) => {
     if (!commandsList.includes(command))
         return `${errorPrefix} command doesn't exist\n\n`;
     
-    if (command === "play")
+    if (command === "play" || command === "setboard")
         args = [args.join(' ')];
 
     let commandArgs = getArrowFunctionArgList(commands[command]);

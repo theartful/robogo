@@ -14,30 +14,9 @@ int main(int argc, const char * argv[])
 {
 	char mode1 = 'a';
 	char mode2 = 'a';
-	if (argc >= 2)
-	{
-		string m1 = argv[1];
-		if (!(m1 == "h" || m1 == "H" || m1 == "a" || m1 == "A"))
-		{
-			std::cout << "invalid arguments\n";
-			exit(-1);
-		}
-		mode1 = m1[0];
-	}
-
-	if (argc >= 3)
-	{
-		string m2 = argv[2];
-		if (!(m2 == "h" || m2 == "H" || m2 == "a" || m2 == "A"))
-		{
-			std::cout << "invalid arguments\n";
-			exit(-1);
-		}
-		mode2 = m2[0];
-	}
 
 	Game game;
-	Server* s = Server::setup(game);
+	Server* s = Server::setup(game, mode1, mode2);
 
 	std::shared_ptr<Agent> agent1;
 	std::shared_ptr<Agent> agent2;
@@ -65,4 +44,5 @@ int main(int argc, const char * argv[])
 	game.register_agent(agent1, 0);
 	game.register_agent(agent2, 1);
 	game.main_loop();
+	s->end_game(game);
 }

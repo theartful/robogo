@@ -16,27 +16,44 @@ let play = (move) => {
  * @param   {Board}  board  a board (Color and vertex) to play
  * @returns {void}
  */
-let setboard = (newBoard) => {
-    let tempBoard = new Array(19)
-    .fill(null)
-    .map(() => new Array(19).fill(null));
+let setboard = (newState) => {
+    if (newState === "invalid") {
+        let errorMessage = (currentPlayer == "w") ? "player2 move is invalid" : "player1 move is invalid";
+        $.growl({
+            title: "Error",
+            message: errorMessage,
+            style: "error"
+        });
+    }
+    else {
+        newState = newState.split(' ');
+        if (newState.length !== 3)
+            throw "invalid state";
+        
+        updatePlayer1Stones(toInt(newState[0]));
+        updatePlayer2Stones(toInt(newState[1]));
+        let newBoard = newState[2];
 
-    for (let i = 0; i < 19; i++) {
-        for (let j = 0; j < 19; j++) {
-            let color = (newBoard[i*19+j] === ".") ? null : newBoard[i*19+j];
-            tempBoard[j][i] = { color: color, selected: false };
+        var tempBoard = new Array(arraySize + 1)
+            .fill(null)
+            .map(() => new Array(arraySize + 1).fill(null));
+        for (let i = 0; i < 19; i++) {
+            for (let j = 0; j < 19; j++) {
+                let color = (newBoard[i*19+j] === ".") ? null : { color: newBoard[i*19+j] };
+                tempBoard[j][i] = color;
+            }
         }
-    }
 
-    if (matchBoards(tempBoard, board)) {
-        alert("invalid move!!!");
-        return;
-    }
+        let action = matchBoards(board, tempBoard);
+        if (action === "add")
+            addSound.play();
+        else if (action === "remove")
+            removeSound.play();
 
-    board = tempBoard;
-    changePlayer(currentPlayer);
-    currentPlayer = (currentPlayer == "w") ? "b" : "w";
-    draw(ctx, canvas);
+        board = tempBoard;
+        changeTurn();
+        draw(ctx, canvas);
+    }
 }
 
 let genmoveId = 0;
@@ -54,8 +71,8 @@ let genmove = (c) => {
 
 pieceLocation.watch('location', (id, oldval, newval) => {
     allowMove = false;
-    if (newval.length !== 2)
-        socket.send(`=${genmoveId} resign\n\n`);
+    if (newval === null)
+        socket.send(`=${genmoveId} pass\n\n`);
     
     let row = (arraySize - (newval[1] - 1)).toString();
     row = (row.length == 1) ? `0${row}` : row;

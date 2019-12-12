@@ -10,14 +10,10 @@ function defaultTask() {
             "./scripts/gtp/entities.js",
             "./scripts/gtp/utils.js",
             "./scripts/gtp/protocol/gtpAdminstrativeCommands.js",
-            "./scripts/gtp/protocol/gtpSetupCommands.js",
             "./scripts/gtp/protocol/gtpCorePlayCommands.js",
             "./scripts/gtp/protocol/gtpTournamentCommands.js",
-            "./scripts/gtp/protocol/gtpRegressionCommands.js",
-            "./scripts/gtp/protocol/gtpDebugCommands.js",
             "./scripts/gtp/protocol/gtp.js",
             "./scripts/client.js",
-            // "./scripts/script.js"
         ]
     )
         .pipe(gp_sourcemaps.init())

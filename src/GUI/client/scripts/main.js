@@ -333,26 +333,36 @@ let isInt = (num) => {
  * @param   {number}    num     Variable to check if it's integer or not
  * @returns {Boolean}   isInt   "true" if num is an integer, "false" otherwise
  */
-let matchBoards = (map1, map2) => {
-	if (map1.length !== map2.length)
-		return false;
+let matchBoards = (oldBoard, newBoard) => {
+	let action = "nothing";
+	if (oldBoard.length !== newBoard.length)
+		return action;
 
-    for (let i = 0; i < map1.length; i++) {
-		if (map1[i].length !== map2[i].length)
+    for (let i = 0; i < oldBoard.length; i++) {
+		if (oldBoard[i].length !== newBoard[i].length)
 			return false;
-		for (let j = 0; j < map1[i].length; j++) {
-			if (map1[i][j] == null && map2[i][j] == null)
+		for (let j = 0; j < oldBoard[i].length; j++) {
+			if (oldBoard[i][j] == null && newBoard[i][j] == null)
 				continue;
 			
-			if (map1[i][j] == null || map2[i][j] == null)
-				return false;
+			if (oldBoard[i][j] == null && newBoard[i][j] != null) {
+				action = "add";
+				continue;
+			}
+
+			if (oldBoard[i][j] != null && newBoard[i][j] == null) {
+				action = "remove";
+				break;
+			}
 			
-			if (map1[i][j].color !== map2[i][j].color)
-				return false;
+			if (oldBoard[i][j].color !== newBoard[i][j].color) {
+				action = "remove";
+				break;
+			}
 		}
 	}
 
-	return true;
+	return action;
 };
 const commandsList = [
     "protocol_version",
@@ -361,23 +371,14 @@ const commandsList = [
     "known_command",
     "list_commands",
     "quit",
-    "boardsize",
-    "clear_board",
-    "komi",
-    "fixed_handicap",
-    "place_free_handicap",
-    "set_free_handicap",
     "play",
+    "setboard",
     "genmove",
     "undo",
     "time_settings",
     "time_left",
     "final_score",
     "final_status_list",
-    "loadsgf",
-    "reg_genmove",
-    "showboard",
-    "setboard"
 ];
 
 // Adminstrative Commands
@@ -439,92 +440,6 @@ let quit = () => {
     // do nothing
 }
 
-// Setup Commands
-/**
- * @param   {int}   size    New size of the board
- * @returns {void}
- */
-let boardsize = (size) => {
-    try {
-        size = toInt(size);
-    }
-    catch(exception) {
-        throw `Invalid board size is ${exception}`;
-    }
-
-    if (size > 25)
-        throw "Invalid board size protocol doesn't support boards bigger than 25x25";
-    // set board size to new size
-}
-
-/**
- * @param   none
- * @returns {void}
- */
-let clear_board = () => {
-    // clear board
-}
-
-/**
- * @param   {float}    new_komi    new komi value
- * @returns {void}
- */
-let komi = (new_komi) => {
-    try {
-        new_komi = toFloat(new_komi);
-    }
-    catch(exception) {
-        throw `Invalid Komi is ${exception}`;
-    }
-
-    // set komi to new komi value
-}
-
-/**
- * @param   {int}           number_of_stones    Number of handicap stones
- * @returns {List<Vertex>}  vertices            A list of the vertices where handicap stones have been placed
- */
-let fixed_handicap = (number_of_stones) => {
-    try {
-        number_of_stones = toInt(number_of_stones);
-    }
-    catch(exception) {
-        throw `Invalid number of stones is ${exception}`;
-    }
-
-    let vertices = List("Vertex");
-    // place fixed handicaps
-    return vertices;
-}
-
-/**
- * @param   {int}           number_of_stones    Number of handicap stones
- * @returns {List<Vertex>}  vertices            A list of the vertices where handicap stones have been placed
- */
-let place_free_handicap = (number_of_stones) => {
-    try {
-        number_of_stones = toInt(number_of_stones);
-    }
-    catch(exception) {
-        throw `Invalid number of stones is ${exception}`;
-    }
-
-    let vertices = List("Vertex");
-    //  place free handicaps
-    return vertices;
-}
-
-/**
- * @param   {List<Vertex>}  vertices  A list of vertices where handicap stones should be placed on the board
- * @returns {void}
- */
-let set_free_handicap = (vertices) => {
-    if (!List.prototype.isPrototypeOf(vertices) || vertices.type !== "Vertex")
-        throw "Invalid List of vertices";
-
-    // set free handicaps
-}
-
 // Core Play Commands
 /**
  * @param   {Move}  move  a move (Color and vertex) to play
@@ -543,27 +458,44 @@ let play = (move) => {
  * @param   {Board}  board  a board (Color and vertex) to play
  * @returns {void}
  */
-let setboard = (newBoard) => {
-    let tempBoard = new Array(19)
-    .fill(null)
-    .map(() => new Array(19).fill(null));
+let setboard = (newState) => {
+    if (newState === "invalid") {
+        let errorMessage = (currentPlayer == "w") ? "player2 move is invalid" : "player1 move is invalid";
+        $.growl({
+            title: "Error",
+            message: errorMessage,
+            style: "error"
+        });
+    }
+    else {
+        newState = newState.split(' ');
+        if (newState.length !== 3)
+            throw "invalid state";
+        
+        updatePlayer1Stones(toInt(newState[0]));
+        updatePlayer2Stones(toInt(newState[1]));
+        let newBoard = newState[2];
 
-    for (let i = 0; i < 19; i++) {
-        for (let j = 0; j < 19; j++) {
-            let color = (newBoard[i*19+j] === ".") ? null : newBoard[i*19+j];
-            tempBoard[j][i] = { color: color, selected: false };
+        var tempBoard = new Array(arraySize + 1)
+            .fill(null)
+            .map(() => new Array(arraySize + 1).fill(null));
+        for (let i = 0; i < 19; i++) {
+            for (let j = 0; j < 19; j++) {
+                let color = (newBoard[i*19+j] === ".") ? null : { color: newBoard[i*19+j] };
+                tempBoard[j][i] = color;
+            }
         }
-    }
 
-    if (matchBoards(tempBoard, board)) {
-        alert("invalid move!!!");
-        return;
-    }
+        let action = matchBoards(board, tempBoard);
+        if (action === "add")
+            addSound.play();
+        else if (action === "remove")
+            removeSound.play();
 
-    board = tempBoard;
-    changePlayer(currentPlayer);
-    currentPlayer = (currentPlayer == "w") ? "b" : "w";
-    draw(ctx, canvas);
+        board = tempBoard;
+        changeTurn();
+        draw(ctx, canvas);
+    }
 }
 
 let genmoveId = 0;
@@ -581,8 +513,8 @@ let genmove = (c) => {
 
 pieceLocation.watch('location', (id, oldval, newval) => {
     allowMove = false;
-    if (newval.length !== 2)
-        socket.send(`=${genmoveId} resign\n\n`);
+    if (newval === null)
+        socket.send(`=${genmoveId} pass\n\n`);
     
     let row = (arraySize - (newval[1] - 1)).toString();
     row = (row.length == 1) ? `0${row}` : row;
@@ -665,52 +597,6 @@ let final_status_list = (status) => {
     return stones;
 }
 
-// Regression Commands
-/**
- * @param   {string}  filename    Name of an sgf file.
- * @param   {int}     move_number Optional move number.
- * @returns {void}
- */
-let loadsgf = (filename, move_number) => {
-    if (typeof filename !== "string")
-        throw "Invalid filename";
-
-    try {
-        move_number = toInt(move_number);
-    }
-    catch(exception) {
-        throw `Invalid move number is ${exception}`;
-    }
-
-    // load sgf file
-}
-
-/**
- * @param   none
- * @returns {Vertex|string}    Vertex    where the engine would want to play a move or the string \resign"
- */
-let reg_genmove = (color) => {
-    if (typeof color !== "Color")
-        throw "Invalid Argument: provided color is not of type color";
-
-    let vertex = "resign";
-    // try to genrate of move and if possiple assign the vertex to vertex if not pass
-
-    return vertex;
-}
-// Debug Commands
-/**
- * @param   none
- * @returns {MultiLineList<List<string>>}   A diagram of the board position
- */
-let showboard = () => {
-    let board = MultiLineList("List");
-    
-    // fill list with baord posions
-
-    return board;
-}
-
 let commands = {
     protocol_version: protocol_version,
     name: name,
@@ -718,23 +604,14 @@ let commands = {
     known_command: known_command,
     list_commands: list_commands,
     quit: quit,
-    boardsize: boardsize,
-    clear_board: clear_board,
-    komi: komi,
-    fixed_handicap: fixed_handicap,
-    place_free_handicap: place_free_handicap,
-    set_free_handicap: set_free_handicap,
     play: play,
+    setboard: setboard,
     genmove: genmove,
     undo: undo,
     time_settings: time_settings,
     time_left: time_left,
     final_score: final_score,
-    final_status_list: final_status_list,
-    loadsgf: loadsgf,
-    reg_genmove: reg_genmove,
-    showboard: showboard,
-    setboard: setboard,
+    final_status_list: final_status_list
 }
 
 /**
@@ -816,7 +693,7 @@ let takeRequest = (request) => {
     if (!commandsList.includes(command))
         return `${errorPrefix} command doesn't exist\n\n`;
     
-    if (command === "play")
+    if (command === "play" || command === "setboard")
         args = [args.join(' ')];
 
     let commandArgs = getArrowFunctionArgList(commands[command]);
@@ -843,23 +720,43 @@ let takeRequest = (request) => {
 // let socket = new WebSocket("ws://localhost:9002");
 
 socket.onopen = function (e) {
-    alert("[open] Connection established");
+    // alert("[open] Connection established");
+    let mode1 = "a";
+    if (player1 === "human")
+        mode1 = "h";
+    else if (player1 === "remote")
+        mode1 = "r";
+    
+    let mode2 = "a";
+    if (player2 === "human")
+        mode2 = "h";
+    else if (player2 === "remote")
+        mode2 = "r";
+
+    socket.send(`game_config ${mode1} ${mode2}`);
 };
 
 socket.onmessage = function (event) {
     // alert(`[message] Data received from server: ${event.data}`);
-    let response = takeRequest(event.data);
-    if (response !== "break")
-        socket.send(response);
+    let command = event.data.split(' ');
+    if (command.length === 3 && command[0] === "end") {
+        let winnerName = (command[1] === "b") ? player1_name : player2_name;
+        window.location = `./finish.html?winner=${winnerName}&score=${command[2]}`;
+    }
+    else {
+        let response = takeRequest(event.data);
+        if (response !== "break")
+            socket.send(response);
+    }
 };
 
 socket.onclose = function (event) {
     if (event.wasClean) {
-        alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        // alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
     } else {
         // e.g. server process killed or network down
         // event.code is usually 1006 in this case
-        alert('[close] Connection died');
+        // alert('[close] Connection died');
     }
 };
 

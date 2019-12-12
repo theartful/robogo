@@ -9,7 +9,7 @@ Game::Game()
 {
 }
 
-void Game::set_make_move_callback(std::function<void()> callback)
+void Game::set_make_move_callback(std::function<void(bool)> callback)
 {
 	if (callback != NULL)
 		make_move_callback = callback;
@@ -87,14 +87,18 @@ void Game::main_loop()
 		        std::chrono::steady_clock::now() - player.move_start_time);
 
 		// accept the move only if played in time
+		bool valid_move = true;
 		if (!is_overtime(player))
 		{
 			if (!engine::make_move(cluster_table, game_state, agent_action))
+			{
+				valid_move = false;
 				DEBUG_PRINT("INVALID MOVE\n!");
+			}
 		}
 
 		if (make_move_callback != NULL)
-			make_move_callback();
+			make_move_callback(valid_move);
 	}
 	engine::calculate_score(
 	    game_state.board_state, game_state.players[0], game_state.players[1]);

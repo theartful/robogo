@@ -1,75 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Go Slayer</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="icon" type="image/png" href="./images/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css"
+    />
     <link rel="stylesheet" href="./css/jquery.growl.css" />
-</head>
-
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-3">
-                <div class="card mt-3">
-                    <div class="card-header bg-dark text-white">
-                        <img src="./images/logo.jpg" alt="logo" class="img-fluid img-thumbnail" style="max-width: 60px;" />
-                        GoSlayer
-                    </div>
-                    <div class="card-body">
-                        <h3>Player: <span class="text-muted player">Black</span></h3>
-                        <button class="btn btn-success btn-block">New Game</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6">
-                <canvas id="go-canvas" class="mr-auto ml-auto d-block mt-3"
-                    style="background-color: #E3BC53; border-radius: 10px;" width="580" height="580"></canvas>
-            </div>
-            <div class="col-3">
-                <div class="card mt-3" style="max-height: 520px;">
-                    <div class="card-header bg-dark text-white">
-                        Game History
-                    </div>
-                    <div style="overflow-y: scroll;">
-                        <div class="list-group">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                5a - 6d
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action active">
-                                5a - 6d
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                5a - 6d
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                5a - 6d
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <link rel="stylesheet" href="./css/start.css" />
+    <link rel="stylesheet" href="./css/animated-text.css" />
+  </head>
+  <body>
+    <div class="music">
+      <a
+        class="btn-3d red text-white rounded muted"
+        style="padding: 1rem 1rem; position: fixed; left: 10px; top: 10px; z-index: 1000;"
+      >
+        <i class="fa fa-volume-mute"></i>
+      </a>
+      <a
+        class="btn-3d green text-white rounded up d-none"
+        style="padding: 1rem 1rem; position: fixed; left: 10px; top: 10px; z-index: 1000;"
+      >
+        <i class="fa fa-volume-up"></i>
+      </a>
     </div>
-    <img src="./images/black.png" alt="" class="d-none" style="width: 20px;" id="black" />
-    <img src="./images/white.png" alt="" class="d-none" style="width: 20px;" id="white" />
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+    <div id="large-header" class="large-header">
+      <canvas id="demo-canvas"></canvas>
+      <h1 class="main-title">
+        <div class="text-center mb-3">
+          <img src="./images/logo.png" style="width: 150px;" alt="" />
+        </div>
+        <div class="container" style="background-color: transparent;">
+          <div class="neon">GO SLAYER</div>
+          <!-- <div class="flux">Flux </div> -->
+        </div>
+        <a
+          class="btn-3d red text-white rounded start"
+          data-toggle="modal"
+          data-target="#exampleModal"
+          ><i class="fa fa-play"></i
+        ></a>
+      </h1>
+    </div>
 
-    <script src="./scripts/jquery.growl.js"></script>
-    <script src="./scripts/script.js"></script>
-    <script src="./scripts/main.min.js"></script>
-</body>
+    <div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header text-center">
+            <h5 class="modal-title">CHOOSE GAME MODE</h5>
+          </div>
+          <div class="modal-body text-center">
+            <a
+              class="btn-3d green text-white rounded"
+              href="./game.html?player1=cmp&player2=cmp&player1_name=CMP1&player2_name=CMP2"
+              id="cmp-cmp-btn"
+            >
+              <i class="fa fa-laptop"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-laptop"></i>
+            </a>
+            <a class="btn-3d purple text-white rounded" id="human-cmp-btn">
+              <i class="fa fa-user"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-laptop"></i>
+            </a>
+            <a class="btn-3d cyan text-white rounded" id="human-human-btn">
+              <i class="fa fa-user"></i>
+              <i class="fas fa-arrows-alt-h"></i>
+              <i class="fa fa-user"></i>
+            </a>
 
+            <div class="human-human d-none">
+              <div class="row mt-3">
+                <div class="col-sm-6">
+                  <input
+                    type="text"
+                    placeholder="Player 1"
+                    autofocus
+                    id="human-human-player1-input"
+                    class="input-3d blue"
+                  />
+                </div>
+                <div class="col-sm-6">
+                  <input
+                    type="text"
+                    placeholder="Player 2"
+                    class="input-3d red"
+                    id="human-human-player2-input"
+                  />
+                </div>
+              </div>
+
+              <a class="btn-3d red text-white rounded" id="human-human-start"
+                ><i class="fa fa-play"></i
+              ></a>
+            </div>
+
+            <div class="human-cmp d-none">
+              <div class="row mt-3">
+                <div class="col-sm-6 m-auto">
+                  <input
+                    type="text"
+                    placeholder="Player 1"
+                    id="human-cmp-player1-input"
+                    autofocus
+                    class="input-3d blue"
+                  />
+                </div>
+              </div>
+
+              <a class="btn-3d red text-white rounded" id="human-cmp-start"
+                ><i class="fa fa-play"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script src="./js/jquery.growl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.2/howler.js"></script>
+
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/EasePack.min.js"></script>
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/rAF.js"></script>
+    <script src="https://www.marcoguglie.it/Codepen/AnimatedHeaderBg/demo-1/js/TweenLite.min.js"></script>
+
+    <script src="./js/start.js"></script>
+  </body>
 </html>
