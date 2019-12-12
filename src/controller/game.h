@@ -11,6 +11,7 @@
 #include "engine/interface.h"
 
 #include <atomic>
+#include <mutex>
 
 namespace go
 {
@@ -72,7 +73,7 @@ private:
 class Game
 {
 public:
-	Game(std::atomic_bool* force_end = nullptr);
+	Game();
 	void main_loop();
 	bool make_move(const engine::Action& action);
 	bool register_agent(std::shared_ptr<Agent> agent, uint32_t player_idx);
@@ -91,10 +92,13 @@ public:
 	void set_elapsed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);
-	bool is_game_finished() const
+	bool is_game_finished()
 	{
-		if (force_game_end != nullptr && force_game_end->load())
+		if (get_game_end())
+		{
+			DEBUG_PRINT("THIS IS WHY IT ENDS.\n");
 			return true;
+		}
 		else if (agents_time_info[0].is_overtime())
 			return true;
 		else if (agents_time_info[1].is_overtime())
@@ -103,6 +107,19 @@ public:
 			return true;
 		else
 			return false;
+	}
+
+	bool get_game_end()
+	{
+		std::lock_guard<std::mutex> lock(game_mutex);
+		return force_game_end;
+	}
+
+	void set_game_end(bool game_end)
+	{
+		DEBUG_PRINT("end_game() called.\n");
+		std::lock_guard<std::mutex> lock(game_mutex);
+		force_game_end = game_end;
 	}
 
 	const engine::GameState& get_game_state() const;
@@ -115,7 +132,8 @@ private:
 	engine::GameState game_state;
 	std::array<std::shared_ptr<Agent>, 2> agents;
 	std::array<AgentTime, 2> agents_time_info;
-	std::atomic_bool* force_game_end;
+	std::mutex game_mutex;
+	bool force_game_end;
 };
 
 } // namespace go

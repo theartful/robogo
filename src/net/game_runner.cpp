@@ -19,9 +19,7 @@ NetGameRunner::NetGameRunner()
 
 void NetGameRunner::run_game(uint32_t netagent_color, std::vector<Action> init_actions)
 {
-    force_end = false;
-    Game game (&force_end);
-    net_agent = std::make_shared<RemoteAgent>();
+    auto net_agent = std::make_shared<RemoteAgent>();
     auto mcts_agent = std::make_shared<MCTSAgent>();
     game.register_agent(net_agent, netagent_color);
     game.register_agent(mcts_agent, 1 - netagent_color);
@@ -31,13 +29,13 @@ void NetGameRunner::run_game(uint32_t netagent_color, std::vector<Action> init_a
 
 void NetGameRunner::set_game_end(bool game_end) 
 {
-    force_end = game_end;
+    game.set_game_end(true);
 }
         
 void NetGameRunner::set_remote_move(const ActionMessage message) {
     DEBUG_PRINT("NetGameRunner: Setting remote move..\n");
     std::lock_guard<std::mutex> lock(remote_move_mutex);
-    net_agent->set_player_pos(message.action.pos);
+    // net_agent->set_player_pos(message.action.pos);
     remote_move_arrival.notify_all();
     DEBUG_PRINT("NetGameRunner: Notification sent..\n");
 }

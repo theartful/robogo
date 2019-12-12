@@ -1,12 +1,14 @@
 #include "controller/game.h"
 #include "config.h"
 #include "engine/interface.h"
+#include <iostream>
 
 using namespace go;
 using namespace go::engine;
 
-Game::Game(std::atomic_bool* force_end) : force_game_end (force_end)
+Game::Game()
 {
+	set_game_end(false);
 }
 
 bool Game::register_agent(std::shared_ptr<Agent> agent, uint32_t player_idx)
@@ -71,14 +73,18 @@ void Game::force_moves(const std::vector<Action>& actions) {
 
 void Game::main_loop()
 {
+	DEBUG_PRINT("GOING INTO THE LOOP.\n");
 	while (!is_game_finished())
 	{
+		DEBUG_PRINT("IN THE LOOP.\n");
 		auto& agent = agents[game_state.player_turn];
 		auto& agent_time = agents_time_info[game_state.player_turn];
 
 		agent_time.start_counting();
+		std::cout << "GAME: Agent " << agent->get_player_idx() << " will play!\n";
 		Action agent_action = {agent->generate_move(*this),
 		                       game_state.player_turn};
+		std::cout << "GAME: Agent " << agent_action.player_index << " played " << agent_action.pos << "\n";
 		agent_time.stop_counting();
 
 		// accept the move only if played in time
@@ -88,4 +94,5 @@ void Game::main_loop()
 				DEBUG_PRINT("INVALID MOVE\n!");
 		}
 	}
+	DEBUG_PRINT("OUT OF THE GAME MAIN LOOP.\n");
 }
