@@ -124,7 +124,7 @@ Action MCTS::run(const GameState& root_state)
 		}
 
 		// expansion phase
-		if (get_node(node_id).num_visits >= EXPANSION_THRESHOLD &&
+		if (get_node(node_id).mcts_visits >= EXPANSION_THRESHOLD &&
 		    !is_expanded(node_id) && !is_terminal_state(node_state))
 		{
 			EdgeId edge_id = expand_node(node_id, node_state);
@@ -143,6 +143,7 @@ Action MCTS::run(const GameState& root_state)
 		// back propagation
 		update_node_stats(traj);
 		update_lgr(traj);
+		update_rave(traj);
 
 		stats.update(traj);
 	}
@@ -155,13 +156,13 @@ Action MCTS::run(const GameState& root_state)
 
 	Node& root_node = get_node(root_id);
 	Action best_action = root_node.edges[0].action;
-	uint32_t max_visits = get_node(root_node.edges[0].dest).num_visits;
+	uint32_t max_visits = get_node(root_node.edges[0].dest).mcts_visits;
 	for (auto& child : root_node.edges)
 	{
 		auto& child_node = get_node(child.dest);
-		if (child_node.num_visits > max_visits)
+		if (child_node.mcts_visits > max_visits)
 		{
-			max_visits = child_node.num_visits;
+			max_visits = child_node.mcts_visits;
 			best_action = child.action;
 		}
 	}
@@ -172,14 +173,13 @@ void MCTS::update_node_stats(const Trajectory& traj)
 {
 	const uint32_t my_id = traj.player_idx;
 	const uint32_t his_id = 1 - my_id;
-	uint32_t his_win = traj.winner_idx == my_id ? 0 : 1;
+	float his_win = traj.winner_idx == my_id ? 0.0f : 1.0f;
 	uint32_t winner_idx = 0;
 
 	for (NodeId traj_node_id : traj.nodes_ids)
 	{
 		auto& node = get_node(traj_node_id);
-		node.num_visits++;
-		node.num_wins += his_win;
+		node.add_mcts_reward(his_win);
 		his_win = 1 - his_win;
 	}
 }
@@ -196,23 +196,59 @@ void MCTS::update_lgr(const Trajectory& traj)
 	}
 }
 
-EdgeId MCTS::expand_node(Node& node, const GameState& game_state)
+void MCTS::update_rave(Trajectory& traj)
 {
-	for_each_valid_action(game_state, [&](const Action& action) {
-		if (!engine::will_be_surrounded(game_state, action.pos))
-			node.edges.emplace_back(action, allocate_node());
-	});
+	if (traj.nodes_ids.size() <= 2)
+		return;
 
-	if (node.edges.empty())
-		node.edges.emplace_back(
-		    Action{Action::PASS, game_state.player_turn}, allocate_node());
+	auto mark_action = [&](const Action& a) {
+		if (!is_invalid(a) && !is_pass(a))
+			traj.rave_actions[a.pos][a.player_index] = true;
+	};
+	auto is_marked = [&](const Action& a) {
+		if (!is_invalid(a) && !is_pass(a))
+			return traj.rave_actions[a.pos][a.player_index];
+		return false;
+	};
 
-	return 0;
+	for (auto& action : playout_policy.get_playout_history())
+		mark_action(action);
+
+	for (size_t i = traj.nodes_ids.size() - 2; (i--) > 0;)
+	{
+		NodeId node_id = traj.nodes_ids[i];
+		EdgeId played_edge_id = traj.edges_ids[i];
+		Node& node = get_node(node_id);
+		Edge& played_edge = get_edge(node_id, played_edge_id);
+		mark_action(played_edge.action);
+		for (Edge& edge : node.edges)
+		{
+			if (is_marked(edge.action))
+			{
+				float z =
+				    edge.action.player_index == traj.winner_idx ? 1.0f : 0.0f;
+				Node& next_node = get_node(edge.dest);
+				next_node.add_rave_reward(z);
+			}
+		}
+	}
 }
 
 EdgeId MCTS::expand_node(NodeId node_id, const GameState& game_state)
 {
-	return expand_node(get_node(node_id), game_state);
+	Node& node = get_node(node_id);
+
+	for_each_valid_action(game_state, [&](const Action& action) {
+		if (!engine::will_be_surrounded(game_state, action.pos))
+			node.edges.emplace_back(action, node_id, allocate_node());
+	});
+
+	if (node.edges.empty())
+		node.edges.emplace_back(
+		    Action{Action::PASS, game_state.player_turn}, node_id,
+		    allocate_node());
+
+	return 0;
 }
 
 NodeId MCTS::allocate_node()
@@ -237,30 +273,33 @@ float MCTS::calculate_uct(const Node& parent, const Node& child)
 {
 	static constexpr auto C = 0.7; // exploration constant
 
-	float q_value = 0;
-	if (child.num_visits == 0)
-		q_value = 0;
-	else
-		q_value = static_cast<float>(child.num_wins) / child.num_visits;
-
+	const float q_value = child.mcts_q;
 	float exploration_term = sqrt(
-	    log(static_cast<float>(parent.num_visits)) / (child.num_visits + 1));
+	    log(static_cast<float>(parent.mcts_visits)) / (child.mcts_visits + 1));
 
 	return q_value + C * exploration_term;
 }
 
+float MCTS::calculate_weighted_rave_value(const Node& child)
+{
+	float weight =
+	    child.rave_visits / (child.rave_visits + child.mcts_visits +
+	                         child.rave_visits * child.mcts_visits * RAVE_BIAS);
+	return weight * child.rave_q + (1.0 - weight) * child.mcts_q;
+}
+
 EdgeId MCTS::select_best_edge(const Node& node)
 {
-	float max_uct_score =
-	    calculate_uct(node, get_node(node.edges.front().dest));
+	float max_q =
+	    calculate_weighted_rave_value(get_node(node.edges.front().dest));
 	uint32_t child_index = 0;
 	for (size_t i = 1; i < node.edges.size(); i++)
 	{
 		Node& child = get_node(node.edges[i].dest);
-		float uct_score = calculate_uct(node, child);
-		if (uct_score > max_uct_score)
+		float q = calculate_weighted_rave_value(child);
+		if (q > max_q)
 		{
-			max_uct_score = uct_score;
+			max_q = q;
 			child_index = i;
 		}
 	}
@@ -307,29 +346,20 @@ void MCTS::show_debugging_info()
 		auto& child_node = get_node(edge.dest);
 		std::string pos_str = BoardSimpleGUI::get_alphanumeric_position(pos);
 		printf(
-		    "Action: %s num_visits: %d num_wins: %d\n", pos_str.c_str(),
-		    child_node.num_visits, child_node.num_wins);
+		    "Action: %s mcts_visits: %d mcts_q: %f, rave_visits: %d, "
+		    "rave q: %f\n",
+		    pos_str.c_str(), child_node.mcts_visits, child_node.mcts_q,
+		    child_node.rave_visits, child_node.rave_q);
 	};
 	for (auto& child : root_node.edges)
 	{
 		// print_edge(child);
 		auto& child_node = get_node(child.dest);
-		if (child_node.num_visits > get_node(most_visited.dest).num_visits)
+		if (child_node.mcts_visits > get_node(most_visited.dest).mcts_visits)
 			most_visited = child;
-		float v1 = 0;
-		float v2 = 0;
-		if (child_node.num_visits > 0)
-			v1 = float(child_node.num_wins) / child_node.num_visits;
-		if (get_node(most_wins_to_visit.dest).num_visits > 0)
-			v2 = float(get_node(most_wins_to_visit.dest).num_wins) /
-			     get_node(most_wins_to_visit.dest).num_visits;
-		if (v1 > v2)
-			most_wins_to_visit = child;
 	}
 	printf("Most visited:\n");
 	print_edge(most_visited);
-	printf("Most wins to visit ratio:\n");
-	print_edge(most_wins_to_visit);
 	printf("Tree size: %lu\n", allocated_nodes.size());
 	printf("Min in tree depth: %lu\n", stats.min_in_tree_depth);
 	printf("Max in tree depth: %lu\n", stats.max_in_tree_depth);

@@ -6,8 +6,8 @@
 #include "mcts/common.h"
 #include "mcts/playout.h"
 #include <atomic>
+#include <iostream>
 #include <memory>
-
 namespace go
 {
 namespace mcts
@@ -20,32 +20,51 @@ constexpr NodeId INVALID_NODE_ID = std::numeric_limits<NodeId>::max();
 
 struct Edge
 {
-	Edge(const engine::Action& action_, NodeId dest_)
-	    : action{action_}, dest{dest_}
+	Edge(const engine::Action& action_, NodeId src_, NodeId dest_)
+	    : action{action_}, src{src_}, dest{dest_}
 	{
 	}
 	engine::Action action;
-	NodeId dest; // destination
+	NodeId src;
+	NodeId dest;
 };
 
 struct Node
 {
-	Node(uint32_t num_visits_ = 0, uint32_t num_wins_ = 0)
-	    : num_visits{num_visits_}, num_wins{num_wins_}
+	Node(
+	    uint32_t mcts_visits_ = 0, float mcts_q_ = 0, uint32_t rave_visits_ = 0,
+	    float rave_q_ = 0)
+	    : mcts_visits{mcts_visits_}, mcts_q{mcts_q_}, rave_visits(rave_visits_),
+	      rave_q(rave_q_)
 	{
 	}
-	uint32_t num_visits;
-	uint32_t num_wins;
+	uint32_t mcts_visits;
+	float mcts_q;
+	uint32_t rave_visits;
+	float rave_q;
 	std::vector<Edge> edges;
+
+	void add_mcts_reward(float z)
+	{
+		mcts_visits++;
+		mcts_q += (z - mcts_q) / mcts_visits;
+	}
+	void add_rave_reward(float z)
+	{
+		rave_visits++;
+		rave_q += (z - rave_q) / rave_visits;
+	}
 };
 
 struct Trajectory
 {
-	engine::GameState state;   // game state at the leaf node
+	engine::GameState state;       // game state at the leaf node
 	std::vector<NodeId> nodes_ids; // nodes along the in-tree trajectory;
 	std::vector<EdgeId> edges_ids;
 	uint32_t player_idx;
 	uint32_t winner_idx;
+
+	std::array<std::array<bool, 2>, BoardState::MAX_NUM_CELLS> rave_actions;
 
 	void visit(EdgeId edge_id, NodeId node_id)
 	{
@@ -58,6 +77,8 @@ struct Trajectory
 		nodes_ids.clear();
 		edges_ids.clear();
 		nodes_ids.push_back(root_id);
+		std::fill(
+		    rave_actions.begin(), rave_actions.end(), std::array{false, false});
 	};
 };
 
@@ -69,9 +90,13 @@ struct MCTSStats
 	size_t play_count;
 	size_t tot_depth;
 
+	size_t num_simulations;
+	std::array<size_t, 2> num_wins;
+
 	MCTSStats()
 	    : min_in_tree_depth{std::numeric_limits<uint32_t>::max()},
-	      max_in_tree_depth{0}, average_in_tree_depth{0}
+	      max_in_tree_depth{0}, average_in_tree_depth{0},
+	      num_simulations{0}, num_wins{0, 0}
 	{
 	}
 
@@ -83,6 +108,8 @@ struct MCTSStats
 		max_in_tree_depth = std::max(max_in_tree_depth, depth);
 		tot_depth += depth;
 		average_in_tree_depth = float(tot_depth) / play_count;
+		num_simulations++;
+		num_wins[traj.winner_idx]++;
 	}
 };
 
@@ -98,17 +125,18 @@ public:
 private:
 	NodeId allocate_node();
 	NodeId allocate_root_node();
-	EdgeId expand_node(Node&, const engine::GameState&);
 	EdgeId expand_node(NodeId, const engine::GameState&);
 	Node& get_node(NodeId);
 	Edge& get_edge(NodeId, EdgeId);
 	bool is_expanded(const Node&);
 	bool is_expanded(NodeId);
 	float calculate_uct(const Node&, const Node&);
+	float calculate_weighted_rave_value(const Node&);
 
 	void update();
 	void update_node_stats(const Trajectory&);
 	void update_lgr(const Trajectory&);
+	void update_rave(Trajectory&);
 
 	// UCT
 	EdgeId select_best_edge(const Node&);
@@ -121,6 +149,8 @@ private:
 	    MAX_NODES_SIZE_IN_BYTES / sizeof(Node);
 	static constexpr size_t NUM_REUSE_LEVELS = 3;
 	static constexpr uint32_t EXPANSION_THRESHOLD = 1;
+
+	static constexpr float RAVE_BIAS = 1.0 / 2003.0;
 
 	PRNG prng;
 	std::vector<Node> allocated_nodes;

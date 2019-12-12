@@ -217,22 +217,41 @@ void for_each_valid_action(const GameState& state, Lambda&& lambda)
 }
 
 template <typename Lambda>
-void for_each_liberty(const Cluster& cluster, Lambda&& lambda)
+void for_each_liberty(
+    const BoardState& state, const Cluster& cluster, Lambda&& lambda)
 {
-	auto wrapped_lambda =
-	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
+	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, DONT_EXPAND>(
+	    std::forward<Lambda>(lambda));
 	uint32_t count = 0;
+
+	/*
 	for (uint32_t pos = BoardState::BOARD_BEGIN;; pos++)
 	{
-		if (cluster.liberties_map[pos])
-		{
-			if (wrapped_lambda(pos) == BREAK)
-				return;
-			count++;
-		}
-		if (count == cluster.num_liberties)
-			return;
+	    if (cluster.liberties_map[pos])
+	    {
+	        if (wrapped_lambda(pos) == BREAK)
+	            return;
+	        count++;
+	    }
+	    if (count == cluster.num_liberties)
+	        return;
 	}
+	*/
+	Cell cluster_color = state.board[cluster.parent_idx];
+	for_each_cell(state, cluster.parent_idx, [&](uint32_t idx) {
+		if (count == cluster.num_liberties)
+			return BREAK;
+		if (state.board[idx] == cluster_color)
+		{
+			return EXPAND;
+		}
+		else if (is_empty_cell(state, idx))
+		{
+			count++;
+			return wrapped_lambda(idx);
+		}
+		return DONT_EXPAND;
+	});
 }
 
 template <typename Lambda>

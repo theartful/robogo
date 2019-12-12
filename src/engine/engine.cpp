@@ -179,6 +179,7 @@ std::pair<float, float> go::engine::calculate_score(const GameState& state)
 	float black_score = black_territory_score +
 	                    black_player.number_alive_stones +
 	                    black_player.number_captured_enemies;
+
 	return {black_score, white_score};
 }
 
