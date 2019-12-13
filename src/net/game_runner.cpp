@@ -53,7 +53,7 @@ void NetGameRunner::set_remaining_time(std::chrono::duration<uint32_t, std::mill
     game.set_remaining_time(remaining_time, agent_id);
 }
 
-
 }
 
 }
+

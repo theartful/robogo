@@ -118,7 +118,6 @@ public:
 	{
 		if (get_game_end())
 		{
-			DEBUG_PRINT("THIS IS WHY IT ENDS.\n");
 			return true;
 		}
 		else
@@ -160,6 +159,5 @@ private:
 	bool force_game_end;
 };
 
-} // namespace go
-
+}
 #endif // SRC_CONTROLLER_INTERFACE_H
