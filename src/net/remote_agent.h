@@ -24,6 +24,10 @@ namespace net
 
 class RemoteAgent : public Agent
 {
+    std::mutex remote_move_mutex;
+    std::condition_variable remote_move_arrival;
+    bool player_pos_arrived = false;
+    uint32_t net_player_pos;
 public:
     virtual uint32_t generate_move(const Game& game) override
     {
@@ -38,8 +42,10 @@ public:
 
     void set_player_pos (uint32_t pos)
     {
+        std::lock_guard<std::mutex> lock(remote_move_mutex);
         player_pos_arrived = true;
         net_player_pos = pos;
+        remote_move_arrival.notify_one();
     }
 };
     
