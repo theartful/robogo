@@ -212,7 +212,7 @@ std::string GTPEngine::take_request(std::string request)
 		else if (command == "known_command")
 			return response_prefix + known_command(args[0]).val() + "\n\n";
 		else if (command == "list_commands")
-			return response_prefix + list_commands().val() + "\n\n";
+			return response_prefix + list_commands().val() + "\n";
 		else if (command == "quit")
 		{
 			quit();

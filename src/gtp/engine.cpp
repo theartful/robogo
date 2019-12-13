@@ -18,6 +18,9 @@ void GTPEngine::game_loop()
 	while (!game.is_game_finished())
 	{
 		std::getline(std::cin, request);
+		if (request.empty())
+			continue;
+
 		to_lower(request);
 		std::cout << take_request(request);
 	}
