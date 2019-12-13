@@ -85,7 +85,7 @@ void Server::send_board(go::Game* game, bool valid)
     else
         args.push_back("invalid");
 
-    send(gtp::make_request("setboard", args, 0));
+    send(gtp::GTPEngine::make_request("setboard", args, 0));
 }
 
 Server::Server(uint32_t port)
@@ -169,8 +169,7 @@ bool Server::send(std::string message)
 
 void Server::end_game(const go::Game& game)
 {
-    float player_1_score = game.get_game_state().players[0].total_score;
-	float player_2_score = game.get_game_state().players[1].total_score;
+    auto [player_1_score, player_2_score] = go::engine::calculate_score(game.get_game_state());
 
     if (player_1_score > player_2_score)
         send("end b " + to_string(player_1_score));

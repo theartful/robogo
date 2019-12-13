@@ -24,7 +24,7 @@ public:
 			mcts_algo.clear_tree();
 
 		auto action = mcts_algo.run(game_state);
-		show_debugging_info(game, action);
+		// show_debugging_info(game, action);
 		return action.pos;
 	}
 

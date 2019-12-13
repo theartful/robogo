@@ -152,12 +152,36 @@ struct Vertex
 struct Move
 {
 	string move;
+	Color color;
+	Vertex vertex;
 	Move()
 	{
 	}
 
-	Move(Color color, Vertex vertex)
+	Move(std::string move_str)
 	{
+		try
+		{
+			std::istringstream stream(move_str);
+			string color_str;
+			string vertex_str;
+			stream >> color_str;
+			stream >> vertex_str;
+			color = Color(color_str);
+			vertex = Vertex(vertex_str);
+		}
+		catch (...)
+		{
+			throw std::invalid_argument("invalid color and vertex value");
+		}
+
+		this->move = color.val() + " " + vertex.val();
+	}
+
+	Move(Color c, Vertex v)
+	{
+		color = c;
+		vertex = v;
 		this->move = color.val() + " " + vertex.val();
 	}
 
@@ -354,9 +378,9 @@ struct List
 
 	void appendAll(vector<T> values)
 	{
-		for (int i = 0; i < items.size(); i++)
+		for (int i = 0; i < values.size(); i++)
 		{
-			this->items.push_back(items[i]);
+			this->items.push_back(values[i]);
 		}
 	}
 

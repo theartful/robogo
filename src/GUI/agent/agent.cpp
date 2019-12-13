@@ -26,7 +26,7 @@ uint32_t HumanAgent::generate_move(const Game& game)
 {
     std::vector<std::string> args;
     args.push_back(color.val());
-    server->send(gtp::make_request("genmove", args, id));
+    server->send(gtp::GTPEngine::make_request("genmove", args, id));
     wait_response = true;
 
     std::mutex m;
@@ -53,7 +53,7 @@ void HumanAgent::response_handler(string res)
     if (!wait_response)
         return;
 
-    std::pair<uint32_t, std::string> parsed_response = gtp::parse_response(res);
+    std::pair<uint32_t, std::string> parsed_response = gtp::GTPEngine::parse_response(res);
     if (parsed_response.first != id)
         return;
 

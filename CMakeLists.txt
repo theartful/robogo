@@ -54,7 +54,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 	    -Wdisabled-optimization -Wformat=2 -Winit-self -Wstrict-overflow=5 \
 	    -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
 	    -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
-	    -Wundef -Wswitch-default -Werror -Wno-unused")
+	    -Wundef -Wswitch-default -Wno-unused")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 elseif (MSVC)

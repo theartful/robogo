@@ -6,7 +6,7 @@ using namespace gtp;
  * @param   none
  * @returns {int}   version_number    Protocol Version Number
  */
-uint32_t gtp::protocol_version()
+uint32_t GTPEngine::protocol_version()
 {
 	return 2u;
 }
@@ -15,7 +15,7 @@ uint32_t gtp::protocol_version()
  * @param   none
  * @returns {List<string>}   name    Engine Name
  */
-List<string> gtp::name()
+List<string> GTPEngine::name()
 {
 	List<string> name({"Go", "Slayer"});
 	return name;
@@ -25,7 +25,7 @@ List<string> gtp::name()
  * @param   none
  * @returns {List<string>}   version    Engine Version Name
  */
-List<string> gtp::version()
+List<string> GTPEngine::version()
 {
 	List<string> version({"1.0.0"});
 	return version;
@@ -37,9 +37,17 @@ List<string> gtp::version()
  * @returns {Boolean}   known           "true" if command is known, "false"
  * otherwise
  */
-Boolean gtp::known_command(string command_name)
+Boolean GTPEngine::known_command(string command_name)
 {
-    bool known = std::find(std::begin(gtp::commands), std::end(gtp::commands), command_name) != std::end(gtp::commands);
+	bool known = false;
+	for (uint32_t i = 0; i < 16; i++)
+	{
+		if (GTPEngine::commands[i] == command_name)
+		{
+			known = true;
+			break;
+		}
+	}
 	return Boolean(known);
 }
 
@@ -47,9 +55,9 @@ Boolean gtp::known_command(string command_name)
  * @param   none
  * @returns {MultiLineList<string>}   commands  List of commands, one per row
  */
-MultiLineList<string> gtp::list_commands()
+MultiLineList<string> GTPEngine::list_commands()
 {
-	MultiLineList<string> list(gtp::commands, 22u);
+	MultiLineList<string> list(GTPEngine::commands, NUM_COMMANDS);
 	return list;
 }
 
@@ -57,6 +65,7 @@ MultiLineList<string> gtp::list_commands()
  * @param   none
  * @returns {void}
  */
-void gtp::quit()
+void GTPEngine::quit()
 {
+	exit(0);
 }

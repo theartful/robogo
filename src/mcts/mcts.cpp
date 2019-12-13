@@ -77,7 +77,7 @@ bool MCTS::advance_tree(const Action& action1, const Action& action2)
 		}
 		first = last;
 		last = temporary_space.size();
-		printf("first: %lu, last: %lu\n", first, last);
+		// printf("first: %lu, last: %lu\n", first, last);
 	}
 	for (NodeId it = first; it != last; it++)
 	{
@@ -149,10 +149,10 @@ Action MCTS::run(const GameState& root_state)
 	}
 	auto done = std::chrono::high_resolution_clock::now();
 
-	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
-	                 done - started)
-	                 .count()
-	          << '\n';
+	// std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(
+	//                  done - started)
+	//                  .count()
+	//           << '\n';
 
 	Node& root_node = get_node(root_id);
 	Action best_action = root_node.edges[0].action;

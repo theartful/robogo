@@ -1,69 +1,71 @@
 #ifndef GTP_GTP_H_
 #define GTP_GTP_H_
 
+#include "controller/agent.h"
+#include "controller/game.h"
 #include "entities.h"
 #include <map>
 #include <utility>
 namespace gtp
 {
-static const string commands[] = {"protocol_version",
-                           "name",
-                           "version",
-                           "known_command",
-                           "list_commands",
-                           "quit",
-                           "clear_board",
-                           "komi",
-                           "play",
-                           "genmove",
-                           "undo",
-                           "final_score",
-                           "final_status_list",
-                           "showboard",
-                           "setboard"};
-static const std::map<string, int> commands_args = {{"protocol_version", 0},
-                                             {"name", 0},
-                                             {"version", 0},
-                                             {"known_command", 1},
-                                             {"list_commands", 0},
-                                             {"quit", 0},
-                                             {"clear_board", 0},
-                                             {"komi", 1},
-                                             {"play", 1},
-                                             {"genmove", 1},
-                                             {"undo", 0},
-                                             {"final_score", 0},
-                                             {"final_status_list", 1},
-                                             {"showboard", 0},
-                                             {"setboard", 1}};
+class GTPEngine
+{
+public:
+	static const uint32_t BOARD_SIZE = 19;
+	static const uint32_t NUM_COMMANDS = 16U;
+	static const std::string commands[];
+	static const std::map<std::string, uint32_t> commands_args;
 
-// Adminstrative Commands
-uint32_t protocol_version();
-List<string> name();
-List<string> version();
-Boolean known_command(string command_name);
-MultiLineList<string> list_commands();
-void quit();
+	GTPEngine();
+	void game_loop();
 
-// Setup Commands
-void clear_board();
-void komi(float new_komi);
+	// Adminstrative Commands
+	static uint32_t protocol_version();
+	static List<string> name();
+	static List<string> version();
+	static Boolean known_command(string command_name);
+	static MultiLineList<string> list_commands();
+	void quit();
 
-// Core Play Commands
-void play(Move move);
-Alternative<Vertex, string> genmove(Color color);
-void undo();
+	// Setup Commands
+	void boardsize(uint32_t size);
+	void clear_board();
+	void komi(float new_komi);
 
-// Tournament Commands
-string final_score();
-MultiLineList<List<Vertex>> final_status_list(string status);
+	// Core Play Commands
+	void play(Move move);
+	std::string genmove(Color color);
+	void undo();
 
-// Debug Commands
-MultiLineList<List<string>> showboard();
+	// Tournament Commands
+	string final_score();
+	MultiLineList<List<Vertex>> final_status_list(string status);
 
-std::string make_request(string command, vector<string> args, uint32_t id);
-std::pair<uint32_t, string> parse_response(string response);
-std::string take_request(string request);
+	// Debug Commands
+	inline bool is_special(uint32_t idx);
+	char get_board_symbol(go::engine::Cell cell, uint32_t x, uint32_t y);
+	std::string showboard();
+
+	static std::pair<uint32_t, std::vector<std::string>> tokenize(string str);
+	static std::string parse_request(
+	    std::string request, std::string& error_prefix,
+	    std::string& response_prefix, std::string& command,
+	    std::vector<std::string>& args);
+	static std::pair<uint32_t, std::string> parse_response(string response);
+
+	static std::string
+	make_request(string command, vector<string> args, uint32_t id);
+	std::string take_request(string request);
+
+private:
+	go::Game game;
+	std::shared_ptr<go::Agent> agent1;
+	std::shared_ptr<go::Agent> agent2;
+
+	void to_lower(std::string& s);
+	static std::string get_alphanumeric_position(uint32_t x, uint32_t y);
+	static std::string get_alphanumeric_position(uint32_t pos);
+};
 } // namespace gtp
 
 #endif
