@@ -68,16 +68,20 @@ void GameManager::start_game(Document& document)
     auto num_moves = configuration["moveLog"].Size();
     auto moves = configuration["moveLog"].GetArray();
     std::vector<engine::Action> actions;
-    // Can he give an initial state AND a move log?
+    std::array<uint32_t, 2> elapsed_time = { 0, 0 };
     uint32_t current_player = 0;
     for (auto& move : moves) { 
         actions.push_back(get_action(move, current_player));
+        elapsed_time[current_player] += move["deltaTime"].GetUint();
         current_player = (current_player + 1) % 2;
     }
+    elapsed_time[current_player] += configuration["idleDeltaTime"].GetUint();
     auto current_runner = std::make_shared<NetGameRunner>();
+    DEBUG_PRINT("Going to lock in start_game().\n");
     std::lock_guard<std::mutex> lock(runners_mutex);
     runners.push_back(current_runner);
-    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions };
+    DEBUG_PRINT("Starting NetGameRunner..\n");
+    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions, elapsed_time };
 }
 
 void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
@@ -117,6 +121,18 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
         cout << "GameManager: END reached. Reason: " << end_reason << "\n";
         current_runner->set_game_end(true);
         game_loop_thread.detach();
+    }
+    else if (message_type == "VALID")
+    {
+        std::lock_guard<std::mutex> lock(runners_mutex);
+        auto current_runner = runners.back();
+        uint32_t remaining_time_b = received_document["remainingTime"]["B"].GetUint();
+        uint32_t remaining_time_w = received_document["remainingTime"]["W"].GetUint();
+        std::chrono::duration<uint32_t, std::milli> duration_black (remaining_time_b); 
+        std::chrono::duration<uint32_t, std::milli> duration_white (remaining_time_w); 
+        current_runner->set_remaining_time(duration_black, 0);
+        current_runner->set_remaining_time(duration_white, 1);
+        
     }
 }
 
@@ -223,8 +239,10 @@ void GameManager::run()
 
 void GameManager::runner_lifetime_over()
 {
+    DEBUG_PRINT("GameManager::runner_lifetime_over() started.");
     std::lock_guard<std::mutex> lock(runners_mutex);
     runners.pop_front();
+    DEBUG_PRINT("GameManager::runner_lifetime_over() ended.");
 }
 
 }

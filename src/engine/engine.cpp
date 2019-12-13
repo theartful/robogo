@@ -87,7 +87,7 @@ static uint32_t get_ko(
 	auto& action_cluster = get_cluster(table, action_pos);
 	if (in_atari(action_cluster) && action_cluster.size == 1)
 	{
-		uint32_t captured_stone_idx;
+		uint32_t captured_stone_idx = std::numeric_limits<uint32_t>::max();
 		for_each_neighbor(state, action_pos, [&](auto neighbor) {
 			if (is_empty_cell(state, neighbor))
 			{
@@ -96,6 +96,10 @@ static uint32_t get_ko(
 			}
 			return CONTINUE;
 		});
+		if (captured_stone_idx == std::numeric_limits<uint32_t>::max())
+		{
+			DEBUG_PRINT("get_ko: ERROR: INCONSISTENT DATA!\n");
+		}
 		return captured_stone_idx;
 	}
 	return BoardState::INVALID_INDEX;

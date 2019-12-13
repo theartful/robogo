@@ -47,6 +47,13 @@ void Game::set_elapsed_time(
 	agents_time_info[player_idx].set_elapsed_time(elapsed_time);
 }
 
+void Game::set_remaining_time(
+	std::chrono::duration<uint32_t, std::milli> remaining_time,
+    uint32_t player_idx)
+{
+	agents_time_info[player_idx].set_remaining_time(remaining_time);
+}
+
 const engine::GameState& Game::get_game_state() const
 {
 	return game_state;
@@ -79,14 +86,15 @@ void Game::main_loop()
 		DEBUG_PRINT("IN THE LOOP.\n");
 		auto& agent = agents[game_state.player_turn];
 		auto& agent_time = agents_time_info[game_state.player_turn];
-
+		auto remaining_time = agent_time.get_remaining_time().count();
+		std::cout << "Agent " << game_state.player_turn << " remaining time: " << remaining_time << "\n";
 		agent_time.start_counting();
 		std::cout << "GAME: Agent " << agent->get_player_idx() << " will play!\n";
 		Action agent_action = {agent->generate_move(*this),
-		                       game_state.player_turn};
+							game_state.player_turn};
 		std::cout << "GAME: Agent " << agent_action.player_index << " played " << agent_action.pos << "\n";
 		agent_time.stop_counting();
-
+	
 		// accept the move only if played in time
 		if (!agent_time.is_overtime())
 		{

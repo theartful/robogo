@@ -15,6 +15,8 @@ namespace go
 namespace net
 {
 
+class GameManager;
+
 class LocalAgent : public Agent
 {
 public:
@@ -34,7 +36,8 @@ public:
         Action action;
         action.player_index = agent->get_player_idx();
         action.pos = move;
-        game_manager->send_move(action);
+        if (!game.get_game_end())
+            game_manager->send_move(action);
         return move;
     }
 
