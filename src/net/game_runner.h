@@ -22,11 +22,13 @@ namespace go
 namespace net
 {
 
+class GameManager;
+
 class NetGameRunner
 {
     public:
         NetGameRunner();
-        void run_game(uint32_t netagent_color, std::vector<Action> init_actions);
+        void run_game(GameManager& manager, uint32_t netagent_color, std::vector<Action> init_actions);
         void set_game_end(bool game_end);
         void set_remote_move(const ActionMessage message);
     private:
