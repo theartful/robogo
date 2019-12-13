@@ -75,6 +75,7 @@ void GameManager::start_game(Document& document)
         current_player = (current_player + 1) % 2;
     }
     auto current_runner = std::make_shared<NetGameRunner>();
+    std::lock_guard<std::mutex> lock(runners_mutex);
     runners.push_back(current_runner);
     game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions };
 }
@@ -101,6 +102,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     }
     else if(message_type == "MOVE")
     {
+        std::lock_guard<std::mutex> lock(runners_mutex);
         auto current_runner = runners.back();
         cout << "GameManager: MOVE received. \n";
         Action action = get_action(received_document, 1 - local_player_index);
@@ -109,11 +111,11 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     }
     else if(message_type == "END")
     {
+        std::lock_guard<std::mutex> lock(runners_mutex);
         auto current_runner = runners.back();
         string end_reason=received_document["reason"].GetString();
         cout << "GameManager: END reached. Reason: " << end_reason << "\n";
         current_runner->set_game_end(true);
-        DEBUG_PRINT("Game Ended..");
         game_loop_thread.detach();
     }
 }
@@ -217,6 +219,12 @@ void GameManager::run()
     }
     end_point.connect(connection);
     end_point.run();
+}
+
+void GameManager::runner_lifetime_over()
+{
+    std::lock_guard<std::mutex> lock(runners_mutex);
+    runners.pop_front();
 }
 
 }

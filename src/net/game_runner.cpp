@@ -26,6 +26,7 @@ void NetGameRunner::run_game(GameManager& manager, uint32_t netagent_color, std:
     game.register_agent(local_agent, 1 - netagent_color);
     game.force_moves(init_actions);
     game.main_loop();
+    manager.runner_lifetime_over();
 }
 
 void NetGameRunner::set_game_end(bool game_end) 

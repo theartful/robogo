@@ -42,13 +42,15 @@ class GameManager {
         void send_value(Document& value);
         void send_name();
         void send_move(const Action& action);
+
+        void runner_lifetime_over();
     private:
         void start_game(Document& document);
         void pretty_print(Document& s);
         Action get_action(rapidjson::Value& move, uint32_t player);
-
-        // TODO: fix the ownership of this.
-        std::vector<std::shared_ptr<NetGameRunner>> runners;
+        
+        std::mutex runners_mutex;
+        std::deque<std::shared_ptr<NetGameRunner>> runners;
         std::thread game_loop_thread;
 
         // TODO: wrap network stuff in a struct.
