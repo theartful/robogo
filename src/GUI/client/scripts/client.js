@@ -22,7 +22,7 @@ socket.onmessage = function (event) {
     let command = event.data.split(' ');
     if (command.length === 3 && command[0] === "end") {
         let winnerName = (command[1] === "b") ? player1_name : player2_name;
-        window.location = `./finish.html?winner=${winnerName}&score=${command[2]}`;
+        window.location = `./finish.html?winner=${winnerName}&score=${Number(command[2])}`;
     }
     else {
         let response = takeRequest(event.data);
