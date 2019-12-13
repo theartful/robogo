@@ -28,8 +28,6 @@ GameManager::GameManager(const std::string& uri):server_address(uri)
     end_point.set_fail_handler(bind(&GameManager::on_fail,this,&end_point,server_address));
     end_point.set_close_handler(bind(&GameManager::on_close,this,&end_point,server_address));
     end_point.set_open_handler(bind(&GameManager::on_open,this));
-
-    current_runner = nullptr;
 }
 
 void GameManager::on_open() 
@@ -76,8 +74,9 @@ void GameManager::start_game(Document& document)
         actions.push_back(get_action(move, current_player));
         current_player = (current_player + 1) % 2;
     }
-    current_runner = std::make_shared<NetGameRunner>();
-    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), 1 - local_player_index, actions };
+    auto current_runner = std::make_shared<NetGameRunner>();
+    runners.push_back(current_runner);
+    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions };
 }
 
 void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 
@@ -86,7 +85,6 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     received_document.Parse(msg->get_payload().c_str());
     pretty_print(received_document);
     string message_type = received_document["type"].GetString();
-
     if (message_type == "NAME")
     {   
         cout << "GameManager: NAME received. \n";
@@ -103,6 +101,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     }
     else if(message_type == "MOVE")
     {
+        auto current_runner = runners.back();
         cout << "GameManager: MOVE received. \n";
         Action action = get_action(received_document, 1 - local_player_index);
 
@@ -110,11 +109,12 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
     }
     else if(message_type == "END")
     {
+        auto current_runner = runners.back();
         string end_reason=received_document["reason"].GetString();
         cout << "GameManager: END reached. Reason: " << end_reason << "\n";
         current_runner->set_game_end(true);
+        DEBUG_PRINT("Game Ended..");
         game_loop_thread.detach();
-        current_runner = nullptr;
     }
 }
 
@@ -139,7 +139,33 @@ void GameManager::send_value(Document & value)
     if (ec) {
         cout << "Echo failed because: " << ec.message() << "\n";
     }
+}
 
+void GameManager::send_move(const Action& action)
+{
+    Document current_move;
+    rapidjson::Value move;
+    if (action.pos == action.PASS)
+    {
+        move.SetObject();
+        move.AddMember("type", "pass", current_move.GetAllocator());
+    }
+    else
+    {
+        auto i = BoardState::get_row(action.pos);
+        auto j = BoardState::get_column(action.pos);
+        rapidjson::Value point(rapidjson::kObjectType);
+        point.AddMember("row", i, current_move.GetAllocator());
+        point.AddMember("column", j, current_move.GetAllocator());
+        move.SetObject();
+        move.AddMember("type", "place", current_move.GetAllocator());
+        move.AddMember("point", point, current_move.GetAllocator() );
+    }
+    current_move.SetObject();
+    current_move.AddMember("type", "MOVE", current_move.GetAllocator());
+    current_move.AddMember("move", move, current_move.GetAllocator());
+    send_value(current_move);
+    
 }
 
 //for debugging

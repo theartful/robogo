@@ -27,6 +27,7 @@ namespace go
 
 namespace net
 {
+
 class GameManager {
     public:
         GameManager(const std::string& uri);
@@ -40,14 +41,16 @@ class GameManager {
         // Network send-and-receive.
         void send_value(Document& value);
         void send_name();
+        void send_move(const Action& action);
     private:
         void start_game(Document& document);
         void pretty_print(Document& s);
         Action get_action(rapidjson::Value& move, uint32_t player);
 
-        std::shared_ptr<NetGameRunner> current_runner;
+        // TODO: fix the ownership of this.
+        std::vector<std::shared_ptr<NetGameRunner>> runners;
         std::thread game_loop_thread;
-        uint current_game = 0;
+
         // TODO: wrap network stuff in a struct.
         static constexpr int reconnection_wait_time = 4;
         const string server_address;

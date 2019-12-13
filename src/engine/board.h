@@ -91,6 +91,16 @@ struct BoardState
 	{
 		return (i + 1) * EXTENDED_BOARD_SIZE + (j + 1);
 	}
+
+	static constexpr uint32_t get_row(uint32_t pos)
+	{
+		return pos / EXTENDED_BOARD_SIZE - 1;
+	}
+
+	static constexpr uint32_t get_column(uint32_t pos)
+	{
+		return pos % EXTENDED_BOARD_SIZE - 1;
+	}
 };
 
 inline bool is_empty_cell(Cell cell)

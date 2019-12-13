@@ -17,7 +17,7 @@ public:
 	{
 		return player_idx;
 	}
-	void set_player_idx(uint32_t player_idx_)
+	virtual void set_player_idx(uint32_t player_idx_)
 	{
 		this->player_idx = player_idx_;
 	}
