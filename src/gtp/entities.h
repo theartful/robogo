@@ -83,6 +83,13 @@ struct Vertex
 	{
 		if (!(value == "pass"))
 		{
+			if (value.length() == 2)
+			{
+				char col = value[1];
+				value[1] = '0';
+				value.push_back(col);
+			}
+
 			if (value.length() > 3)
 				throw invalid_argument("invalid vertex value");
 

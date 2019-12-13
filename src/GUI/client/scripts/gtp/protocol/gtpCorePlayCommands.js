@@ -27,12 +27,12 @@ let setboard = (newState) => {
     }
     else {
         newState = newState.split(' ');
-        if (newState.length !== 3)
+        if (newState.length !== 4)
             throw "invalid state";
         
         updatePlayer1Stones(toInt(newState[0]));
         updatePlayer2Stones(toInt(newState[1]));
-        let newBoard = newState[2];
+        let newBoard = newState[3];
 
         var tempBoard = new Array(arraySize + 1)
             .fill(null)
@@ -51,7 +51,7 @@ let setboard = (newState) => {
             removeSound.play();
 
         board = tempBoard;
-        changeTurn();
+        changeTurn(toInt(newState[2]));
         draw(ctx, canvas);
     }
 }

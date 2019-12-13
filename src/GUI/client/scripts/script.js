@@ -33,7 +33,7 @@ currentTurn = { name: player1_name, mode: player1 };
 
 updateNames(player1_name, player2_name);
 
-clock1 = $(".clock").FlipClock(15 * 60, {
+var clock1 = $(".clock").FlipClock(15 * 60, {
     clockFace: "MinuteCounter",
     countdown: true,
     callbacks: {
@@ -42,7 +42,7 @@ clock1 = $(".clock").FlipClock(15 * 60, {
         }
     }
 });
-clock2 = $(".clock2").FlipClock(15 * 60, {
+var clock2 = $(".clock2").FlipClock(15 * 60, {
     clockFace: "MinuteCounter",
     countdown: true,
     autoStart: false,
@@ -137,7 +137,7 @@ $(".player2-controls.pass").on("click", function (event) {
 });
 
 
-const changeTurn = () => {
+const changeTurn = (playerTime) => {
     currentTurn =
         currentTurn.name == player1_name
             ? { name: player2_name, mode: player2 }
@@ -148,6 +148,7 @@ const changeTurn = () => {
         $(".player1-controls").removeClass("disabled");
         $(".player2-controls").addClass("disabled");
         currentPlayer = changePlayer(currentPlayer);
+        clock1.setTime(playerTime);
         clock1.start();
         clock2.stop();
     } else {
@@ -156,7 +157,7 @@ const changeTurn = () => {
         $(".player2-controls").removeClass("disabled");
         $(".player1-controls").addClass("disabled");
         currentPlayer = changePlayer(currentPlayer);
-
+        clock2.setTime(playerTime);
         clock2.start();
         clock1.stop();
     }
