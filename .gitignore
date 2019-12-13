@@ -34,5 +34,6 @@
 *.out
 *.app
 
+build
 node_modules
 package-lock.json

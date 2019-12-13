@@ -22,6 +22,14 @@ cmake ..
 make
 ```
 
+To build release version, simply add build type flag option to cmake:
+```shell
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=RELEASE ..
+make
+```
+
 ## Testing
 
 To build unit tests, pass `-DENABLE_TESTING=ON` flag to cmake:
@@ -47,6 +55,7 @@ Make sure you are in build folder, and you built the project with cmake, then ru
 
 ```shell
 ./bin/goslayer-executable
+google-chrome ./src/GUI/client/index.html
 ```
 
 ## CLI Supported Commands
