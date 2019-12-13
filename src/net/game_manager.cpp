@@ -76,9 +76,8 @@ void GameManager::start_game(Document& document)
         actions.push_back(get_action(move, current_player));
         current_player = (current_player + 1) % 2;
     }
-    NetGameRunner runner;
-    current_runner = &runner;
-    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner, 1 - local_player_index, actions };
+    current_runner = std::make_shared<NetGameRunner>();
+    game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), 1 - local_player_index, actions };
 }
 
 void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) 

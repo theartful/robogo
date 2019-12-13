@@ -45,7 +45,7 @@ class GameManager {
         void pretty_print(Document& s);
         Action get_action(rapidjson::Value& move, uint32_t player);
 
-        NetGameRunner* current_runner;
+        std::shared_ptr<NetGameRunner> current_runner;
         std::thread game_loop_thread;
         uint current_game = 0;
         // TODO: wrap network stuff in a struct.
