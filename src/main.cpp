@@ -45,7 +45,8 @@ int main(int argc, const char * argv[])
 			char mode1 = 'a';
 			char mode2 = 'a';
 
-			Server* s = Server::setup(game, mode1, mode2);
+			Server* s = Server::setup(mode1, mode2);
+			s->bind_game(game);
 
 			std::shared_ptr<Agent> agent1;
 			std::shared_ptr<Agent> agent2;

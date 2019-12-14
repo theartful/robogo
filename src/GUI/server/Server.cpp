@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-Server* Server::setup(go::Game& game, char& mode1, char& mode2, uint32_t port)
+Server* Server::setup(char& mode1, char& mode2, uint32_t port)
 {
 	std::condition_variable cv;
 	auto unlock = [&cv, &mode1, &mode2](std::string payload) {
@@ -41,10 +41,13 @@ Server* Server::setup(go::Game& game, char& mode1, char& mode2, uint32_t port)
 	std::unique_lock<std::mutex> lk(m);
 	cv.wait(lk, [s] { return s->has_client(); });
 
-	using std::placeholders::_1;
-	game.set_make_move_callback(std::bind(&Server::send_board, s, &game, _1));
-
 	return s;
+}
+
+void Server::bind_game(go::Game& game)
+{
+	using std::placeholders::_1;
+	game.set_make_move_callback(std::bind(&Server::send_board, this, &game, _1));
 }
 
 void Server::send_board(go::Game* game, bool valid)

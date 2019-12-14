@@ -40,6 +40,10 @@ void NetGameRunner::set_remote_move(const ActionMessage message) {
     DEBUG_PRINT("NetGameRunner: Notification sent..\n");
 }
 
+void NetGameRunner::bind_gui(const Server*& s)
+{
+    s->bind_game(game);
+}
 
 }
 

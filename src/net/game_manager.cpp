@@ -28,6 +28,10 @@ GameManager::GameManager(const std::string& uri):server_address(uri)
     end_point.set_fail_handler(bind(&GameManager::on_fail,this,&end_point,server_address));
     end_point.set_close_handler(bind(&GameManager::on_close,this,&end_point,server_address));
     end_point.set_open_handler(bind(&GameManager::on_open,this));
+
+    char mode1 = 'a';
+    char mode2 = 'r';
+    s = Server::setup(mode1, mode2);
 }
 
 void GameManager::on_open() 
@@ -75,6 +79,7 @@ void GameManager::start_game(Document& document)
         current_player = (current_player + 1) % 2;
     }
     auto current_runner = std::make_shared<NetGameRunner>();
+    current_runner->bind_gui(s);
     std::lock_guard<std::mutex> lock(runners_mutex);
     runners.push_back(current_runner);
     game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions };

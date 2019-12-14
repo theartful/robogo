@@ -108,6 +108,5 @@ void Game::main_loop()
 			make_move_callback(valid_move);
 	}
 	DEBUG_PRINT("OUT OF THE GAME MAIN LOOP.\n");
-	engine::calculate_score(
-	    game_state.board_state, game_state.players[0], game_state.players[1]);
+	// engine::calculate_score(game_state);
 }

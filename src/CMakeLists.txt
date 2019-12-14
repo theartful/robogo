@@ -9,7 +9,7 @@ add_library(goslayer ${ENGINE_SRC} ${ENGINE_HEADERS})
 add_executable(goslayer-executable main.cpp)
 
 # use Websocketpp as depandancy
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system thread)
 if(NOT Boost_FOUND)
   message(FATAL_ERROR)
 endif()

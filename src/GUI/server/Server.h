@@ -39,13 +39,14 @@ class Server
     void send_board(go::Game* game, bool valid);
 public:
     Server(uint32_t port=DEFAULT_PORT);
+    void bind_game(go::Game& game);
     void set_on_config_callback(std::function<void(std::string)> cb);
     void add_message_handler(std::function<void(std::string)> handler);
     bool has_client();
     bool send(std::string message);
     void end_game(const go::Game& game);
 
-    static Server* setup(go::Game& game, char& mode1, char& mode2, uint32_t port=DEFAULT_PORT);
+    static Server* setup(char& mode1, char& mode2, uint32_t port=DEFAULT_PORT);
     ~Server();
 };
 

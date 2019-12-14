@@ -146,8 +146,7 @@ void go::engine::force_moves(GameState& game_state, const std::vector<Action>& a
 	}
 }
 
-void go::engine::calculate_score(
-    const BoardState& boardState, Player& black_player, Player& white_player)
+std::pair<float, float> go::engine::calculate_score(const GameState& state)
 {
 	auto& board_state = state.board_state;
 	auto& black_player = state.players[0];

@@ -6,6 +6,7 @@
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
 #define RAPIDJSON_HAS_STDSTRING 1
+#include "GUI/server/Server.h"
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
@@ -61,6 +62,7 @@ class GameManager {
         Document received_document;
         string player_name = "GoSlayer";
         uint32_t local_player_index;
+        Server* s;
 };
 
 }

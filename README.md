@@ -28,6 +28,7 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=RELEASE ..
 make
+cp -r ../src/GUI/client ./bin
 ```
 
 ## Testing
