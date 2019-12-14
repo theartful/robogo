@@ -3,28 +3,24 @@ var ctx = canvas.getContext("2d");
 var black = document.getElementById("black");
 var white = document.getElementById("white");
 
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (
-        m,
-        key,
-        value
-    ) {
-        vars[key] = value;
-    });
-    return vars;
-}
-
 const updateNames = (player1_name, player2_name) => {
     $("#player1_name").text(player1_name);
     $("#player2_name").text(player2_name);
 };
 
-var urlParams = getUrlVars();
 player1 = urlParams["player1"] ? urlParams["player1"] : "cmp";
 player2 = urlParams["player2"] ? urlParams["player2"] : "cmp";
 player1_name = urlParams["player1_name"] ? urlParams["player1_name"] : "CMP1";
 player2_name = urlParams["player2_name"] ? urlParams["player2_name"] : "CMP2";
+let clock1_auto_start = true;
+
+if (player1 == "remote" || player2 == "remote") {
+    clock1_auto_start = false;
+    $("#loadingModel").modal({
+        keyboard: false,
+        backdrop: 'static'
+    });
+}
 
 let allowMove = false;
 let pieceLocation = { location: [] };
@@ -36,6 +32,7 @@ updateNames(player1_name, player2_name);
 var clock1 = $(".clock").FlipClock(15 * 60, {
     clockFace: "MinuteCounter",
     countdown: true,
+    autoStart: clock1_auto_start,
     callbacks: {
         stop: function () {
             // $(".message").html("The clock has stopped!");
@@ -267,11 +264,11 @@ $("canvas#go-canvas").on("click", function (event) {
     if (allowMove) {
         var xIndex = parseInt((event.offsetX - (startOffset - step / 2)) / step);
         var yIndex = parseInt((event.offsetY - (startOffset - step / 2)) / step);
-    
+
         if (xIndex < 0 || xIndex > arraySize || yIndex < 0 || yIndex > arraySize) {
             return;
         }
-    
+
         pieceLocation.location = [xIndex, yIndex];
     }
 });
@@ -291,5 +288,10 @@ const draw = (ctx, canvas) => {
     drawBoard();
     drawAllPieces();
 };
+
+let stopWaiting = () => {
+    $("#loadingModel").modal("hide");
+    clock1.start();
+}
 
 draw(ctx, canvas);

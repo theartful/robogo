@@ -31,7 +31,7 @@ namespace net
 
 class GameManager {
     public:
-        GameManager(const std::string& uri);
+        GameManager(const std::string& uri, Server* gui_server);
         void run();
 
         // Network callbacks.

@@ -15,8 +15,9 @@ namespace go
 namespace net
 {
 
-GameManager::GameManager(const std::string& uri):server_address(uri)
+GameManager::GameManager(const std::string& uri, Server* gui_server):server_address(uri)
 {
+    s = gui_server;
     // clear logging channels
     end_point.clear_access_channels(websocketpp::log::alevel::all);
     end_point.clear_error_channels(websocketpp::log::alevel::all);
@@ -28,10 +29,6 @@ GameManager::GameManager(const std::string& uri):server_address(uri)
     end_point.set_fail_handler(bind(&GameManager::on_fail,this,&end_point,server_address));
     end_point.set_close_handler(bind(&GameManager::on_close,this,&end_point,server_address));
     end_point.set_open_handler(bind(&GameManager::on_open,this));
-
-    char mode1 = 'a';
-    char mode2 = 'r';
-    s = Server::setup(mode1, mode2);
 }
 
 void GameManager::on_open() 
@@ -79,7 +76,10 @@ void GameManager::start_game(Document& document)
         current_player = (current_player + 1) % 2;
     }
     auto current_runner = std::make_shared<NetGameRunner>();
+    
     current_runner->bind_gui(s);
+    s->start_net_game(1-local_player_index, "RemoteAgent");
+
     std::lock_guard<std::mutex> lock(runners_mutex);
     runners.push_back(current_runner);
     game_loop_thread = std::thread{ &NetGameRunner::run_game, current_runner.get(), std::ref(*this), 1 - local_player_index, actions };

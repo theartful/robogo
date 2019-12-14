@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="./css/jquery.growl.css" />
     <link rel="stylesheet" href="./css/start.css" />
     <link rel="stylesheet" href="./css/animated-text.css" />
+    <script src="./scripts/websocketHandler.js"></script>
 </head>
 
-<body>
+<body onbeforeunload="closeConnection()">
     <div class="music">
         <a class="btn-3d red text-white rounded muted"
             style="padding: 1rem 1rem; position: fixed; left: 10px; top: 10px; z-index: 1000;">
@@ -48,8 +49,7 @@
                     <h5 class="modal-title">CHOOSE GAME MODE</h5>
                 </div>
                 <div class="modal-body text-center">
-                    <a class="btn-3d green text-white rounded"
-                        href="./game.html?player1=cmp&player2=cmp&player1_name=CMP1&player2_name=CMP2" id="cmp-cmp-btn">
+                    <a class="btn-3d green text-white rounded" id="cmp-cmp-btn">
                         <i class="fa fa-laptop"></i>
                         <i class="fas fa-arrows-alt-h"></i>
                         <i class="fa fa-laptop"></i>
@@ -65,8 +65,7 @@
                         <i class="fa fa-user"></i>
                     </a>
 
-                    <a class="btn-3d red text-white rounded"
-                        href="./game.html?player1=cmp&player2=remote&player1_name=GoSlayer&player2_name=CMP2" id="cmp-remote-btn">
+                    <a class="btn-3d red text-white rounded" id="cmp-remote-btn">
                         <i class="fa fa-laptop"></i>
                         <i class="fas fa-arrows-alt-h"></i>
                         <i class="fa fa-rss"></i>

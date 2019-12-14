@@ -27,6 +27,7 @@ class Server
     static constexpr uint32_t DEFAULT_PORT = 9002;
     server_thread m_thread;
     server s;
+    std::string buffered_net_start = "";
     bool configed = false;
     bool client_connected = false;
     connection_hdl client_con;
@@ -44,10 +45,14 @@ public:
     void add_message_handler(std::function<void(std::string)> handler);
     bool has_client();
     bool send(std::string message);
+    void start_net_game(uint32_t remote_agent_index, std::string remote_agent_name);
     void end_game(const go::Game& game);
 
+    static uint32_t parse_port(std::string port_str);
     static Server* setup(char& mode1, char& mode2, uint32_t port=DEFAULT_PORT);
     ~Server();
+
+    bool net_game = false;
 };
 
 #endif
