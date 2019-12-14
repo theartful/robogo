@@ -22,5 +22,7 @@ if(NOT Websocketpp_FOUND)
   message(FATAL_ERROR "websocketpp library not found you can install it from here: https://github.com/zaphoyd/websocketpp.git")
 endif()
 
-target_link_libraries(goslayer-executable goslayer ${Boost_LIBRARIES})
+find_package(RapidJSON)
+
+target_link_libraries(goslayer-executable goslayer atomic ${Boost_LIBRARIES})
 set_property(TARGET goslayer-executable APPEND PROPERTY INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})

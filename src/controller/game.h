@@ -11,6 +11,9 @@
 #include "engine/cluster.h"
 #include "engine/interface.h"
 
+#include <atomic>
+#include <mutex>
+
 namespace go
 {
 
@@ -91,27 +94,49 @@ public:
 	void set_elapsed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);
-	bool is_game_finished() const
+	bool is_game_finished()
 	{
-		if (engine::is_terminal_state(game_state))
+		if (get_game_end())
+		{
+			DEBUG_PRINT("THIS IS WHY IT ENDS.\n");
 			return true;
+		}
 		else if (agents_time_info[0].is_overtime())
 			return true;
 		else if (agents_time_info[1].is_overtime())
 			return true;
+		else if (engine::is_terminal_state(game_state))
+			return true;
 		else
 			return false;
+	}
+
+	bool get_game_end()
+	{
+		std::lock_guard<std::mutex> lock(game_mutex);
+		return force_game_end;
+	}
+
+	void set_game_end(bool game_end)
+	{
+		DEBUG_PRINT("end_game() called.\n");
+		std::lock_guard<std::mutex> lock(game_mutex);
+		force_game_end = game_end;
 	}
 
 	const engine::GameState& get_game_state() const;
 	const engine::BoardState& get_board_state() const;
 	const engine::ClusterTable& get_cluster_table() const;
 
+	void force_moves(const std::vector<engine::Action>& actions);
+
 private:
 	engine::GameState game_state;
 	std::array<std::shared_ptr<Agent>, 2> agents;
 	std::array<AgentTime, 2> agents_time_info;
 	std::function<void(bool)> make_move_callback = NULL;
+	std::mutex game_mutex;
+	bool force_game_end;
 };
 
 } // namespace go

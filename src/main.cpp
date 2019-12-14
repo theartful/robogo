@@ -6,6 +6,7 @@
 #include "GUI/server/Server.h"
 #include "GUI/agent/agent.h"
 #include "gtp/gtp.h"
+#include "net/game_manager.h"
 #include <memory>
 #include <time.h>
 
@@ -20,6 +21,11 @@ int main(int argc, const char * argv[])
 	{
 		gtp::GTPEngine engine;
 		engine.game_loop();
+	}
+	else if (argc > 1 && strcmp(argv[1], "tournament") == 0)
+	{
+		net::GameManager GM("ws://localhost:8080");
+		GM.run();
 	}
 	else
 	{
@@ -71,4 +77,6 @@ int main(int argc, const char * argv[])
 			sleep(2);
 		}
 	}
+
+	return 0;
 }

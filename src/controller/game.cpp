@@ -1,12 +1,14 @@
 #include "controller/game.h"
 #include "config.h"
 #include "engine/interface.h"
+#include <iostream>
 
 using namespace go;
 using namespace go::engine;
 
 Game::Game()
 {
+	set_game_end(false);
 }
 
 void Game::set_make_move_callback(std::function<void(bool)> callback)
@@ -71,16 +73,24 @@ bool Game::make_move(const Action& action)
 	return engine::make_move(game_state, action);
 }
 
+void Game::force_moves(const std::vector<Action>& actions) {
+	engine::force_moves(game_state, actions);
+}
+
 void Game::main_loop()
 {
+	DEBUG_PRINT("GOING INTO THE LOOP.\n");
 	while (!is_game_finished())
 	{
+		DEBUG_PRINT("IN THE LOOP.\n");
 		auto& agent = agents[game_state.player_turn];
 		auto& agent_time = agents_time_info[game_state.player_turn];
 
 		agent_time.start_counting();
+		std::cout << "GAME: Agent " << agent->get_player_idx() << " will play!\n";
 		Action agent_action = {agent->generate_move(*this),
 		                       game_state.player_turn};
+		std::cout << "GAME: Agent " << agent_action.player_index << " played " << agent_action.pos << "\n";
 		agent_time.stop_counting();
 
 		// accept the move only if played in time
@@ -97,4 +107,7 @@ void Game::main_loop()
 		if (make_move_callback != NULL)
 			make_move_callback(valid_move);
 	}
+	DEBUG_PRINT("OUT OF THE GAME MAIN LOOP.\n");
+	engine::calculate_score(
+	    game_state.board_state, game_state.players[0], game_state.players[1]);
 }
