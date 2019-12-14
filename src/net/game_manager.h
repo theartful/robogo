@@ -1,7 +1,7 @@
 #ifndef NET_GAME_MANAGER_H
 #define NET_GAME_MANAGER_H
 
-#define ASIO_STANDALONE
+// #define ASIO_STANDALONE
 #include <websocketpp/config/asio_no_tls_client.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
@@ -47,7 +47,7 @@ class GameManager {
         void runner_lifetime_over();
     private:
         void start_game(Document& document);
-        void pretty_print(Document& s);
+        void pretty_print(Document& d);
         Action get_action(rapidjson::Value& move, uint32_t player);
         
         std::mutex runners_mutex;

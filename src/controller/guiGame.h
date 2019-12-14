@@ -23,19 +23,20 @@ public:
 		std::string player_2_name =
 		    (player_1_name == "GoSlayer") ? remote_player_name : "GoSlayer";
 
-		command = "google-chrome "
+		command = "firefox "
 		          "\"file://$PWD/client/"
 		          "game.html?player1=" +
 		          player_1_type + "&player2=" + player_2_type +
 		          "&player1_name=" + player_1_name +
 		          "&player2_"
 		          "name=" +
-		          player_2_name + "\"";
+		          player_2_name + "\" &";
 
 		std::thread gui(std::bind(GuiGame::open_gui, this));
 		char mode1 = 'a';
 		char mode2 = 'a';
-		server = Server::setup(*this, mode1, mode2);
+		s = Server::setup(mode1, mode2);
+		s->bind_game(*this);
 
 		gui.join();
 	}
@@ -43,11 +44,11 @@ public:
 	void open_gui()
 	{
 		sleep(2);
-		std::system(command);
+		std::system(command.c_str());
 	}
 
 private:
-	Server* server;
+	Server* s;
 	std::string command;
 };
 } // namespace go

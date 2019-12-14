@@ -176,13 +176,13 @@ void GameManager::send_move(const Action& action)
 }
 
 //for debugging
-void GameManager::pretty_print(Document  & s)
+void GameManager::pretty_print(Document  & d)
 { 
     StringBuffer buffer;
     PrettyWriter<StringBuffer> writer(buffer);
     buffer.Clear();
     writer.Reset(buffer); 
-    s.Accept(writer);
+    d.Accept(writer);
     cout << buffer.GetString() << "\n";
 }
 

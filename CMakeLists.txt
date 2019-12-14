@@ -73,7 +73,7 @@ elseif (MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "/Ot")
 endif()
 
-set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS} -pthread")
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
