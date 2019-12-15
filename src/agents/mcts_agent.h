@@ -36,13 +36,14 @@ public:
 			auto& move_stat = stats.moves_stats.back();
 			float average_playout_length =
 			    float(move_stat.total_playout_length) /
-			    move_stat.number_playouts;
-			int32_t average_num_moves = std::ceil(average_playout_length / 2.0);
+			    float(move_stat.number_playouts + 0.01);
+			int32_t average_num_moves =
+			    std::ceil((average_playout_length + 0.1) / 2.0);
 			allowed_time = std::chrono::duration<uint32_t, std::milli>{std::min(
 			    std::max(
 			        (static_cast<int32_t>(
 			             game.get_remaining_time(get_player_idx()).count()) -
-			         60000) /
+			         7 * 60000) /
 			            average_num_moves,
 			        1000),
 			    4500)};
