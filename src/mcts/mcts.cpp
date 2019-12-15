@@ -174,6 +174,7 @@ Action MCTS::run(
 		{
 			max_visits = child_node.mcts_visits;
 			max_mcts_q = child_node.mcts_q;
+			best_action = child.action;
 		}
 	}
 
