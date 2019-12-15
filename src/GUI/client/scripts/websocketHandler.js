@@ -25,8 +25,7 @@ let openSocket = () => {
 let socket = openSocket();
 let closeConnection = () => {
     let url = window.location.href;
-    url = url.split('/');
-    if (url.length == 11 && url[10].includes("index.html")) {
+    if (url.length == 11 && url.includes("index.html")) {
         let mode1 = "a";
         if (player1 === "human")
             mode1 = "h";
