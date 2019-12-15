@@ -292,8 +292,12 @@ EdgeId MCTS::expand_node(
 		}
 	});
 
-	if (node.edges.size() == 1)
+	if (node.edges.empty())
+	{
+		node.edges.emplace_back(
+		    Action{Action::PASS, game_state.player_turn}, allocate_node());
 		return 0;
+	}
 
 	return best_edge;
 }
