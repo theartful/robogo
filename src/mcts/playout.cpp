@@ -97,12 +97,11 @@ uint32_t PlayoutPolicy::run_playout(GameState& game_state)
 			break;
 		update_atari_clusters(game_state);
 	}
-	// dont register mercy rule for competitions reasons
+	playout_stats.register_new_playout(i);
 	if (mercy_rule_result != std::numeric_limits<uint32_t>::max())
 	{
 		return mercy_rule_result;
 	}
-	playout_stats.register_new_playout(i);
 	auto [black_score, white_score] = calculate_score(game_state);
 	return black_score > white_score ? 0 : 1;
 }
