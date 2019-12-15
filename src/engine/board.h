@@ -25,10 +25,10 @@ namespace engine
 {
 enum class Cell : unsigned char
 {
-	EMPTY = 0,
-	BLACK = 1,
-	WHITE = 2,
-	BORDER = 4
+	EMPTY,
+	BLACK,
+	WHITE,
+	BORDER
 };
 
 static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
@@ -46,10 +46,11 @@ struct BoardState
 
 	std::array<Cell, MAX_NUM_CELLS> board;
 	std::array<uint16_t, MAX_NUM_CELLS> neighbor_count;
-	uint32_t ko;
+	std::array<uint16_t, MAX_NUM_CELLS> empty_cells;
 	uint32_t num_empty;
+	uint32_t ko;
 
-	BoardState() : ko{INVALID_INDEX}, num_empty{MAX_BOARD_SIZE * MAX_BOARD_SIZE}
+	BoardState() : num_empty{0}, ko{INVALID_INDEX}
 	{
 		std::fill(board.begin(), board.end(), Cell::EMPTY);
 		std::fill(neighbor_count.begin(), neighbor_count.end(), 4);
@@ -66,6 +67,13 @@ struct BoardState
 			neighbor_count[index(i, 0)] = 3;
 			neighbor_count[index(MAX_BOARD_SIZE - 1, i)] = 3;
 			neighbor_count[index(i, MAX_BOARD_SIZE - 1)] = 3;
+		}
+		for(uint32_t i = 0; i < MAX_BOARD_SIZE; i++)
+		{
+			for(uint32_t j = 0; j < MAX_BOARD_SIZE; j++)
+			{
+				empty_cells[num_empty++] = index(i, j);
+			}
 		}
 		neighbor_count[index(0, 0)] = 2;
 		neighbor_count[index(MAX_BOARD_SIZE - 1, 0)] = 2;
@@ -140,6 +148,21 @@ inline uint16_t get_empty_count(const BoardState& state, uint32_t idx)
 {
 	return (state.neighbor_count[idx] & uint16_t(0b000000111));
 }
+inline void add_empty_cell(BoardState& state, uint32_t idx)
+{
+	state.empty_cells[state.num_empty++] = idx;
+}
+inline void remove_empty_cell(BoardState& state, uint32_t idx)
+{
+	for (uint32_t i = 0; i < state.num_empty; i++)
+	{
+		if (state.empty_cells[i] == idx)
+		{
+			std::swap(state.empty_cells[i], state.empty_cells[--state.num_empty]);
+			return;
+		}
+	}
+}
 
 struct Action
 {
@@ -162,14 +185,14 @@ inline bool is_invalid(const Action& action)
 // A cluster is a maximal set of connected stones
 struct Cluster
 {
-	mutable uint32_t parent_idx;
+	mutable uint16_t parent_idx;
 	// TODO: decide whether to use parent tail to quickly iterate cluster stones
 	// or leave the original implementation
 	// uint32_t tail;
-	uint32_t player;
-	uint32_t size;
-	uint32_t num_liberties;
-	uint32_t atari_lib;
+	uint16_t player;
+	uint16_t size;
+	uint16_t num_liberties;
+	uint16_t atari_lib;
 	std::bitset<BoardState::MAX_NUM_CELLS> liberties_map;
 
 	Cluster()
@@ -205,14 +228,12 @@ struct GameState
 	BoardState board_state;
 	ClusterTable cluster_table;
 	uint32_t board_size;
-	uint32_t number_played_moves;
 	uint32_t player_turn;
 	std::array<Player, 2> players;
 	std::vector<Action> move_history;
 
 	GameState()
-	    : board_state(), board_size{BoardState::MAX_BOARD_SIZE},
-	      number_played_moves{0}, player_turn{0}
+	    : board_state(), board_size{BoardState::MAX_BOARD_SIZE}, player_turn{0}
 	{
 	}
 };

@@ -6,6 +6,7 @@
 #include "mcts/common.h"
 #include "mcts/playout.h"
 #include <atomic>
+#include <chrono>
 #include <iostream>
 #include <memory>
 namespace go
@@ -20,22 +21,17 @@ constexpr NodeId INVALID_NODE_ID = std::numeric_limits<NodeId>::max();
 
 struct Edge
 {
-	Edge(const engine::Action& action_, NodeId src_, NodeId dest_)
-	    : action{action_}, src{src_}, dest{dest_}
+	Edge(const engine::Action& action_, NodeId dest_)
+	    : action{action_}, dest{dest_}
 	{
 	}
 	engine::Action action;
-	NodeId src;
 	NodeId dest;
 };
 
 struct Node
 {
-	Node(
-	    uint32_t mcts_visits_ = 0, float mcts_q_ = 0, uint32_t rave_visits_ = 0,
-	    float rave_q_ = 0)
-	    : mcts_visits{mcts_visits_}, mcts_q{mcts_q_}, rave_visits(rave_visits_),
-	      rave_q(rave_q_)
+	Node() : mcts_visits{0}, mcts_q{0}, rave_visits{0}, rave_q{0}
 	{
 	}
 	uint32_t mcts_visits;
@@ -63,6 +59,8 @@ struct Trajectory
 	std::vector<EdgeId> edges_ids;
 	uint32_t player_idx;
 	uint32_t winner_idx;
+	uint32_t playout_action_idx;
+	uint32_t mcts_action_idx;
 
 	std::array<std::array<bool, 2>, BoardState::MAX_NUM_CELLS> rave_actions;
 
@@ -79,7 +77,12 @@ struct Trajectory
 		nodes_ids.push_back(root_id);
 		std::fill(
 		    rave_actions.begin(), rave_actions.end(), std::array{false, false});
+		mcts_action_idx = state.move_history.size();
 	};
+	void start_playout()
+	{
+		playout_action_idx = state.move_history.size();
+	}
 };
 
 struct MCTSStats
@@ -117,7 +120,12 @@ class MCTS
 {
 public:
 	MCTS();
-	engine::Action run(const engine::GameState&);
+	engine::Action
+	run(const engine::GameState&,
+	    std::chrono::duration<uint32_t, std::milli> duration =
+	        std::chrono::duration<uint32_t, std::milli>(0));
+
+	const PlayoutStats& get_playout_stats();
 	bool advance_tree(const engine::Action&, const engine::Action&);
 	void clear_tree();
 	void show_debugging_info();
@@ -125,7 +133,8 @@ public:
 private:
 	NodeId allocate_node();
 	NodeId allocate_root_node();
-	EdgeId expand_node(NodeId, const engine::GameState&);
+	EdgeId expand_node(NodeId, const engine::GameState&, const Trajectory&);
+	bool expand_root_node(const engine::GameState&);
 	Node& get_node(NodeId);
 	Edge& get_edge(NodeId, EdgeId);
 	bool is_expanded(const Node&);

@@ -91,6 +91,12 @@ public:
 	{
 		return agents_time_info[player_idx].get_elapsed_time();
 	}
+	auto get_remaining_time(uint32_t player_idx) const
+	{
+		return agents_time_info[player_idx].get_allowed_time() -
+		       agents_time_info[player_idx].get_elapsed_time();
+	}
+
 	void set_elapsed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);

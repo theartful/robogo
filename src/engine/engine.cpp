@@ -112,10 +112,10 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 	}
 	else
 	{
-		// printf(
-		//     "engine::make_move: invalid move, case: %s\n",
-		//     move_validity_strings[static_cast<int>(
-		//         get_move_validity(table, board_state, action))]);
+		fprintf(
+		    stderr, "engine::make_move: invalid move, case: %s\n",
+		    move_validity_strings[static_cast<int>(
+		        get_move_validity(table, board_state, action))]);
 		return false;
 	}
 }
@@ -134,7 +134,6 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 		    get_ko(table, board_state, action.pos, num_captured_stones);
 	}
 
-	game_state.number_played_moves++;
 	game_state.player_turn = 1 - game_state.player_turn;
 	game_state.move_history.push_back(action);
 }
