@@ -165,7 +165,7 @@ Action MCTS::run(
 	Node& root_node = get_node(root_id);
 	Action best_action = root_node.edges[0].action;
 	uint32_t max_visits = get_node(root_node.edges[0].dest).mcts_visits;
-	float max_mcts_q = get_node(root_id).mcts_q;
+	float max_mcts_q = get_node(root_node.edges[0].dest).mcts_q;
 
 	for (auto& child : root_node.edges)
 	{
