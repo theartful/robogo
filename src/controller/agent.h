@@ -21,6 +21,10 @@ public:
 	{
 		this->player_idx = player_idx_;
 	}
+	uint32_t get_player_idx()
+	{
+		return player_idx;
+	}
 
 private:
 	uint32_t player_idx;

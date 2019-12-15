@@ -96,9 +96,9 @@ void MCTS::clear_tree()
 	allocated_nodes.clear();
 }
 
-Action MCTS::run(const GameState& root_state)
+Action MCTS::run(const GameState& root_state, std::chrono::duration<uint32_t, std::milli> duration)
 {
-	constexpr uint32_t MAX_ITERATIONS = 10e3;
+	auto started = std::chrono::steady_clock::now();
 
 	stats = {};
 	root_id = allocate_root_node();
@@ -109,8 +109,15 @@ Action MCTS::run(const GameState& root_state)
 		if (!expand_root_node(root_state))
 			return Action{Action::PASS, root_state.player_turn};
 
-	auto started = std::chrono::high_resolution_clock::now();
-	for (uint32_t iteration = 0; iteration < MAX_ITERATIONS; iteration++)
+	auto timeout = [&](){
+		auto time_now = std::chrono::steady_clock::now();
+		auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - started);
+		return elapsed_time > duration;
+	};
+
+	playout_policy.init_new_move();
+	uint32_t iterations;
+	for(iterations = 0 ;!timeout(); iterations++)
 	{
 		traj.reset(root_state, root_id);
 		auto& node_state = traj.state;
@@ -120,7 +127,7 @@ Action MCTS::run(const GameState& root_state)
 		// selection phase
 		while (!is_terminal_state(node_state) && is_expanded(node_id))
 		{
-			EdgeId best_edge_id = select_best_edge(node_id, node_state);
+			EdgeId best_edge_id = select_best_edge(node_id);
 			auto& best_edge = get_edge(node_id, best_edge_id);
 			force_move(node_state, best_edge.action);
 			node_id = best_edge.dest;
@@ -149,13 +156,8 @@ Action MCTS::run(const GameState& root_state)
 
 		stats.update(traj);
 	}
-	auto done = std::chrono::high_resolution_clock::now();
 
-	std::cerr << std::chrono::duration_cast<std::chrono::milliseconds>(
-	                 done - started)
-	                 .count()
-	          << '\n';
-
+	std::cerr << "NUM ITERATIONS: " << iterations << '\n';
 	Node& root_node = get_node(root_id);
 	Action best_action = root_node.edges[0].action;
 	uint32_t max_visits = get_node(root_node.edges[0].dest).mcts_visits;
@@ -338,7 +340,7 @@ float MCTS::calculate_weighted_rave_value(const Node& child)
 	return weight * child.rave_q + (1.0 - weight) * child.mcts_q;
 }
 
-EdgeId MCTS::select_best_edge(const Node& node, const engine::GameState& state)
+EdgeId MCTS::select_best_edge(const Node& node)
 {
 	float max_q =
 	    calculate_weighted_rave_value(get_node(node.edges.front().dest));
@@ -356,9 +358,9 @@ EdgeId MCTS::select_best_edge(const Node& node, const engine::GameState& state)
 	return child_index;
 }
 
-EdgeId MCTS::select_best_edge(NodeId id, const GameState& state)
+EdgeId MCTS::select_best_edge(NodeId id)
 {
-	return select_best_edge(get_node(id), state);
+	return select_best_edge(get_node(id));
 }
 
 bool MCTS::is_expanded(const Node& node)
@@ -379,6 +381,11 @@ Node& MCTS::get_node(NodeId node_id)
 Edge& MCTS::get_edge(NodeId node_id, EdgeId edge_id)
 {
 	return get_node(node_id).edges[edge_id];
+}
+
+const PlayoutStats& MCTS::get_playout_stats()
+{
+	return playout_policy.get_playout_stats();
 }
 
 void MCTS::show_debugging_info()

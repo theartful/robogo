@@ -10,21 +10,85 @@ namespace go
 namespace mcts
 {
 
-enum class PlayoutHeuristicType
+// TODO: move this to someplace else
+template <bool condition, typename T, typename U>
+static inline constexpr auto conditional_v(T&& if_true, U&& if_false)
 {
+	if constexpr (condition)
+		return if_true;
+	return if_false;
+}
+
+static constexpr bool DETAILED_PLAYOUT_STATS = false;
+
+enum class PlayoutHeuristicType : size_t
+{
+	LGR,
 	NEAREST_ATARI_CAPTURE,
 	GENERAL_ATARI_CAPTURE,
 	NEAREST_ATARI_DEFENSE,
-	LOW_LIB
+	LOW_LIB,
+	PATTERN3X3,
+	RANDOM,
+	NUM_HEURISTICS
+};
+
+struct PlayoutStats
+{
+	struct SingleMoveStats
+	{
+		static constexpr size_t HITS_SIZE =
+		    conditional_v<DETAILED_PLAYOUT_STATS>(
+		        static_cast<size_t>(PlayoutHeuristicType::NUM_HEURISTICS), 0);
+
+		uint32_t number_playouts = 0;
+		uint32_t total_playout_length = 0;
+		std::vector<uint32_t> playout_length;
+		std::array<uint32_t, HITS_SIZE> hits = {};
+	};
+
+	std::array<
+	    uint32_t, static_cast<size_t>(PlayoutHeuristicType::NUM_HEURISTICS)>
+	    tot_hits = {};
+	std::vector<SingleMoveStats> moves_stats;
+
+	void add_heuristic_hit(PlayoutHeuristicType type)
+	{
+		size_t type_idx = static_cast<size_t>(type);
+		tot_hits[type_idx]++;
+		if constexpr (DETAILED_PLAYOUT_STATS)
+			moves_stats.back().hits[type_idx]++;
+	}
+
+	void new_move_stats()
+	{
+		moves_stats.push_back({});
+	}
+
+	void register_new_playout(uint32_t playout_length)
+	{
+		if (!moves_stats.empty())
+		{
+			auto& stats = moves_stats.back();
+			stats.number_playouts++;
+			stats.total_playout_length += playout_length;
+			if constexpr (DETAILED_PLAYOUT_STATS)
+			{
+				stats.playout_length.push_back(playout_length);
+			}
+		}
+	}
 };
 
 class PlayoutPolicy
 {
 public:
 	PlayoutPolicy(const lgr::LGR& lgr_);
+	void init_new_move();
 	uint32_t run_playout(engine::GameState& game_state);
 	engine::Action generate_move(engine::GameState& game_state);
 	const std::vector<engine::Action>& get_playout_history();
+	const PlayoutStats& get_playout_stats();
 
 private:
 	engine::Action apply_lgr(const engine::GameState& game_state);
@@ -60,6 +124,7 @@ private:
 	uint32_t last_move;
 
 	const lgr::LGR& lgr;
+	PlayoutStats playout_stats;
 };
 
 } // namespace mcts

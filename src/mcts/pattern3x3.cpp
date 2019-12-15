@@ -125,7 +125,7 @@ static inline std::array<PatternSymbols, 8>
 rotate_pattern_code(const std::array<PatternSymbols, 8>& pattern_code)
 {
 	std::array<PatternSymbols, 8> rotated_pattern_code;
-	std::array remapping = {2, 4, 7, 1, 6, 0, 3, 5};
+	std::array<uint32_t, 8> remapping = {2, 4, 7, 1, 6, 0, 3, 5};
 	for (size_t i = 0; i < pattern_code.size(); i++)
 		rotated_pattern_code[i] = pattern_code[remapping[i]];
 	return rotated_pattern_code;
@@ -138,7 +138,7 @@ static inline std::array<PatternSymbols, 8>
 flip_pattern_code(const std::array<PatternSymbols, 8>& pattern_code)
 {
 	std::array<PatternSymbols, 8> flipped_pattern_code;
-	std::array remapping = {2, 1, 0, 4, 3, 7, 6, 5};
+	std::array<uint32_t, 8> remapping = {2, 1, 0, 4, 3, 7, 6, 5};
 	for (size_t i = 0; i < pattern_code.size(); i++)
 		flipped_pattern_code[i] = pattern_code[remapping[i]];
 	return flipped_pattern_code;
@@ -168,7 +168,7 @@ static inline void register_pattern(
 	auto register_flips_and_rotations = [&]() {
 		Pattern pattern{};
 		auto register_rotations = [&]() {
-			for (auto i = 0; i < pattern_code.size(); i++)
+			for (size_t i = 0; i < pattern_code.size(); i++)
 			{
 				expand_and_register(
 				    pattern_table, pattern_code, pattern_id, 0, pattern);

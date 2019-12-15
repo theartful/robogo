@@ -72,6 +72,11 @@ void PlayoutPolicy::update_atari_clusters(const GameState& state)
 	    });
 }
 
+void PlayoutPolicy::init_new_move()
+{
+	playout_stats.new_move_stats();
+}
+
 uint32_t PlayoutPolicy::run_playout(GameState& game_state)
 {
 	init_atari_clusters(game_state);
@@ -92,10 +97,12 @@ uint32_t PlayoutPolicy::run_playout(GameState& game_state)
 			break;
 		update_atari_clusters(game_state);
 	}
+	// dont register mercy rule for competitions reasons
 	if (mercy_rule_result != std::numeric_limits<uint32_t>::max())
 	{
 		return mercy_rule_result;
 	}
+	playout_stats.register_new_playout(i);
 	auto [black_score, white_score] = calculate_score(game_state);
 	return black_score > white_score ? 0 : 1;
 }
@@ -137,29 +144,53 @@ Action PlayoutPolicy::apply_lgr(const GameState& game_state)
 	{
 		return {Action::INVALID_ACTION, game_state.player_turn};
 	}
+
+	playout_stats.add_heuristic_hit(PlayoutHeuristicType::LGR);
 	return action;
 }
 
 Action PlayoutPolicy::apply_default_policy(GameState& game_state)
 {
 	Action action{Action::INVALID_ACTION, game_state.player_turn};
+	PlayoutHeuristicType heuristic_type;
 	if (last_move != Action::PASS)
 	{
 		if (nearest_atari_capture(game_state))
+		{
 			action = choose_action(game_state);
+			heuristic_type = PlayoutHeuristicType::NEAREST_ATARI_CAPTURE;
+		}
 		if (is_invalid(action) && nearest_atari_defense(game_state))
+		{
 			action = choose_action(game_state);
+			heuristic_type = PlayoutHeuristicType::NEAREST_ATARI_DEFENSE;
+		}
 		if (is_invalid(action) && generate_low_lib(game_state))
+		{
 			action = choose_action(game_state);
+			heuristic_type = PlayoutHeuristicType::LOW_LIB;
+		}
 		if (is_invalid(action) && generate_pattern_moves(game_state))
+		{
 			action = choose_action(game_state);
+			heuristic_type = PlayoutHeuristicType::PATTERN3X3;
+		}
 	}
 
 	if (is_invalid(action))
+	{
 		action = general_atari_capture(game_state);
+		heuristic_type = PlayoutHeuristicType::GENERAL_ATARI_CAPTURE;
+	}
 
 	if (is_invalid(action))
+	{
 		action = generate_random_action(game_state);
+		heuristic_type = PlayoutHeuristicType::RANDOM;
+	}
+
+	if (!is_invalid(action))
+		playout_stats.add_heuristic_hit(heuristic_type);
 
 	return action;
 }
@@ -421,6 +452,11 @@ bool PlayoutPolicy::is_self_atari(const GameState& game_state, uint32_t pos)
 			lib_capture++;
 	});
 	return (lib_map.count() + lib_capture) <= 2;
+}
+
+const PlayoutStats& PlayoutPolicy::get_playout_stats()
+{
+	return playout_stats;
 }
 
 static inline void show_case(

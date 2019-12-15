@@ -26,7 +26,24 @@ public:
 		else
 			mcts_algo.clear_tree();
 
-		auto action = mcts_algo.run(game_state);
+		constexpr uint32_t DEFAULT_ALLOWED_TIME = 3000;
+		auto& stats = mcts_algo.get_playout_stats();
+		std::chrono::duration<uint32_t, std::milli> allowed_time{
+		    DEFAULT_ALLOWED_TIME};
+		if (!stats.moves_stats.empty())
+		{
+			auto& move_stat = stats.moves_stats.back();
+			float average_playout_length =
+			    float(move_stat.total_playout_length) /
+			    move_stat.number_playouts;
+			uint32_t average_num_moves =
+			    std::ceil(average_playout_length / 2.0);
+			allowed_time = std::chrono::duration<uint32_t, std::milli>{
+			    game.get_remaining_time(get_player_idx()).count() /
+			    average_num_moves};
+		}
+		std::cerr << "Allocated time for move: " << allowed_time.count() << '\n';
+		auto action = mcts_algo.run(game_state, allowed_time);
 		show_debugging_info(game, action);
 		return action.pos;
 	}
@@ -59,8 +76,7 @@ public:
 		auto& last_action = state.move_history.back();
 		if (engine::is_pass(last_action))
 		{
-			auto [black_score, white_score] = 
-				engine::calculate_score(state);
+			auto [black_score, white_score] = engine::calculate_score(state);
 			float scores[2] = {black_score, white_score};
 			return scores[state.player_turn] > scores[1 - state.player_turn];
 		}

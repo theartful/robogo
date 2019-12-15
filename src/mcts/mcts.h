@@ -6,6 +6,7 @@
 #include "mcts/common.h"
 #include "mcts/playout.h"
 #include <atomic>
+#include <chrono>
 #include <iostream>
 #include <memory>
 namespace go
@@ -119,7 +120,12 @@ class MCTS
 {
 public:
 	MCTS();
-	engine::Action run(const engine::GameState&);
+	engine::Action
+	run(const engine::GameState&,
+	    std::chrono::duration<uint32_t, std::milli> duration =
+	        std::chrono::duration<uint32_t, std::milli>(0));
+
+	const PlayoutStats& get_playout_stats();
 	bool advance_tree(const engine::Action&, const engine::Action&);
 	void clear_tree();
 	void show_debugging_info();
@@ -142,8 +148,8 @@ private:
 	void update_rave(Trajectory&);
 
 	// UCT
-	EdgeId select_best_edge(const Node&, const engine::GameState&);
-	EdgeId select_best_edge(NodeId, const engine::GameState&);
+	EdgeId select_best_edge(const Node&);
+	EdgeId select_best_edge(NodeId);
 
 private:
 	static constexpr size_t MAX_NODES_SIZE_IN_BYTES =
