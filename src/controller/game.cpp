@@ -78,12 +78,14 @@ void Game::main_loop()
 		agent_time.stop_counting();
 
 		// accept the move only if played in time
+		bool valid_move = true;
 		if (!agent_time.is_overtime())
 		{
 			if (!engine::make_move(game_state, agent_action))
+			{
+				valid_move = false;
 				DEBUG_PRINT("INVALID MOVE\n!");
+			}
 		}
 	}
-	engine::calculate_score(
-	    game_state.board_state, game_state.players[0], game_state.players[1]);
 }

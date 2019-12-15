@@ -32,7 +32,7 @@ auto wrap_void_lambda(Lambda&& lambda)
 	if constexpr (!is_same_v<decltype(lambda(declval<Arg>())), void>)
 		return lambda;
 	else
-		return [lambda](auto&& val) {
+		return [lambda{std::forward<Lambda>(lambda)}](auto&& val) {
 			lambda(val);
 			return policy;
 		};
@@ -63,6 +63,23 @@ void for_each_neighbor(
 	    state.board[down] != Cell::BORDER)
 		if (wrapped_lambda(down) == BREAK)
 			return;
+}
+
+template <typename Lambda>
+void for_each_8neighbor_all(uint32_t pos, Lambda&& lambda)
+{
+	const auto neighbors = {
+	    pos - BoardState::EXTENDED_BOARD_SIZE - 1,
+	    pos - BoardState::EXTENDED_BOARD_SIZE,
+	    pos - BoardState::EXTENDED_BOARD_SIZE + 1,
+	    pos - 1,
+	    pos + 1,
+	    pos + BoardState::EXTENDED_BOARD_SIZE - 1,
+	    pos + BoardState::EXTENDED_BOARD_SIZE,
+	    pos + BoardState::EXTENDED_BOARD_SIZE + 1,
+	};
+	for (auto neighbor : neighbors)
+		lambda(neighbor);
 }
 
 template <typename Lambda, typename CVClusterTable>
@@ -217,22 +234,41 @@ void for_each_valid_action(const GameState& state, Lambda&& lambda)
 }
 
 template <typename Lambda>
-void for_each_liberty(const Cluster& cluster, Lambda&& lambda)
+void for_each_liberty(
+    const BoardState& state, const Cluster& cluster, Lambda&& lambda)
 {
-	auto wrapped_lambda =
-	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
+	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, DONT_EXPAND>(
+	    std::forward<Lambda>(lambda));
 	uint32_t count = 0;
-	for (uint32_t pos = 0;; pos++)
+
+	/*
+	for (uint32_t pos = BoardState::BOARD_BEGIN;; pos++)
 	{
-		if (cluster.liberties_map[pos])
-		{
-			if (wrapped_lambda(pos) == BREAK)
-				return;
-			count++;
-		}
-		if (count == cluster.num_liberties)
-			return;
+	    if (cluster.liberties_map[pos])
+	    {
+	        if (wrapped_lambda(pos) == BREAK)
+	            return;
+	        count++;
+	    }
+	    if (count == cluster.num_liberties)
+	        return;
 	}
+	*/
+	Cell cluster_color = state.board[cluster.parent_idx];
+	for_each_cell(state, cluster.parent_idx, [&](uint32_t idx) {
+		if (count == cluster.num_liberties)
+			return BREAK;
+		if (state.board[idx] == cluster_color)
+		{
+			return EXPAND;
+		}
+		else if (is_empty_cell(state, idx))
+		{
+			count++;
+			return wrapped_lambda(idx);
+		}
+		return DONT_EXPAND;
+	});
 }
 
 template <typename Lambda>
@@ -240,7 +276,7 @@ void for_each_cluster(const GameState& game_state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
 	    details::wrap_void_lambda<Cluster&>(std::forward<Lambda>(lambda));
-	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
 		auto cluster = game_state.cluster_table.clusters[i];
 		if (i != cluster.parent_idx || !cluster.size)

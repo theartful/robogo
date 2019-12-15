@@ -73,32 +73,32 @@ bool go::engine::is_suicide_move(
 	return is_suicide;
 }
 
-static uint32_t
-get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
+static uint32_t get_ko(
+    const ClusterTable& table, const BoardState& state, uint32_t action_pos,
+    uint32_t num_captured_stones)
 {
-	if (get_empty_count(state, action_pos) != 1)
-		return BoardState::INVALID_INDEX;
-	if (get_cluster(table, action_pos).size != 1)
-		return BoardState::INVALID_INDEX;
-
-	uint32_t num_captured_stones = 0;
-	uint32_t captured_stone_idx;
-	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
-		if (in_atari(cluster))
-		{
-			num_captured_stones += cluster.size;
-			captured_stone_idx = cluster.parent_idx;
-		}
-	});
-
 	// there is a ko if:
 	//     1. the previous move captured exactly one stone,
 	//     2. the played stone has exactly one liberty, and
 	//     3. the played stone's cluster consists only of it
-	if (num_captured_stones == 1)
-		return captured_stone_idx;
-	else
+	if (num_captured_stones != 1)
 		return BoardState::INVALID_INDEX;
+
+	auto& action_cluster = get_cluster(table, action_pos);
+	if (in_atari(action_cluster) && action_cluster.size == 1)
+	{
+		uint32_t captured_stone_idx = 0;
+		for_each_neighbor(state, action_pos, [&](auto neighbor) {
+			if (is_empty_cell(state, neighbor))
+			{
+				captured_stone_idx = neighbor;
+				return BREAK;
+			}
+			return CONTINUE;
+		});
+		return captured_stone_idx;
+	}
+	return BoardState::INVALID_INDEX;
 }
 
 bool go::engine::make_move(GameState& game_state, const Action& action)
@@ -112,11 +112,10 @@ bool go::engine::make_move(GameState& game_state, const Action& action)
 	}
 	else
 	{
-		printf(
-		    "engine::make_move: invalid move, case: %s\n",
+		fprintf(
+		    stderr, "engine::make_move: invalid move, case: %s\n",
 		    move_validity_strings[static_cast<int>(
 		        get_move_validity(table, board_state, action))]);
-		exit(0);
 		return false;
 	}
 }
@@ -130,18 +129,20 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 	{
 		game_state.players[game_state.player_turn].number_alive_stones++;
 		board_state.board[action.pos] = PLAYERS[action.player_index];
-		board_state.ko = get_ko(table, board_state, action.pos);
-		update_clusters(game_state, action);
+		uint32_t num_captured_stones = update_clusters(game_state, action);
+		board_state.ko =
+		    get_ko(table, board_state, action.pos, num_captured_stones);
 	}
 
-	game_state.number_played_moves++;
 	game_state.player_turn = 1 - game_state.player_turn;
 	game_state.move_history.push_back(action);
 }
 
-void go::engine::calculate_score(
-    const BoardState& boardState, Player& black_player, Player& white_player)
+std::pair<float, float> go::engine::calculate_score(const GameState& state)
 {
+	auto& board_state = state.board_state;
+	auto& black_player = state.players[0];
+	auto& white_player = state.players[1];
 	uint32_t white_territory_score = 0, black_territory_score = 0,
 	         score_temp = 0;
 
@@ -156,11 +157,11 @@ void go::engine::calculate_score(
 	// Traversing the board to detect any start of any territory
 	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
-		if (!search_cache.is_visited(i) && is_empty_cell(boardState, i))
+		if (!search_cache.is_visited(i) && is_empty_cell(board_state, i))
 		{
 			territory_type = 0;
 			score_temp =
-			    territory_points(boardState, territory_type, i, search_cache);
+			    territory_points(board_state, territory_type, i, search_cache);
 			// ANDing the territory_type to figure out the output of the
 			// traversed territory
 			if ((territory_type & static_cast<unsigned char>(Cell::BLACK)) == 0)
@@ -171,13 +172,14 @@ void go::engine::calculate_score(
 		}
 	}
 
-	// Updating scores
-	white_player.total_score =
-	    white_territory_score + white_player.number_alive_stones +
-	    white_player.number_captured_enemies + Rules::KOMI;
-	black_player.total_score = black_territory_score +
-	                           black_player.number_alive_stones +
-	                           black_player.number_captured_enemies;
+	float white_score = white_territory_score +
+	                    white_player.number_alive_stones +
+	                    white_player.number_captured_enemies + Rules::KOMI;
+	float black_score = black_territory_score +
+	                    black_player.number_alive_stones +
+	                    black_player.number_captured_enemies;
+
+	return {black_score, white_score};
 }
 
 static inline uint32_t territory_points(

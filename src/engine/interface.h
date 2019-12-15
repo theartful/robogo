@@ -2,6 +2,7 @@
 #define SRC_ENGINE_INTERFACE_H_
 
 #include "engine/board.h"
+#include <utility>
 
 namespace go
 {
@@ -29,7 +30,7 @@ bool is_valid_move(const ClusterTable& table, const BoardState&, const Action&);
 bool is_suicide_move(
     const ClusterTable& table, const BoardState&, const Action&);
 bool is_terminal_state(const GameState&);
-void calculate_score(const BoardState&, Player&, Player&);
+std::pair<float, float> calculate_score(const GameState&);
 
 inline bool is_ko(const BoardState& board_state, const Action& action)
 {

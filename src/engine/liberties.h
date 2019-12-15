@@ -27,6 +27,7 @@ inline bool in_atari(const GameState& game_state, uint32_t pos)
 {
 	return count_liberties(game_state.cluster_table, pos) == 1;
 }
+
 inline uint32_t get_atari_lib(const Cluster& cluster)
 {
 	return cluster.atari_lib;
@@ -39,9 +40,9 @@ inline bool is_cluster_lib(const Cluster& cluster, uint32_t lib)
 inline bool will_be_surrounded(const GameState& state, uint32_t pos)
 {
 	auto& board = state.board_state;
-	if (get_empty_count(board, pos) > 1)
+	if (get_empty_count(board, pos) >= 1)
 		return false;
-	if (get_white_count(board, pos) > 1 && get_black_count(board, pos) > 1)
+	if (get_white_count(board, pos) >= 1 && get_black_count(board, pos) >= 1)
 		return false;
 
 	bool atari_exists = false;

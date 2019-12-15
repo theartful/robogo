@@ -4,6 +4,8 @@
 #include "controller/game.h"
 #include "engine/board.h"
 #include <memory>
+#include "config.h"
+#include "mcts/pattern3x3.h"
 
 using namespace go::engine;
 using namespace go;
@@ -11,6 +13,8 @@ using namespace go::simplegui;
 
 int main()
 {
+	mcts::load_patterns_file(PATTERNFILE);
+
 	Game game;
 	auto agent = std::make_shared<BoardSimpleGUI>();
 	auto agent2 = std::make_shared<MCTSAgent>();

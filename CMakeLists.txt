@@ -13,12 +13,25 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
+cmake_policy(SET CMP0069 NEW)
+# Enable Link-Time Optimization, AKA Inter-Procedure Optimization
+if(NOT ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG"))
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT LTOAvailable)
+endif()
+if(LTOAvailable)
+    message("Link-time optimization enabled")
+	set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 # set NDEBUG
 if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
 	set(NDEBUG 0)
 elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
 	set(NDEBUG 1)
 endif()
+
+file(GLOB_RECURSE PATTERNFILE michi.pat3)
 
 # configure config.h
 configure_file(
@@ -42,7 +55,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 	    -Wdisabled-optimization -Wformat=2 -Winit-self -Wstrict-overflow=5 \
 	    -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
 	    -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
-	    -Wundef -Wswitch-default -Werror -Wno-unused")
+	    -Wundef -Wswitch-default -Wno-unused")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 elseif (MSVC)

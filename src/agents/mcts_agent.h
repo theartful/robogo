@@ -17,6 +17,9 @@ public:
 	uint32_t generate_move(const Game& game) override
 	{
 		auto& game_state = game.get_game_state();
+		if (will_win_if_pass(game_state))
+			return Action::PASS;
+
 		auto& history = game_state.move_history;
 		if (history.size() >= 2)
 			mcts_algo.advance_tree(*(history.rbegin() + 1), history.back());
@@ -30,6 +33,7 @@ public:
 
 	void show_debugging_info(const Game& game, const engine::Action& action)
 	{
+		/*
 		auto player_turn = game.get_game_state().player_turn;
 		auto state = game.get_game_state();
 
@@ -44,8 +48,23 @@ public:
 		          << simplegui::BoardSimpleGUI::get_board_symbol(
 		                 engine::PLAYERS[player_turn], 0, 0)
 		          << '\n';
-
+		*/
 		mcts_algo.show_debugging_info();
+	}
+
+	bool will_win_if_pass(const engine::GameState& state)
+	{
+		if (state.move_history.empty())
+			return false;
+		auto& last_action = state.move_history.back();
+		if (engine::is_pass(last_action))
+		{
+			auto [black_score, white_score] = 
+				engine::calculate_score(state);
+			float scores[2] = {black_score, white_score};
+			return scores[state.player_turn] > scores[1 - state.player_turn];
+		}
+		return false;
 	}
 
 private:

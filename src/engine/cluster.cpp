@@ -7,12 +7,12 @@
 
 using namespace go::engine;
 
-static void
+static inline void
 init_single_cell_cluster(Cluster&, const BoardState&, const Action&);
-static Cluster* merge_clusters(Cluster**, uint32_t);
-static void
+static inline Cluster* merge_clusters(Cluster**, uint32_t);
+static inline void
 merge_cluster_with_cell(Cluster&, uint32_t, ClusterTable&, const BoardState&);
-static void capture_cluster(Cluster&, GameState&);
+static inline void capture_cluster(Cluster&, GameState&);
 
 uint32_t
 go::engine::get_cluster_idx(const ClusterTable& table, uint32_t cell_idx)
@@ -45,26 +45,33 @@ static inline uint32_t compute_atari_lib(const Cluster& cluster)
 	return first_set_bit;
 }
 
-static inline void update_if_atari(Cluster& cluster, ClusterTable& table)
+static inline void
+update_if_atari(const BoardState& state, Cluster& cluster, ClusterTable& table)
 {
 	if (in_atari(cluster))
 	{
 		table.num_in_atari++;
-		cluster.atari_lib = compute_atari_lib(cluster);
+		for_each_liberty(state, cluster, [&](uint32_t pos) {
+			cluster.atari_lib = pos;
+			return BREAK;
+		});
+		// cluster.atari_lib = compute_atari_lib(cluster);
 	}
 }
 
-void go::engine::update_clusters(GameState& game_state, const Action& action)
+uint32_t
+go::engine::update_clusters(GameState& game_state, const Action& action)
 {
 	auto& table = game_state.cluster_table;
 	auto& board_state = game_state.board_state;
+	uint32_t num_captured_stones = 0;
 
 	for_each_neighbor(board_state, action.pos, [&](auto idx) {
 		increment_cell_count(
 		    game_state.board_state, PLAYERS[game_state.player_turn], idx);
 		decrement_empty_count(game_state.board_state, idx);
 	});
-	board_state.num_empty--;
+	remove_empty_cell(board_state, action.pos);
 
 	// obtain a list of neighbor clusters, and update liberties
 	// of enemy clusters
@@ -94,6 +101,7 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 			    {
 				    table.num_in_atari--;
 				    to_capture[capture_count++] = &cluster;
+				    num_captured_stones += cluster.size;
 			    }
 		    }
 	    });
@@ -117,11 +125,13 @@ void go::engine::update_clusters(GameState& game_state, const Action& action)
 
 	// update atari status
 	for (auto it = enemy_clusters; it != enemy_clusters + enemy_count; it++)
-		update_if_atari(**it, table);
-	update_if_atari(*new_cluster, table);
+		update_if_atari(board_state, **it, table);
+	update_if_atari(board_state, *new_cluster, table);
+
+	return num_captured_stones;
 }
 
-static void init_single_cell_cluster(
+static inline void init_single_cell_cluster(
     Cluster& cluster, const BoardState& state, const Action& action)
 {
 	cluster.player = action.player_index;
@@ -140,7 +150,7 @@ static void init_single_cell_cluster(
 	// cluster.tail = action.pos;
 }
 
-static void merge_cluster_with_cell(
+static inline void merge_cluster_with_cell(
     Cluster& cluster, uint32_t cell_index, ClusterTable& table,
     const BoardState& state)
 {
@@ -163,9 +173,8 @@ static void merge_cluster_with_cell(
 	// cluster.tail = cell_index;
 }
 
-static Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
+static inline Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
 {
-	assert(count >= 1);
 	if (count == 1)
 		return clusters[0];
 	// find cluster with maximum size and make it the first element
@@ -191,12 +200,11 @@ static Cluster* merge_clusters(Cluster* clusters[], uint32_t count)
 	return biggest;
 }
 
-static void capture_cluster(Cluster& cluster, GameState& game_state)
+static inline void capture_cluster(Cluster& cluster, GameState& game_state)
 {
 	auto& board_state = game_state.board_state;
 	auto& table = game_state.cluster_table;
 
-	board_state.num_empty += cluster.size;
 	// update player info
 	auto captured_player_idx = cluster.player;
 	auto& captured_player = game_state.players[captured_player_idx];
@@ -219,6 +227,7 @@ static void capture_cluster(Cluster& cluster, GameState& game_state)
 			    board_state, PLAYERS[cluster.player], neighbor);
 		});
 		board_state.board[cell_idx] = Cell::EMPTY;
+		add_empty_cell(board_state, cell_idx);
 	});
 }
 

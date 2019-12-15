@@ -14,7 +14,8 @@ Cluster& get_cluster(ClusterTable& table, uint32_t cell_idx);
 const Cluster& get_cluster(const ClusterTable& table, uint32_t cell_idx);
 
 // Updates cluster information given an action.
-void update_clusters(GameState&, const Action&);
+// returns number of captured stones
+uint32_t update_clusters(GameState&, const Action&);
 
 } // namespace engine
 } // namespace go
