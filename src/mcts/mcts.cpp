@@ -96,7 +96,9 @@ void MCTS::clear_tree()
 	allocated_nodes.clear();
 }
 
-Action MCTS::run(const GameState& root_state, std::chrono::duration<uint32_t, std::milli> duration)
+Action MCTS::run(
+    const GameState& root_state,
+    std::chrono::duration<uint32_t, std::milli> duration)
 {
 	auto started = std::chrono::steady_clock::now();
 
@@ -109,15 +111,17 @@ Action MCTS::run(const GameState& root_state, std::chrono::duration<uint32_t, st
 		if (!expand_root_node(root_state))
 			return Action{Action::PASS, root_state.player_turn};
 
-	auto timeout = [&](){
+	auto timeout = [&]() {
 		auto time_now = std::chrono::steady_clock::now();
-		auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(time_now - started);
+		auto elapsed_time =
+		    std::chrono::duration_cast<std::chrono::milliseconds>(
+		        time_now - started);
 		return elapsed_time > duration;
 	};
 
 	playout_policy.init_new_move();
 	uint32_t iterations;
-	for(iterations = 0 ;!timeout(); iterations++)
+	for (iterations = 0; !timeout(); iterations++)
 	{
 		traj.reset(root_state, root_id);
 		auto& node_state = traj.state;
@@ -161,16 +165,22 @@ Action MCTS::run(const GameState& root_state, std::chrono::duration<uint32_t, st
 	Node& root_node = get_node(root_id);
 	Action best_action = root_node.edges[0].action;
 	uint32_t max_visits = get_node(root_node.edges[0].dest).mcts_visits;
+	float max_mcts_q = 0;
+
 	for (auto& child : root_node.edges)
 	{
 		auto& child_node = get_node(child.dest);
 		if (child_node.mcts_visits > max_visits)
 		{
 			max_visits = child_node.mcts_visits;
-			best_action = child.action;
+			max_mcts_q = child_node.mcts_q;
 		}
 	}
-	return best_action;
+
+	if (max_mcts_q < PASS_PROP)
+		return Action{Action::PASS, root_state.player_turn};
+	else
+		return best_action;
 }
 
 void MCTS::update_node_stats(const Trajectory& traj)
@@ -281,12 +291,9 @@ EdgeId MCTS::expand_node(
 		}
 	});
 
-	if (node.edges.empty())
-	{
-		node.edges.emplace_back(
-		    Action{Action::PASS, game_state.player_turn}, allocate_node());
+	if (node.edges.size() == 1)
 		return 0;
-	}
+
 	return best_edge;
 }
 

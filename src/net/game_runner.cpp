@@ -45,6 +45,11 @@ void NetGameRunner::bind_gui(Server* s)
     s->bind_game(game);
 }
 
+Game& NetGameRunner::get_game()
+{
+    return this->game;
+}
+
 }
 
 }

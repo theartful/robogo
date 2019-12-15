@@ -6,8 +6,8 @@
 #include "controller/game.h"
 #include "engine/board.h"
 #include "mcts/mcts.h"
+#include <algorithm>
 #include <iostream>
-#include  <algorithm>
 
 namespace go
 {
@@ -37,13 +37,18 @@ public:
 			float average_playout_length =
 			    float(move_stat.total_playout_length) /
 			    move_stat.number_playouts;
-			uint32_t average_num_moves =
-			    std::ceil(average_playout_length / 2.0);
-			allowed_time = std::chrono::duration<uint32_t, std::milli>{
-			    std::min(game.get_remaining_time(get_player_idx()).count() /
-			    average_num_moves, 4500U)};
+			int32_t average_num_moves = std::ceil(average_playout_length / 2.0);
+			allowed_time = std::chrono::duration<uint32_t, std::milli>{std::min(
+			    std::max(
+			        (static_cast<int32_t>(
+			             game.get_remaining_time(get_player_idx()).count()) -
+			         60000) /
+			            average_num_moves,
+			        1000),
+			    4500)};
 		}
-		std::cerr << "Allocated time for move: " << allowed_time.count() << '\n';
+		std::cerr << "Allocated time for move: " << allowed_time.count()
+		          << '\n';
 		auto action = mcts_algo.run(game_state, allowed_time);
 		show_debugging_info(game, action);
 		return action.pos;

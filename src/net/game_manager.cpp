@@ -89,7 +89,7 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
 {
     cout << "GameManager: Got a message! \n";
     received_document.Parse(msg->get_payload().c_str());
-    pretty_print(received_document);
+    // pretty_print(received_document);
     string message_type = received_document["type"].GetString();
     if (message_type == "NAME")
     {   
@@ -229,6 +229,8 @@ void GameManager::run()
 void GameManager::runner_lifetime_over()
 {
     std::lock_guard<std::mutex> lock(runners_mutex);
+    auto dead_runner = runners.front();
+    s->end_game(dead_runner->get_game());
     runners.pop_front();
 }
 
