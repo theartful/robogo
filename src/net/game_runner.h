@@ -33,6 +33,7 @@ class NetGameRunner
         void set_game_end(bool game_end);
         void set_remote_move(const ActionMessage message);
         void bind_gui(Server* s);
+        Game& get_game();
     private:
         std::shared_ptr<RemoteAgent> net_agent;
         std::atomic_bool force_end;

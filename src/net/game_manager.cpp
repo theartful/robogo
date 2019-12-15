@@ -229,6 +229,8 @@ void GameManager::run()
 void GameManager::runner_lifetime_over()
 {
     std::lock_guard<std::mutex> lock(runners_mutex);
+    auto dead_runner = runners.front();
+    s->end_game(dead_runner->get_game());
     runners.pop_front();
 }
 
