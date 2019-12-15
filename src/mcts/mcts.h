@@ -158,7 +158,7 @@ private:
 	    MAX_NODES_SIZE_IN_BYTES / sizeof(Node);
 	static constexpr size_t NUM_REUSE_LEVELS = 3;
 	static constexpr uint32_t EXPANSION_THRESHOLD = 1;
-	static constexpr float PASS_PROP = 0.01;
+	static constexpr float PASS_PROP = 0.05;
 
 	static constexpr float RAVE_BIAS = 1.0 / 2003.0;
 
