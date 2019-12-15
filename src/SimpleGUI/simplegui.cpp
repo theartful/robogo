@@ -78,6 +78,19 @@ uint32_t BoardSimpleGUI::generate_move(const Game& game)
 			std::cin >> pos;
 			return pos;
 		}
+		else if (command == "list_suicide")
+		{
+			for_each_empty_cell(game.get_board_state(), [&](uint32_t pos) {
+				if (engine::is_suicide_move(
+				        game.get_game_state().cluster_table,
+				        game.get_board_state(),
+				        Action{pos, game.get_game_state().player_turn}))
+				{
+					std::cout << get_alphanumeric_position(pos) << '\t';
+				}
+			});
+			std::cout << '\n';
+		}
 	}
 }
 
@@ -227,9 +240,6 @@ void BoardSimpleGUI::print_game_state(const Game& game)
 	          << game.get_allowed_time(game_state.player_turn).count() << " ";
 	std::cout << "Elapsed time: "
 	          << game.get_elapsed_time(game_state.player_turn).count()
-	          << std::endl;
-
-	std::cout << "Number of played moves: " << game_state.number_played_moves
 	          << std::endl;
 
 	std::cout << "\tPlayer 0 \t\t\t Player 1" << std::endl;

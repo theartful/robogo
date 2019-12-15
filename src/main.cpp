@@ -9,6 +9,8 @@
 #include "net/game_manager.h"
 #include <memory>
 #include <time.h>
+#include "config.h"
+#include "mcts/pattern3x3.h"
 
 using namespace go::engine;
 using namespace go;
@@ -25,6 +27,7 @@ void sigint_handler(int signal)
 
 int main(int argc, const char * argv[])
 {
+	mcts::load_patterns_file(PATTERNFILE);
 	struct sigaction sigIntHandler;
     sigIntHandler.sa_handler = sigint_handler;
     sigemptyset(&sigIntHandler.sa_mask);

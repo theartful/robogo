@@ -2,5 +2,6 @@
 #define SRC_CONFIG_H_
 
 #cmakedefine NDEBUG
+#cmakedefine PATTERNFILE "@PATTERNFILE@"
 
 #endif

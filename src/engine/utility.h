@@ -65,6 +65,23 @@ void for_each_neighbor(
 			return;
 }
 
+template <typename Lambda>
+void for_each_8neighbor_all(uint32_t pos, Lambda&& lambda)
+{
+	const auto neighbors = {
+	    pos - BoardState::EXTENDED_BOARD_SIZE - 1,
+	    pos - BoardState::EXTENDED_BOARD_SIZE,
+	    pos - BoardState::EXTENDED_BOARD_SIZE + 1,
+	    pos - 1,
+	    pos + 1,
+	    pos + BoardState::EXTENDED_BOARD_SIZE - 1,
+	    pos + BoardState::EXTENDED_BOARD_SIZE,
+	    pos + BoardState::EXTENDED_BOARD_SIZE + 1,
+	};
+	for (auto neighbor : neighbors)
+		lambda(neighbor);
+}
+
 template <typename Lambda, typename CVClusterTable>
 void for_each_neighbor_cluster(
     CVClusterTable& table, const BoardState& state, uint32_t cell_idx,
@@ -259,7 +276,7 @@ void for_each_cluster(const GameState& game_state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
 	    details::wrap_void_lambda<Cluster&>(std::forward<Lambda>(lambda));
-	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
 		auto cluster = game_state.cluster_table.clusters[i];
 		if (i != cluster.parent_idx || !cluster.size)
