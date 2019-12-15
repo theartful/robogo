@@ -7,6 +7,7 @@
 #include "engine/board.h"
 #include "mcts/mcts.h"
 #include <iostream>
+#include  <algorithm>
 
 namespace go
 {
@@ -39,8 +40,8 @@ public:
 			uint32_t average_num_moves =
 			    std::ceil(average_playout_length / 2.0);
 			allowed_time = std::chrono::duration<uint32_t, std::milli>{
-			    game.get_remaining_time(get_player_idx()).count() /
-			    average_num_moves};
+			    std::min(game.get_remaining_time(get_player_idx()).count() /
+			    average_num_moves, 4500U)};
 		}
 		std::cerr << "Allocated time for move: " << allowed_time.count() << '\n';
 		auto action = mcts_algo.run(game_state, allowed_time);
