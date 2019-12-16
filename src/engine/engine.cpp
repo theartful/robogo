@@ -138,9 +138,12 @@ void go::engine::force_move(GameState& game_state, const Action& action)
 	game_state.move_history.push_back(action);
 }
 
-void go::engine::force_moves(GameState& game_state, const std::vector<Action>& actions) {
+void go::engine::force_moves(
+    GameState& game_state, const std::vector<Action>& actions)
+{
 	// Can be further optimized & refactored.
-	for (auto& action : actions) {
+	for (auto& action : actions)
+	{
 		force_move(game_state, action);
 	}
 }
@@ -153,15 +156,8 @@ std::pair<float, float> go::engine::calculate_score(const GameState& state)
 	uint32_t white_territory_score = 0, black_territory_score = 0,
 	         score_temp = 0;
 
-	// To detect wether the traversed territory belong to which side, "01" for
-	// white and "10" for black
-	unsigned char territory_type; // if the output of the traversed territory
-	                              // was "11" the it was a false territory
-	details::SearchCache
-	    search_cache; // to avoid starting traversing a new territory from an
-	                  // already traversed empty cell
-
-	// Traversing the board to detect any start of any territory
+	unsigned char territory_type;
+	details::SearchCache search_cache;
 	for (uint32_t i = BoardState::BOARD_BEGIN; i < BoardState::BOARD_END; i++)
 	{
 		if (!search_cache.is_visited(i) && is_empty_cell(board_state, i))
@@ -169,8 +165,7 @@ std::pair<float, float> go::engine::calculate_score(const GameState& state)
 			territory_type = 0;
 			score_temp =
 			    territory_points(board_state, territory_type, i, search_cache);
-			// ANDing the territory_type to figure out the output of the
-			// traversed territory
+
 			if ((territory_type & static_cast<unsigned char>(Cell::BLACK)) == 0)
 				white_territory_score += score_temp;
 			else if (

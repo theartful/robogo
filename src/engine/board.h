@@ -42,7 +42,7 @@ struct BoardState
 	static constexpr uint32_t INVALID_INDEX = MAX_NUM_CELLS;
 	static constexpr uint32_t BOARD_BEGIN = EXTENDED_BOARD_SIZE + 1;
 	static constexpr uint32_t BOARD_END =
-	    MAX_BOARD_SIZE * EXTENDED_BOARD_SIZE + MAX_BOARD_SIZE + 1;
+	    (MAX_BOARD_SIZE + 1) * EXTENDED_BOARD_SIZE + EXTENDED_BOARD_SIZE;
 
 	std::array<Cell, MAX_NUM_CELLS> board;
 	std::array<uint16_t, MAX_NUM_CELLS> neighbor_count;
@@ -68,9 +68,9 @@ struct BoardState
 			neighbor_count[index(MAX_BOARD_SIZE - 1, i)] = 3;
 			neighbor_count[index(i, MAX_BOARD_SIZE - 1)] = 3;
 		}
-		for(uint32_t i = 0; i < MAX_BOARD_SIZE; i++)
+		for (uint32_t i = 0; i < MAX_BOARD_SIZE; i++)
 		{
-			for(uint32_t j = 0; j < MAX_BOARD_SIZE; j++)
+			for (uint32_t j = 0; j < MAX_BOARD_SIZE; j++)
 			{
 				empty_cells[num_empty++] = index(i, j);
 			}
@@ -158,7 +158,8 @@ inline void remove_empty_cell(BoardState& state, uint32_t idx)
 	{
 		if (state.empty_cells[i] == idx)
 		{
-			std::swap(state.empty_cells[i], state.empty_cells[--state.num_empty]);
+			std::swap(
+			    state.empty_cells[i], state.empty_cells[--state.num_empty]);
 			return;
 		}
 	}
