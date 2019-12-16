@@ -173,6 +173,12 @@ void Server::on_open(connection_hdl hdl)
 
 		if (net_game && buffered_net_start != "")
 			send(buffered_net_start);
+
+		if (buffered_genmove != "")
+		{
+			send(buffered_genmove);
+			buffered_genmove = "";
+		}
 	}
 }
 
@@ -201,6 +207,7 @@ bool Server::has_client()
 
 bool Server::send(std::string message)
 {
+	// std::cout << "sending message: " << message << std::endl;
 	if (this->client_connected)
 	{
 		websocketpp::lib::error_code ec;
@@ -210,6 +217,15 @@ bool Server::send(std::string message)
 		else
 			return true;
 	}
+	else
+	{
+		if (message.find("genmove") != std::string::npos)
+		{
+			std::cout << "buffering..." << std::endl;
+			buffered_genmove = message;
+		}
+	}
+	
 
 	return false;
 }

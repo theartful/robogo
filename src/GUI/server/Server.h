@@ -28,6 +28,7 @@ class Server
     server_thread m_thread;
     server s;
     std::string buffered_net_start = "";
+    std::string buffered_genmove = "";
     bool configed = false;
     bool client_connected = false;
     connection_hdl client_con;
