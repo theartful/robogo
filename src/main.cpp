@@ -3,14 +3,14 @@
 #include "GUI/server/Server.h"
 #include "SimpleGUI/simplegui.h"
 #include "agents/mcts_agent.h"
+#include "config.h"
 #include "controller/game.h"
 #include "engine/board.h"
 #include "gtp/gtp.h"
+#include "mcts/pattern3x3.h"
 #include "net/game_manager.h"
 #include <memory>
 #include <time.h>
-#include "config.h"
-#include "mcts/pattern3x3.h"
 
 using namespace go::engine;
 using namespace go;
@@ -20,17 +20,19 @@ using namespace go::gui;
 Server* s = NULL;
 void sigint_handler(int signal)
 {
-	if (s != NULL)
-		delete s;
+	delete s;
 	exit(1);
 }
 
-std::string get_parameter(int argc, const char* argv[], std::string long_parameter, std::string short_parameter)
+std::string get_parameter(
+    int argc, const char* argv[], std::string long_parameter,
+    std::string short_parameter)
 {
-	for (int i = 0; i < argc-1; i++)
+	for (int i = 0; i < argc - 1; i++)
 	{
-		if (strcmp(argv[i], long_parameter.c_str()) == 0 || strcmp(argv[i], short_parameter.c_str()) == 0)
-			return argv[i+1];
+		if (strcmp(argv[i], long_parameter.c_str()) == 0 ||
+		    strcmp(argv[i], short_parameter.c_str()) == 0)
+			return argv[i + 1];
 	}
 
 	return "";
@@ -39,11 +41,6 @@ std::string get_parameter(int argc, const char* argv[], std::string long_paramet
 int main(int argc, const char* argv[])
 {
 	mcts::load_patterns_file(PATTERNFILE);
-	struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = sigint_handler;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	sigaction(SIGINT, &sigIntHandler, NULL);
 
 	if (get_parameter(argc, argv, "--mode", "-m") == "gtp")
 	{
@@ -92,7 +89,7 @@ int main(int argc, const char* argv[])
 				net::GameManager GM(uri, s);
 				GM.run();
 			}
-			catch(const std::exception& e)
+			catch (const std::exception& e)
 			{
 				std::cerr << e.what() << '\n';
 			}
@@ -130,8 +127,5 @@ int main(int argc, const char* argv[])
 			sleep(2);
 		}
 	}
-
-	if (s != NULL)
-		delete s;
 	return 0;
 }

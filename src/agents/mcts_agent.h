@@ -17,7 +17,24 @@ class MCTSAgent : public Agent
 public:
 	uint32_t generate_move(const Game& game) override
 	{
+		std::array<uint32_t, 4> corners = {
+		    BoardState::index(3, 3), BoardState::index(15, 15),
+		    BoardState::index(15, 3), BoardState::index(3, 15)};
 		auto& game_state = game.get_game_state();
+		if (game_state.move_history.size() <= 1)
+		{
+			auto& table = game_state.cluster_table;
+			auto& board = game_state.board_state;
+			for (auto corner : corners)
+			{
+				if (engine::is_valid_move(
+				        table, board,
+				        engine::Action{corner, game_state.player_turn}))
+				{
+					return corner;
+				}
+			}
+		}
 		if (will_win_if_pass(game_state))
 			return Action::PASS;
 
@@ -39,14 +56,14 @@ public:
 			    float(move_stat.number_playouts + 0.01);
 			int32_t average_num_moves =
 			    std::ceil((average_playout_length + 0.1) / 2.0);
+			int32_t remaining_time = static_cast<int32_t>(
+			    game.get_remaining_time(get_player_idx()).count());
 			allowed_time = std::chrono::duration<uint32_t, std::milli>{std::min(
 			    std::max(
-			        (static_cast<int32_t>(
-			             game.get_remaining_time(get_player_idx()).count()) -
-			         7 * 60000) /
-			            average_num_moves,
-			        1000),
+			        (remaining_time - 5 * 60000) / average_num_moves, 1000),
 			    4500)};
+			if (remaining_time < 3000)
+				return Action::PASS;
 		}
 		std::cerr << "Allocated time for move: " << allowed_time.count()
 		          << '\n';

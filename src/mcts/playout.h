@@ -54,10 +54,12 @@ struct PlayoutStats
 
 	void add_heuristic_hit(PlayoutHeuristicType type)
 	{
+		/*
 		size_t type_idx = static_cast<size_t>(type);
 		tot_hits[type_idx]++;
 		if constexpr (DETAILED_PLAYOUT_STATS)
 			moves_stats.back().hits[type_idx]++;
+		*/
 	}
 
 	void new_move_stats()
