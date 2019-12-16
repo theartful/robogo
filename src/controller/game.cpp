@@ -1,6 +1,7 @@
 #include "controller/game.h"
 #include "config.h"
 #include "engine/interface.h"
+#include "SimpleGUI/simplegui.h"
 #include <iostream>
 
 using namespace go;
@@ -73,7 +74,8 @@ bool Game::make_move(const Action& action)
 	return engine::make_move(game_state, action);
 }
 
-void Game::force_moves(const std::vector<Action>& actions) {
+void Game::force_moves(const std::vector<Action>& actions)
+{
 	engine::force_moves(game_state, actions);
 }
 
@@ -87,10 +89,12 @@ void Game::main_loop()
 		auto& agent_time = agents_time_info[game_state.player_turn];
 
 		agent_time.start_counting();
-		std::cout << "GAME: Agent " << agent->get_player_idx() << " will play!\n";
+		std::cout << "GAME: Agent " << agent->get_player_idx()
+		          << " will play!\n";
 		Action agent_action = {agent->generate_move(*this),
 		                       game_state.player_turn};
-		std::cout << "GAME: Agent " << agent_action.player_index << " played " << agent_action.pos << "\n";
+		std::cout << "GAME: Agent " << agent_action.player_index << " played "
+		          << agent_action.pos << "\n";
 		agent_time.stop_counting();
 
 		// accept the move only if played in time
@@ -108,5 +112,13 @@ void Game::main_loop()
 			make_move_callback(valid_move);
 	}
 	DEBUG_PRINT("OUT OF THE GAME MAIN LOOP.\n");
-	// engine::calculate_score(game_state);
+
+	simplegui::BoardSimpleGUI::print_board(game_state.board_state, game_state.player_turn);
+	auto [black_score, white_score] = engine::calculate_score(game_state);
+	std::cout << "Black alive stones: " << game_state.players[0].number_alive_stones << '\n';
+	std::cout << "Black captured enemies: " << game_state.players[0].number_captured_enemies << '\n';
+	std::cout << "White alive stones: " << game_state.players[1].number_alive_stones << '\n';
+	std::cout << "White captured enemies: " << game_state.players[1].number_captured_enemies << '\n';
+	std::cout << "Black score: " << black_score << '\t'
+	          << "White score: " << white_score << '\n';
 }

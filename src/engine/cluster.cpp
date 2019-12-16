@@ -229,6 +229,8 @@ static inline void capture_cluster(Cluster& cluster, GameState& game_state)
 		board_state.board[cell_idx] = Cell::EMPTY;
 		add_empty_cell(board_state, cell_idx);
 	});
+
+	cluster.size = 0;
 }
 
 uint32_t go::engine::get_num_liberties(const Cluster& cluster)

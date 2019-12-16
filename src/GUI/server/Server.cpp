@@ -184,7 +184,6 @@ void Server::on_close(connection_hdl hdl)
 
 void Server::on_message(connection_hdl hdl, message_ptr msg)
 {
-	std::cout << "received: " << msg->get_payload() << std::endl;
 	if (!configed)
 	{
 		configed = true;
