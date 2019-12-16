@@ -58,12 +58,13 @@ public:
 			    std::ceil((average_playout_length + 0.1) / 2.0);
 			int32_t remaining_time = static_cast<int32_t>(
 			    game.get_remaining_time(get_player_idx()).count());
+			if (remaining_time < 30000)
+				return Action::PASS;
+
 			allowed_time = std::chrono::duration<uint32_t, std::milli>{std::min(
 			    std::max(
 			        (remaining_time - 5 * 60000) / average_num_moves, 1000),
 			    4500)};
-			if (remaining_time < 3000)
-				return Action::PASS;
 		}
 		std::cerr << "Allocated time for move: " << allowed_time.count()
 		          << '\n';

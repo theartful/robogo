@@ -44,13 +44,25 @@ void Game::set_allowed_time(
     std::chrono::duration<uint32_t, std::milli> allowed_time,
     uint32_t player_idx)
 {
+	std::lock_guard<std::mutex> lock(agent_mutex);
 	agents_time_info[player_idx].set_allowed_time(allowed_time);
+}
+
+
+void Game::set_remaining_time(std::chrono::duration<uint32_t, std::milli> remaining_time,
+	uint32_t agent_id)
+{
+	// std::lock_guard<std::mutex> lock(agent_mutex);
+	// auto allowed_time = agents_time_info[agent_id].get_allowed_time();
+	// auto new_elapsed_time = allowed_time - remaining_time;
+	// agents_time_info[agent_id].set_elapsed_time(new_elapsed_time);
 }
 
 void Game::set_elapsed_time(
     std::chrono::duration<uint32_t, std::milli> elapsed_time,
     uint32_t player_idx)
 {
+	std::lock_guard<std::mutex> lock(agent_mutex);
 	agents_time_info[player_idx].set_elapsed_time(elapsed_time);
 }
 

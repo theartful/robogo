@@ -71,11 +71,17 @@ void GameManager::start_game(Document& document)
     std::vector<engine::Action> actions;
     // Can he give an initial state AND a move log?
     uint32_t current_player = 0;
+    uint32_t elapsed_time[2];
+    elapsed_time[0] = 0;
+    elapsed_time[1] = 1;
     for (auto& move : moves) { 
         actions.push_back(get_action(move, current_player));
+        elapsed_time[current_player] += move["deltaTime"].GetUint();
         current_player = (current_player + 1) % 2;
     }
     auto current_runner = std::make_shared<NetGameRunner>();
+    current_runner->set_remaining_time(elapsed_time[0], 0);
+    current_runner->set_remaining_time(elapsed_time[1], 1);
     
     current_runner->bind_gui(s);
     s->start_net_game(1-local_player_index, "RemoteAgent");
@@ -122,6 +128,15 @@ void GameManager::on_message(client* c, websocketpp::connection_hdl hdl, message
         cout << "GameManager: END reached. Reason: " << end_reason << "\n";
         current_runner->set_game_end(true);
         game_loop_thread.detach();
+    }
+    else if (message_type == "VALID")
+    {
+        std::lock_guard<std::mutex> lock(runners_mutex);
+        auto current_runner = runners.back();
+        auto remaining_time_black = received_document["remainingTime"]["B"].GetUint();
+        auto remaining_time_white = received_document["remainingTime"]["W"].GetUint();
+        current_runner->set_remaining_time(remaining_time_black, 0);
+        current_runner->set_remaining_time(remaining_time_white, 1);
     }
 }
 

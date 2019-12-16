@@ -25,20 +25,24 @@ public:
 	}
 	auto get_allowed_time() const
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		return allowed_time;
 	}
 	auto get_elapsed_time() const
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		return elapsed_time;
 	}
 	void
 	set_allowed_time(std::chrono::duration<uint32_t, std::milli> allowed_time_)
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		this->allowed_time = allowed_time_;
 	}
 	void
 	set_elapsed_time(std::chrono::duration<uint32_t, std::milli> elapsed_time_)
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		this->elapsed_time = elapsed_time_;
 	}
 	void start_counting()
@@ -47,15 +51,18 @@ public:
 	}
 	void stop_counting()
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		elapsed_time += std::chrono::duration_cast<std::chrono::milliseconds>(
 		    std::chrono::steady_clock::now() - move_start_time);
 	}
 	bool is_overtime() const
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		return elapsed_time > allowed_time;
 	}
 	void reset()
 	{
+		std::lock_guard<std::mutex> lock(mutex);
 		elapsed_time = std::chrono::duration<uint32_t, std::milli>::zero();
 	}
 
@@ -69,6 +76,7 @@ private:
 	// should be updated when the player finishes his move
 	// elapsed_time += duration(now - move_start_time);
 	std::chrono::duration<uint32_t, std::milli> elapsed_time;
+	mutable std::mutex mutex;
 };
 
 class Game
@@ -85,18 +93,22 @@ public:
 	    uint32_t player_idx);
 	auto get_allowed_time(uint32_t player_idx) const
 	{
+		std::lock_guard<std::mutex> lock(agent_mutex);
 		return agents_time_info[player_idx].get_allowed_time();
 	}
 	auto get_elapsed_time(uint32_t player_idx) const
 	{
+		std::lock_guard<std::mutex> lock(agent_mutex);
 		return agents_time_info[player_idx].get_elapsed_time();
 	}
 	auto get_remaining_time(uint32_t player_idx) const
 	{
+		std::lock_guard<std::mutex> lock(agent_mutex);
 		return agents_time_info[player_idx].get_allowed_time() -
 		       agents_time_info[player_idx].get_elapsed_time();
 	}
-
+	void set_remaining_time(std::chrono::duration<uint32_t, std::milli> remaining_time,
+		uint32_t agent_id);
 	void set_elapsed_time(
 	    std::chrono::duration<uint32_t, std::milli> allowed_time,
 	    uint32_t player_idx);
@@ -142,6 +154,7 @@ private:
 	std::array<AgentTime, 2> agents_time_info;
 	std::function<void(bool)> make_move_callback = NULL;
 	std::mutex game_mutex;
+	mutable std::mutex agent_mutex;
 	bool force_game_end;
 };
 

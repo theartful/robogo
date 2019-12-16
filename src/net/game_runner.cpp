@@ -50,6 +50,11 @@ Game& NetGameRunner::get_game()
     return this->game;
 }
 
+void NetGameRunner::set_remaining_time(uint32_t remaining_time, uint32_t agent)
+{
+    game.set_remaining_time(std::chrono::duration<uint32_t, std::milli>(remaining_time), agent);
+}
+
 }
 
 }
