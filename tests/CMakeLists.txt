@@ -3,8 +3,8 @@ add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
 file(GLOB_RECURSE TEST_SRC *.cpp)
-add_executable(goslayer-unit-tests ${TEST_SRC})
-target_link_libraries(goslayer-unit-tests goslayer)
+add_executable(robogo-unit-tests ${TEST_SRC})
+target_link_libraries(robogo-unit-tests robogo)
 
 include(ParseAndAddCatchTests)
-ParseAndAddCatchTests(goslayer-unit-tests)
+ParseAndAddCatchTests(robogo-unit-tests)

@@ -72,7 +72,7 @@ template <typename T>
 static std::optional<T> from_str(std::string_view str)
 {
 	return T{str};
-};
+}
 
 template <>
 std::optional<float> from_str<float>(std::string_view str)
