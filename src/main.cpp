@@ -1,14 +1,17 @@
-#include "SimpleGUI/simplegui.h"
 #include "controller/game.h"
 #include "engine/board.h"
+#include "gtp/gtp.h"
 #include <memory>
+#include <iostream>
 
 using namespace go::engine;
 using namespace go;
-using namespace go::simplegui;
 
 int main()
 {
+	go::gtp::GTPController controller;
+	controller.main_loop();
+	/*
 	Game game;
 	auto agent = std::make_shared<BoardSimpleGUI>();
 	auto agent2 = std::make_shared<BoardSimpleGUI>();
@@ -17,4 +20,5 @@ int main()
 	game.register_agent(agent, 0);
 	game.register_agent(agent2, 1);
 	game.main_loop();
+	*/
 }

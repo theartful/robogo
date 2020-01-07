@@ -153,7 +153,7 @@ void go::engine::calculate_score(
 	// Updating scores
 	white_player.total_score =
 	    white_territory_score + white_player.number_alive_stones +
-	    white_player.number_captured_enemies + Rules::KOMI;
+	    white_player.number_captured_enemies; //+ Rules::KOMI;
 	black_player.total_score = black_territory_score +
 	                           black_player.number_alive_stones +
 	                           black_player.number_captured_enemies;

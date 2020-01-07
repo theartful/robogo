@@ -40,10 +40,11 @@ struct BoardState
 	    EXTENDED_BOARD_SIZE * EXTENDED_BOARD_SIZE;
 	static constexpr uint32_t INVALID_INDEX = MAX_NUM_CELLS;
 
+	uint32_t size;
 	std::array<Cell, MAX_NUM_CELLS> board;
 	uint32_t ko;
 
-	BoardState() : ko{INVALID_INDEX}
+	BoardState(uint32_t size_ = MAX_BOARD_SIZE) : size(size_), ko{INVALID_INDEX}
 	{
 		std::fill(board.begin(), board.end(), Cell::EMPTY);
 		for (uint32_t i = 0; i < EXTENDED_BOARD_SIZE; i++)
@@ -138,15 +139,12 @@ struct GameState
 {
 	BoardState board_state;
 	ClusterTable cluster_table;
-	uint32_t board_size;
 	uint32_t number_played_moves;
 	uint32_t player_turn;
 	std::array<Player, 2> players;
 	std::vector<Action> move_history;
 
-	GameState()
-	    : board_state(), board_size{BoardState::MAX_BOARD_SIZE},
-	      number_played_moves{0}, player_turn{0}
+	GameState() : board_state(), number_played_moves{0}, player_turn{0}
 	{
 	}
 };
@@ -154,7 +152,7 @@ struct GameState
 // TODO: Support more rules and make it runtime!
 struct Rules
 {
-	static constexpr float KOMI = 6.5;
+	float komi = 6.5;
 };
 
 } // namespace engine

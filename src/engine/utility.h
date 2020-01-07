@@ -29,7 +29,7 @@ template <typename Arg = uint32_t, ForPolicy policy = CONTINUE, typename Lambda>
 auto wrap_void_lambda(Lambda&& lambda)
 {
 	using namespace std;
-	if constexpr (!is_same_v<decltype(lambda(declval<Arg>())), void>)
+	if constexpr (!is_same_v<invoke_result_t<Lambda, Arg>, void>)
 		return lambda;
 	else
 		return [lambda](auto&& val) {
