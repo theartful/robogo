@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(goslayer)
+project(robogo)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake.modules/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -54,7 +54,7 @@ elseif (MSVC)
 			add_compile_options("/std:c++17")
 		endif()
 	else()
-		message(FATAL_ERROR "C++17 is required to build goslayer, but it isn't \
+		message(FATAL_ERROR "C++17 is required to build robogo, but it isn't \
 		        supported by this compiler")
 	endif()
 	set(COMPILER_WARNINGS "/Wall")
