@@ -31,8 +31,8 @@ include_directories(
 	"${PROJECT_BINARY_DIR}/src/"
 )
 
-# use c++17
-set(CMAKE_CXX_STANDARD 17) 
+# use c++20 (trying out new features!)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set compiler flags
