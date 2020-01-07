@@ -1,23 +1,36 @@
-sudo: required
-dist: bionic
-
-notifications:
-  slack: go-mi:emgh2vMsJ523vXca8Pif0wUF
-
-before_install:
-  - sudo apt-get install libao-dev
-  - sudo apt-get install libcurl4-openssl-dev
-  - sudo apt-get install g++
-  - sudo apt-get install python-dev
-  - sudo apt-get install clang-format
-  
-# Enable C++ support
 language: cpp
 
-# Compiler selection
-compiler:
-  - g++
-# Build steps
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+          packages:
+            - g++-9
+      env:
+        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+            - sourceline: "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main"
+              key_url: "https://apt.llvm.org/llvm-snapshot.gpg.key"
+          packages:
+            - clang-9
+            - lldb-9
+            - lld-9
+            - libstdc++-9-dev
+      env:
+        - MATRIX_EVAL="CC=clang-9 && CXX=clang++-9"
+
+before_install: eval "${MATRIX_EVAL}"
+
 script:
   - ./check_format.sh ${TRAVIS_PULL_REQUEST_BRANCH} ${TRAVIS_BRANCH} 
   - mkdir build

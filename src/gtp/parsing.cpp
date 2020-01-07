@@ -221,7 +221,7 @@ static GTPCommand parse(std::string_view str)
 	if (it != tokens.end())
 		command = *(it++);
 
-	return GTPCommand(id, command, std::vector(it, tokens.end()));
+	return GTPCommand(id, command, {it, tokens.end()});
 }
 
 static void preprocess(std::string& request)
