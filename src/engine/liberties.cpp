@@ -1,41 +1,30 @@
 #include <array>
 
 #include "board.h"
-#include "cluster.h"
-#include "interface.h"
+#include "engine.h"
+#include "group.h"
+#include "iterators.h"
 #include "liberties.h"
-#include "utility.h"
 
 using go::engine::BoardState;
-using go::engine::Cell;
+using go::engine::Stone;
 
-uint32_t go::engine::count_liberties(const BoardState& state, uint32_t cell_idx)
+uint32_t
+go::engine::count_liberties(const BoardState& state, uint32_t stone_idx)
 {
 	uint32_t num_liberties = 0;
-	for_each_cell(state, cell_idx, [&](uint32_t cur_idx) {
-		if (is_empty_cell(state, cur_idx))
+	for_each_stone(state, stone_idx, [&](uint32_t cur_idx) {
+		if (is_empty(state, cur_idx))
 			num_liberties++;
-		if (state.board[cur_idx] == state.board[cell_idx])
-			return EXPAND;
-		return DONT_EXPAND;
+		if (state.stones[cur_idx] == state.stones[stone_idx])
+			return Expand;
+		return DontExpand;
 	});
 	return num_liberties;
 }
 
 uint32_t
-go::engine::count_liberties(const BoardState& state, uint32_t i, uint32_t j)
+go::engine::count_liberties(const GroupTable& table, uint32_t stone_idx)
 {
-	return count_liberties(state, BoardState::index(i, j));
-}
-
-uint32_t
-go::engine::count_liberties(const ClusterTable& table, uint32_t i, uint32_t j)
-{
-	return count_liberties(table, BoardState::index(i, j));
-}
-
-uint32_t
-go::engine::count_liberties(const ClusterTable& table, uint32_t cell_idx)
-{
-	return get_num_liberties(get_cluster(table, cell_idx));
+	return get_num_liberties(get_group(table, stone_idx));
 }

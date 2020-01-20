@@ -49,12 +49,10 @@ public:
 	{
 		return parent::index() == 0;
 	}
-
 	const value_type& value() const
 	{
 		return std::get<0>(*this);
 	}
-
 	const error_type& error() const
 	{
 		return std::get<1>(*this).e;

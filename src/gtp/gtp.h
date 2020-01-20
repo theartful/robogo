@@ -22,8 +22,8 @@ struct Vertex
 
 enum class Color
 {
-	BLACK,
-	WHITE
+	Black,
+	White
 };
 
 struct GTPCommand
@@ -67,12 +67,16 @@ public:
 	std::string list_commands();
 
 	void quit();
-	expected<bool> boardsize(uint32_t size);
+	expected<void> boardsize(uint32_t size);
 	void komi(float new_komi);
 	void clearboard();
 	expected<void> play(Color color, Vertex vertex);
 	Vertex genmove(Color color);
 	std::string showboard();
+	void clear_board();
+
+	// debugging
+	std::string rg_showboard();
 
 private:
 	template <typename R, typename... Args>
@@ -85,6 +89,7 @@ private:
 	engine::Rules rules;
 	GTPFunctionMap function_map;
 	std::vector<std::string_view> known_commands;
+	bool quit_flag;
 };
 
 } // namespace go::gtp

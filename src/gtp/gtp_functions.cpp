@@ -1,12 +1,12 @@
 #include <algorithm>
 #include <array>
 #include <functional>
-#include <utility>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <utility>
 
 #include "engine/board.h"
-#include "engine/interface.h"
+#include "engine/engine.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
 
@@ -48,7 +48,7 @@ std::string GTPController::list_commands()
 
 std::string GTPController::showboard()
 {
-	auto& board = game.board_state;
+	auto& board = game.board;
 
 	auto show_col_names = [](std::ostringstream& stream, uint32_t board_size) {
 		stream << "    ";
@@ -62,11 +62,11 @@ std::string GTPController::showboard()
 			return (r == 3 || r == 9 || r == 15) &&
 			       (c == 3 || c == 9 || c == 15);
 		};
-		if (board(row, col) == engine::Cell::BLACK)
+		if (board(row, col) == engine::Stone::Black)
 			return 'X';
-		else if (board(row, col) == engine::Cell::WHITE)
+		else if (board(row, col) == engine::Stone::White)
 			return 'O';
-		else if (board(row, col) == engine::Cell::EMPTY)
+		else if (board(row, col) == engine::Stone::Empty)
 			if (is_star_point(row, col))
 				return '+';
 			else
@@ -78,15 +78,16 @@ std::string GTPController::showboard()
 	std::ostringstream oss;
 	oss << std::endl;
 	show_col_names(oss, board.size);
-	for (uint32_t row = 0; row < board.size; row++)
+	for (int32_t row = board.size - 1; row >= 0; row--)
 	{
+		uint32_t urow = static_cast<uint32_t>(row);
 		oss << ' ';
-		oss << std::setw(2) << (board.size - row) << ' ';
+		oss << std::setw(2) << urow + 1 << ' ';
 
 		for (uint32_t col = 0; col < board.size; col++)
-			oss << point_symbol(row, col) << ' ';
+			oss << point_symbol(urow, col) << ' ';
 
-		oss << (board.size - row) << std::endl;
+		oss << urow + 1 << std::endl;
 	}
 	show_col_names(oss, board.size);
 	return oss.str();
@@ -94,16 +95,37 @@ std::string GTPController::showboard()
 
 expected<void> GTPController::play(Color color, Vertex vertex)
 {
-	uint32_t player_idx = color == Color::BLACK ? 0 : 1;
+	uint32_t player_idx = color == Color::Black ? 0 : 1;
 	uint32_t pos = engine::BoardState::index(vertex.row, vertex.col);
 
-	std::cout << static_cast<int>(color) << '\t' << vertex.row << '\t'
-	          << vertex.col << '\n';
-
-	if (engine::make_move(game, engine::Action{player_idx, pos}))
+	if (engine::make_move(game, engine::Action{pos, player_idx}))
 		return {};
 	else
 		return unexpected("illegal move"s);
+}
+
+void GTPController::clear_board()
+{
+	auto old_board_size = game.board.size;
+	game = engine::GameState(old_board_size);
+}
+
+void GTPController::komi(float new_komi)
+{
+	rules.komi = new_komi;
+}
+
+expected<void> GTPController::boardsize(uint32_t size)
+{
+	if (size > 19 || size < 4)
+		return unexpected("unacceptable size"s);
+	game = engine::GameState(size);
+	return {};
+}
+
+void GTPController::quit()
+{
+	quit_flag = true;
 }
 
 } // namespace go::gtp

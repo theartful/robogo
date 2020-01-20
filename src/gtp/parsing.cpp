@@ -14,9 +14,7 @@
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
 
-namespace go
-{
-namespace gtp
+namespace go::gtp
 {
 
 static constexpr auto get_column_char_arr()
@@ -28,7 +26,7 @@ static constexpr auto get_column_char_arr()
 char get_column_char(uint32_t col)
 {
 	auto column_char_arr = get_column_char_arr();
-	if (col < column_char_arr.size())
+	if (static_cast<size_t>(col) < column_char_arr.size())
 		return column_char_arr[col];
 	else
 		return '?';
@@ -91,7 +89,7 @@ std::optional<int32_t> from_str<int32_t>(std::string_view str)
 	long val = strtol(str.data(), &end, 10);
 	if (*end != '\0')
 		return {};
-	return static_cast<int32_t>(val);
+	return static_cast<uint32_t>(val);
 }
 
 template <>
@@ -100,7 +98,7 @@ std::optional<uint32_t> from_str<uint32_t>(std::string_view str)
 	auto val = from_str<int32_t>(str);
 	if (!val || val.value() < 0)
 		return {};
-	return val.value();
+	return static_cast<uint32_t>(val.value());
 }
 
 template <>
@@ -113,7 +111,7 @@ std::optional<Vertex> from_str<Vertex>(std::string_view str)
 
 	std::string_view row_str{str.data() + 1, str.size() - 1};
 	if (auto row = from_str<uint32_t>(row_str); row)
-		return Vertex{row.value(), col};
+		return Vertex{row.value() - 1, col};
 	else
 		return {};
 }
@@ -122,9 +120,9 @@ template <>
 std::optional<Color> from_str<Color>(std::string_view str)
 {
 	if (str == "b" || str == "black")
-		return Color::BLACK;
+		return Color::Black;
 	else if (str == "w" || str == "white")
-		return Color::WHITE;
+		return Color::White;
 	else
 		return {};
 }
@@ -134,7 +132,8 @@ namespace details
 template <typename R, typename... Args, typename Callable>
 static GTPFunction to_gtp_function_impl(Callable&& func)
 {
-	return [func](const GTPCommand& command) -> GTPCommandResult {
+	return [func{std::forward<Callable>(func)}](
+	           const GTPCommand& command) -> GTPCommandResult {
 		using namespace std;
 		constexpr size_t num_func_args = sizeof...(Args);
 
@@ -245,7 +244,7 @@ static void preprocess(std::string& request)
 void GTPController::main_loop()
 {
 	std::string request;
-	while (true)
+	while (!quit_flag)
 	{
 		std::getline(std::cin, request);
 		if (request.empty())
@@ -273,7 +272,7 @@ void GTPController::main_loop()
 	}
 }
 
-GTPController::GTPController()
+GTPController::GTPController() : game{}, quit_flag{false}
 {
 	function_map = {
 	    {"list_commands", to_gtp_function(&GTPController::list_commands)},
@@ -282,11 +281,15 @@ GTPController::GTPController()
 	    {"version", to_gtp_function(&GTPController::version)},
 	    {"known_command", to_gtp_function(&GTPController::known_command)},
 	    {"showboard", to_gtp_function(&GTPController::showboard)},
-	    {"play", to_gtp_function(&GTPController::play)}};
-
+	    {"play", to_gtp_function(&GTPController::play)},
+	    {"clear_board", to_gtp_function(&GTPController::clear_board)},
+	    {"komi", to_gtp_function(&GTPController::komi)},
+	    {"boardsize", to_gtp_function(&GTPController::boardsize)},
+	    {"quit", to_gtp_function(&GTPController::quit)},
+	    {"rg_showboard", to_gtp_function(&GTPController::rg_showboard)},
+	};
 	for (auto&& pair : function_map)
 		known_commands.push_back(pair.first);
 }
 
-} // namespace gtp
-} // namespace go
+} // namespace go::gtp

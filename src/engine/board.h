@@ -1,161 +1,279 @@
-#ifndef SRC_ENGINE_BOARD_H_
-#define SRC_ENGINE_BOARD_H_
+#ifndef _ENGINE_BOARD_H_
+#define _ENGINE_BOARD_H_
 
+#include "config.h"
 #include <array>
-#include <assert.h>
 #include <bitset>
-#include <stdint.h>
+#include <cassert>
+#include <cstdint>
 #include <vector>
 
-#ifndef NDEBUG
-#include <stdio.h>
-#define DEBUG_PRINT(...)                                                       \
-	do                                                                         \
-	{                                                                          \
-		printf(__VA_ARGS__);                                                   \
-	} while (0)
-#else
-#define DEBUG_PRINT(...) (void)0
-#endif // NDEBUG
+#include "engine/utility.h"
 
-namespace go
+namespace go::engine
 {
-namespace engine
+
+enum class Stone : unsigned char
 {
-enum class Cell : unsigned char
-{
-	EMPTY = 0,
-	WHITE = 1,
-	BLACK = 2,
-	BORDER = 4
+	Empty,
+	Black,
+	White,
+	Border
 };
 
-static constexpr Cell PLAYERS[] = {Cell::BLACK, Cell::WHITE};
+inline constexpr Stone get_player_stone(uint16_t player_idx)
+{
+	constexpr std::array colors = {Stone::Black, Stone::White};
+	return colors[player_idx];
+}
+inline constexpr uint32_t get_player_idx(Stone stone)
+{
+	constexpr std::array<uint32_t, 4> idxs = {3, 0, 1, 3};
+	return idxs[static_cast<unsigned char>(stone)];
+}
 
 struct BoardState
 {
-	static constexpr uint32_t MAX_BOARD_SIZE = 19;
-	static constexpr uint32_t EXTENDED_BOARD_SIZE = MAX_BOARD_SIZE + 2;
-	static constexpr uint32_t MAX_NUM_CELLS =
-	    EXTENDED_BOARD_SIZE * EXTENDED_BOARD_SIZE;
-	static constexpr uint32_t INVALID_INDEX = MAX_NUM_CELLS;
+	static constexpr auto MAX_SIZE = 19;
+	static constexpr auto MAX_AREA = MAX_SIZE * MAX_SIZE;
+	static constexpr auto EXTENDED_SIZE = MAX_SIZE + 2;
+	static constexpr auto EXTENDED_AREA = EXTENDED_SIZE * EXTENDED_SIZE;
+	static constexpr uint32_t INVALID_INDEX = EXTENDED_AREA;
 
-	uint32_t size;
-	std::array<Cell, MAX_NUM_CELLS> board;
-	uint32_t ko;
+	std::array<Stone, EXTENDED_AREA> stones;
+	std::array<uint16_t, MAX_AREA> empty_stones;
+	MarginRemapped2DArray<uint16_t, MAX_SIZE> neighbor_count;
 
-	BoardState(uint32_t size_ = MAX_BOARD_SIZE) : size(size_), ko{INVALID_INDEX}
+	uint16_t num_empty_stones;
+	uint16_t size;
+	uint16_t ko;
+
+	explicit BoardState(uint16_t size_)
+	    : stones{}, empty_stones{}, neighbor_count{},
+	      num_empty_stones{0}, size{size_}, ko{INVALID_INDEX}
 	{
-		std::fill(board.begin(), board.end(), Cell::EMPTY);
-		for (uint32_t i = 0; i < EXTENDED_BOARD_SIZE; i++)
+		const uint16_t extended_size = size + 2u;
+
+		// not constexpr Q_Q
+		std::fill(stones.begin(), stones.end(), Stone::Empty);
+		std::fill(neighbor_count.begin(), neighbor_count.end(), 4);
+		for (uint32_t i = 0; i < extended_size; i++)
 		{
-			board[i] = Cell::BORDER;
-			board[i + (EXTENDED_BOARD_SIZE - 1) * EXTENDED_BOARD_SIZE] =
-			    Cell::BORDER;
-			board[i * EXTENDED_BOARD_SIZE] = Cell::BORDER;
-			board[i * EXTENDED_BOARD_SIZE + EXTENDED_BOARD_SIZE - 1] =
-			    Cell::BORDER;
+			stones[i] = Stone::Border;
+			stones[i + (extended_size - 1u) * EXTENDED_SIZE] = Stone::Border;
+			stones[i * EXTENDED_SIZE] = Stone::Border;
+			stones[i * EXTENDED_SIZE + extended_size - 1u] = Stone::Border;
 		}
+		for (uint32_t i = 0; i < size; i++)
+		{
+			for (uint32_t j = 0; j < size; j++)
+			{
+				empty_stones[num_empty_stones++] = index(i, j);
+			}
+		}
+		for (uint32_t i = 0; i < size; i++)
+		{
+			neighbor_count[index(0, i)] = 3;
+			neighbor_count[index(i, 0)] = 3;
+			neighbor_count[index(size - 1u, i)] = 3;
+			neighbor_count[index(i, size - 1u)] = 3;
+		}
+		neighbor_count[index(0, 0)] = 2;
+		neighbor_count[index(size - 1u, 0)] = 2;
+		neighbor_count[index(0, size - 1u)] = 2;
+		neighbor_count[index(size - 1u, size - 1u)] = 2;
 	}
-
-	Cell& operator()(uint32_t i, uint32_t j)
+	BoardState() : BoardState{MAX_SIZE}
 	{
-		assert(i < MAX_BOARD_SIZE);
-		assert(j < MAX_BOARD_SIZE);
-		return board[index(i, j)];
 	}
-
-	Cell operator()(uint32_t i, uint32_t j) const
+	constexpr Stone& operator()(uint32_t i, uint32_t j)
 	{
-		assert(i < MAX_BOARD_SIZE);
-		assert(j < MAX_BOARD_SIZE);
-		return board[index(i, j)];
+		return stones[index(i, j)];
 	}
-
-	static uint32_t index(uint32_t i, uint32_t j)
+	constexpr Stone operator()(uint32_t i, uint32_t j) const
 	{
-		return (i + 1) * EXTENDED_BOARD_SIZE + (j + 1);
+		return stones[index(i, j)];
+	}
+	static constexpr uint32_t index(uint32_t i, uint32_t j)
+	{
+		return (i + 1) * EXTENDED_SIZE + (j + 1);
 	}
 };
 
-inline bool is_empty_cell(Cell cell)
+inline constexpr bool is_empty(Stone stone)
 {
-	return cell == Cell::EMPTY;
+	return stone == Stone::Empty;
 }
-inline bool is_empty_cell(const BoardState& state, uint32_t idx)
+inline constexpr bool is_empty(const BoardState& board, uint32_t idx)
 {
-	return is_empty_cell(state.board[idx]);
+	return is_empty(board.stones[idx]);
+}
+inline constexpr void increment_empty_neighbors(BoardState& board, uint32_t idx)
+{
+	board.neighbor_count[idx] += 1;
+}
+inline constexpr void decrement_empty_neighbors(BoardState& board, uint32_t idx)
+{
+	board.neighbor_count[idx] -= 1;
+}
+inline constexpr void
+increment_neighbors(BoardState& board, uint32_t player_idx, uint32_t idx)
+{
+	board.neighbor_count[idx] += (1UL << (3UL * (player_idx + 1)));
+}
+inline constexpr void
+decrement_neighbors(BoardState& board, uint32_t player_idx, uint32_t idx)
+{
+	board.neighbor_count[idx] -= (1UL << (3UL * (player_idx + 1)));
+}
+inline constexpr void
+increment_neighbors(BoardState& board, Stone neighbor, uint32_t idx)
+{
+	increment_neighbors(board, get_player_idx(neighbor), idx);
+}
+inline constexpr void
+decrement_neighbors(BoardState& board, Stone neighbor, uint32_t idx)
+{
+	decrement_neighbors(board, get_player_idx(neighbor), idx);
+}
+inline constexpr uint16_t
+get_white_neighbors_count(const BoardState& board, uint32_t idx)
+{
+	return (board.neighbor_count[idx] & uint16_t{0b000111000}) >> 3;
+}
+inline constexpr uint16_t
+get_black_neighbors_count(const BoardState& board, uint32_t idx)
+{
+	return (board.neighbor_count[idx] & uint16_t{0b111000000}) >> 6;
+}
+inline constexpr uint16_t
+get_empty_neighbors_count(const BoardState& board, uint32_t idx)
+{
+	return (board.neighbor_count[idx] & uint16_t{0b000000111});
+}
+inline constexpr void add_empty_stone(BoardState& board, uint32_t idx)
+{
+	board.empty_stones[board.num_empty_stones++] = idx;
+}
+inline void remove_empty_stone(BoardState& board, uint32_t idx)
+{
+	// should probably use a hash table
+	for (uint32_t i = 0; i < board.num_empty_stones; i++)
+	{
+		if (board.empty_stones[i] == idx)
+		{
+			// not constexpr Q_Q
+			std::swap(
+			    board.empty_stones[i],
+			    board.empty_stones[--board.num_empty_stones]);
+			return;
+		}
+	}
 }
 
 struct Action
 {
-	static constexpr uint32_t PASS = BoardState::INVALID_INDEX;
-	uint32_t pos;
-	uint32_t player_index;
+	static constexpr uint16_t PASS = BoardState::INVALID_INDEX;
+	static constexpr uint16_t INVALID_ACTION = PASS + 1;
+
+	uint16_t pos;
+	uint8_t player_idx;
+
+	constexpr Action(uint16_t pos_, uint8_t player_idx_)
+	    : pos{pos_}, player_idx{player_idx_}
+	{
+	}
+	constexpr Action(uint32_t pos_, uint32_t player_idx_)
+	    : Action{static_cast<uint16_t>(pos_), static_cast<uint8_t>(player_idx_)}
+	{
+	}
+	constexpr Action() : Action{0u, 0u}
+	{
+	}
 };
 
-inline bool is_pass(const Action& action)
+inline constexpr bool is_pass(const Action& action)
 {
 	return action.pos == Action::PASS;
 }
-
-inline bool is_invalid(const Action& action)
+inline constexpr bool is_invalid(const Action& action)
 {
-	return action.pos > BoardState::INVALID_INDEX || action.player_index > 1;
+	return action.pos >= Action::INVALID_ACTION;
 }
 
-// A cluster is a maximal set of connected stones
-struct Cluster
+// A group is a maximal set of connected stones
+struct Group
 {
-	mutable uint32_t parent_idx;
-	uint32_t player;
-	uint32_t size;
-	uint32_t num_liberties;
-	std::bitset<BoardState::MAX_NUM_CELLS> liberties_map;
+	uint16_t parent : 15;
+	uint16_t player_idx : 1;
+	uint16_t size;
+	uint16_t num_libs;
+	uint16_t atari_lib;
+	MarginRemapped2DBitset<BoardState::MAX_SIZE> lib_map;
+
+	constexpr Group()
+	    : parent{0},
+	      player_idx{0}, size{0}, num_libs{0}, atari_lib{0}, lib_map{}
+	{
+	}
 };
 
 // A union find structure
-struct ClusterTable
+struct GroupTable
 {
-	std::array<Cluster, BoardState::MAX_NUM_CELLS> clusters;
-	ClusterTable() : clusters{} // initialize clusters to 0
+	// checkout https://senseis.xmp.net/?MaximumNumberOfLiveGroups
+	static constexpr uint32_t MAX_GROUP_NUM = 277;
+
+	std::array<Group, MAX_GROUP_NUM> groups;
+	mutable MarginRemapped2DArray<int16_t, BoardState::MAX_SIZE> parents;
+
+	uint16_t max_group_idx;
+	uint16_t num_in_atari;
+
+	// TODO: decide whether to use linked structure to quickly iterate group
+	// stones or leave the current implementation
+	// mutable std::array<uint16_t, BoardState::EXTENDED_AREA> next_stone;
+
+	constexpr GroupTable()
+	    : groups{}, parents{}, max_group_idx{0}, num_in_atari{0}
 	{
 	}
 };
 
 struct Player
 {
-	uint32_t number_captured_enemies;
-	uint32_t number_alive_stones;
-	float total_score;
+	uint32_t num_captures;
+	uint32_t num_alive;
 
-	Player()
-	    : number_captured_enemies{0}, number_alive_stones{0}, total_score{0}
+	constexpr Player() : num_captures{0}, num_alive{0}
 	{
 	}
 };
 
 struct GameState
 {
-	BoardState board_state;
-	ClusterTable cluster_table;
-	uint32_t number_played_moves;
-	uint32_t player_turn;
+	BoardState board;
+	GroupTable group_table;
 	std::array<Player, 2> players;
 	std::vector<Action> move_history;
+	uint8_t player_turn;
 
-	GameState() : board_state(), number_played_moves{0}, player_turn{0}
+	explicit GameState(uint16_t board_size)
+	    : board{board_size}, group_table{}, players{}, move_history{},
+	      player_turn{0}
+	{
+	}
+	GameState() : GameState(19)
 	{
 	}
 };
 
-// TODO: Support more rules and make it runtime!
+// TODO: Support more rules!
 struct Rules
 {
 	float komi = 6.5;
 };
 
-} // namespace engine
-} // namespace go
+} // namespace go::engine
 
-#endif // SRC_ENGINE_BOARD_H_
+#endif // _ENGINE_BOARD_H_

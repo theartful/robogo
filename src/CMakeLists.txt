@@ -1,10 +1,8 @@
-file(GLOB_RECURSE ENGINE_SRC *.cpp)
-file(GLOB_RECURSE ENGINE_HEADERS *.h)
+file(GLOB_RECURSE SRC_FILES *.cpp)
+file(GLOB_RECURSE HEADER_FILES *.h)
 
-list(REMOVE_ITEM ENGINE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-message(${ENGINE_SRC})
+list(REMOVE_ITEM SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
-add_library(robogo ${ENGINE_SRC} ${ENGINE_HEADERS})
-
+add_library(robogo ${SRC_FILES} ${HEADER_FILES})
 add_executable(robogo-executable main.cpp)
 target_link_libraries(robogo-executable robogo)

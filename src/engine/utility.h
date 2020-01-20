@@ -1,204 +1,97 @@
-#ifndef SRC_ENGINE_UTILITY_H_
-#define SRC_ENGINE_UTILITY_H_
+#ifndef _ENGINE_UTILITY_H_
+#define _ENGINE_UTILITY_H_
 
 #include <algorithm>
 #include <array>
 #include <type_traits>
 
-#include "board.h"
-#include "cluster.h"
+#include <stdio.h>
+#define DEBUG_PRINT(...)                                                       \
+	do                                                                         \
+	{                                                                          \
+		fprintf(stderr, __VA_ARGS__);                                          \
+	} while (0)
 
-#include "interface.h"
-
-namespace go
-{
-namespace engine
+namespace go::engine
 {
 
-enum ForPolicy
+template <size_t N, size_t margin>
+constexpr size_t index(size_t i, size_t j)
 {
-	EXPAND,
-	DONT_EXPAND,
-	CONTINUE,
-	BREAK,
+	return (i + margin) * (N + 2 * margin) + (j + margin);
+}
+
+template <size_t N, size_t M, size_t margin = 1, typename T = uint16_t>
+struct MarginMapping
+{
+	constexpr size_t operator()(size_t t)
+	{
+		return index_map[t];
+	}
+
+private:
+	static constexpr auto get_index_map()
+	{
+		std::array<T, (N + 2 * margin) * (M + 2 * margin)> result{};
+		for (size_t i = 0; i < N; i++)
+			for (size_t j = 0; j < M; j++)
+				result[index<N, margin>(i, j)] = index<N, 0>(i, j);
+		return result;
+	}
+	static constexpr auto index_map = get_index_map();
 };
 
-namespace details
+template <typename Container, typename Mapping>
+class RemappedContainer : public Container
 {
-template <typename Arg = uint32_t, ForPolicy policy = CONTINUE, typename Lambda>
-auto wrap_void_lambda(Lambda&& lambda)
-{
-	using namespace std;
-	if constexpr (!is_same_v<invoke_result_t<Lambda, Arg>, void>)
-		return lambda;
-	else
-		return [lambda](auto&& val) {
-			lambda(val);
-			return policy;
-		};
-}
-} // namespace details
+	using parent = Container;
 
-template <typename Lambda>
-void for_each_neighbor(
-    const BoardState& state, uint32_t cell_idx, Lambda&& lambda)
-{
-	auto wrapped_lambda =
-	    details::wrap_void_lambda(std::forward<Lambda>(lambda));
-	// right
-	if (uint32_t right = cell_idx + 1; state.board[right] != Cell::BORDER)
-		if (wrapped_lambda(right) == BREAK)
-			return;
-	// up
-	if (uint32_t up = cell_idx - BoardState::EXTENDED_BOARD_SIZE;
-	    state.board[up] != Cell::BORDER)
-		if (wrapped_lambda(up) == BREAK)
-			return;
-	// left
-	if (uint32_t left = cell_idx - 1; state.board[left] != Cell::BORDER)
-		if (wrapped_lambda(left) == BREAK)
-			return;
-	// down
-	if (uint32_t down = cell_idx + BoardState::EXTENDED_BOARD_SIZE;
-	    state.board[down] != Cell::BORDER)
-		if (wrapped_lambda(down) == BREAK)
-			return;
-}
-
-template <typename Lambda, typename CVClusterTable>
-void for_each_neighbor_cluster(
-    CVClusterTable& table, const BoardState& state, uint32_t cell_idx,
-    Lambda&& lambda)
-{
-	auto wrapped_lambda =
-	    details::wrap_void_lambda<Cluster&>(std::forward<Lambda>(lambda));
-	uint32_t visited[4];
-	uint32_t visited_count = 0;
-	for_each_neighbor(state, cell_idx, [&](uint32_t neighbor) {
-		if (!is_empty_cell(state.board[neighbor]))
-		{
-			uint32_t cluster_idx = get_cluster_idx(table, neighbor);
-			// check if visited
-			const auto begin_it = visited;
-			const auto end_it = visited + visited_count;
-			if (std::find(begin_it, end_it, cluster_idx) == end_it)
-			{
-				visited[visited_count++] = cluster_idx;
-				return wrapped_lambda(table.clusters[cluster_idx]);
-			}
-		}
-		return CONTINUE;
-	});
-}
-
-namespace details
-{
-struct SearchCache
-{
-	static constexpr uint32_t VISIT_BIT = 1U << 31;
-	bool empty() const
+public:
+	using Container::Container;
+	constexpr decltype(auto) operator[](std::size_t pos)
 	{
-		return top_index == -1;
+		return parent::operator[](Mapping{}(pos));
 	}
-	uint32_t pop()
+	constexpr decltype(auto) operator[](std::size_t pos) const
 	{
-		assert(top_index >= 0);
-		return cache[top_index--] & (~VISIT_BIT);
+		return parent::operator[](Mapping{}(pos));
 	}
-	void push(uint32_t value)
-	{
-		top_index++;
-		// clear all except VISIT_BIT
-		cache[top_index] &= VISIT_BIT;
-		// store the value in the first 31 bits;
-		cache[top_index] |= value;
-	}
-	bool is_visited(uint32_t index) const
-	{
-		return (cache[index] & VISIT_BIT);
-	}
-	void mark_visited(uint32_t index)
-	{
-		cache[index] |= VISIT_BIT;
-	}
-	void mark_unvisited(uint32_t index)
-	{
-		cache[index] &= ~(VISIT_BIT);
-	}
-	uint32_t cache[BoardState::MAX_NUM_CELLS] = {};
-	int32_t top_index = -1;
 };
-} // namespace details
-
-template <typename Lambda>
-void for_each_cell(const BoardState& state, uint32_t root, Lambda&& lambda)
+template <size_t N, typename Mapping>
+class RemappedBitset : public RemappedContainer<std::bitset<N>, Mapping>
 {
-	details::SearchCache search_cache;
-	search_cache.push(root);
-	search_cache.mark_visited(root);
+	using parent = RemappedContainer<std::bitset<N>, Mapping>;
 
-	while (!search_cache.empty())
+public:
+	using RemappedContainer<std::bitset<N>, Mapping>::RemappedContainer;
+	decltype(auto) set(std::size_t pos, bool value = true)
 	{
-		uint32_t cur_pos = search_cache.pop();
-		if (lambda(cur_pos) == EXPAND)
-		{
-			for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
-				if (!search_cache.is_visited(neighbour))
-				{
-					search_cache.push(neighbour);
-					search_cache.mark_visited(neighbour);
-				}
-			});
-		}
+		return parent::set(Mapping{}(pos), value);
 	}
-}
-
-template <typename Lambda>
-void for_each_cluster_cell(
-    const Cluster& cluster, const BoardState& state, Lambda&& lambda)
-{
-	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, EXPAND>(
-	    std::forward<Lambda>(lambda));
-	Cell cluster_color = state.board[cluster.parent_idx];
-	for_each_cell(state, cluster.parent_idx, [&](uint32_t idx) {
-		if (state.board[idx] == cluster_color)
-			return wrapped_lambda(idx);
-		else
-			return DONT_EXPAND;
-	});
-}
-
-template <typename Lambda>
-void for_each_empty_cell(const BoardState& state, Lambda&& lambda)
-{
-	auto wrapped_lambda =
-	    details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
-	for (uint32_t i = 0; i < static_cast<uint32_t>(state.board.size()); i++)
+	decltype(auto) reset(std::size_t pos)
 	{
-		if (state.board[i] == Cell::EMPTY)
-			if (wrapped_lambda(i) == BREAK)
-				return;
+		return parent::reset(Mapping{}(pos));
 	}
-}
+	decltype(auto) reset()
+	{
+		return parent::reset();
+	}
+};
 
-// if there are no actions, calls lambda on pass, otherwise pass is not
-// considered
-template <typename Lambda>
-void for_each_valid_action(const GameState& state, Lambda&& lambda)
-{
-	auto wrapped_lambda =
-	    details::wrap_void_lambda<Action&>(std::forward<Lambda>(lambda));
-	Action action;
-	action.player_index = state.player_turn;
-	for_each_empty_cell(state.board_state, [&](auto pos) {
-		action.pos = pos;
-		if (is_valid_move(state.cluster_table, state.board_state, action))
-			return wrapped_lambda(action);
-		return CONTINUE;
-	});
-}
+template <typename T, size_t N, size_t margin = 1>
+using MarginRemapped2DArray_ = std::array<T, 21 * 21>;
 
-} // namespace engine
-} // namespace go
+template <typename T, size_t N, size_t margin = 1>
+using MarginRemapped2DArray =
+    RemappedContainer<std::array<T, N * N>, MarginMapping<N, N, margin>>;
+
+template <size_t N, size_t margin = 1>
+using MarginRemapped2DBitset =
+    RemappedBitset<N * N, MarginMapping<N, N, margin>>;
+
+template <size_t N, size_t margin = 1>
+using MarginRemapped2DBitset_ = std::bitset<21 * 21>;
+
+} // namespace go::engine
 
 #endif // SRC_ENGINE_UTILITY_H_

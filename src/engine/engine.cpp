@@ -1,190 +1,197 @@
-#include "cluster.h"
-#include "interface.h"
+#include "engine.h"
+#include "group.h"
+#include "iterators.h"
 #include "liberties.h"
-#include "utility.h"
 #include <cmath>
 
 using namespace go::engine;
 
-static inline uint32_t territory_points(
-    const BoardState&, unsigned char&, uint32_t, details::SearchCache&);
+static const std::array move_legality_strings = {
+    "not empty", "ko", "suicide", "inlegal action value", "legal"};
 
-bool go::engine::is_valid_move(
-    const ClusterTable& table, const BoardState& board_state,
-    const Action& action)
+static inline std::tuple<uint32_t, bool, bool> territory_points(
+    const BoardState& state, uint32_t root, details::SearchCache& cache);
+
+MoveLegality
+go::engine::get_move_legality(const GameState& game, const Action& action)
 {
+	const auto& board = game.board;
 	if (is_pass(action))
-		return true;
+		return MoveLegality::Legal;
 	else if (is_invalid(action))
-		return false;
-	else if (!is_empty_cell(board_state, action.pos))
-		return false;
-	else if (is_ko(board_state, action))
-		return false;
-	else if (is_suicide_move(table, board_state, action))
-		return false;
+		return MoveLegality::InvalidActionValue;
+	else if (!is_empty(board, action.pos))
+		return MoveLegality::IllegalNotEmpty;
+	else if (is_simple_ko(board, action))
+		return MoveLegality::IllegalKo;
+	else if (is_suicide_move(game, action))
+		return MoveLegality::IllegalSuicide;
 	else
-		return true;
+		return MoveLegality::Legal;
 }
 
-bool go::engine::is_suicide_move(
-    const ClusterTable& table, const BoardState& board_state,
-    const Action& action)
+bool go::engine::is_legal_move(const GameState& game, const Action& action)
 {
-	bool is_suicide = true;
+	return get_move_legality(game, action) == MoveLegality::Legal;
+}
+
+#include <iostream>
+bool go::engine::is_suicide_move(const GameState& game, const Action& action)
+{
+	auto& board = game.board;
+	auto& table = game.group_table;
 	// move is not suicide if:
-	//     1. a neighbor cell is empty, or
-	//     2. a neighbor friend cluster has more than one liberty, or
-	//     3. a neighbor enemy cluster will be captured
-	for_each_neighbor(board_state, action.pos, [&](uint32_t neighbor) {
-		if (is_empty_cell(board_state, neighbor))
+	//     1. a neighbor stone is empty, or
+	//     2. a neighbor friend group has more than one liberty, or
+	//     3. a neighbor enemy group will be captured
+	if (get_empty_neighbors_count(board, action.pos))
+		return false;
+
+	bool is_suicide = true;
+	for_each_neighbor(board, action.pos, [&](uint32_t neighbor) {
+		if (board.stones[neighbor] == get_player_stone(action.player_idx))
 		{
-			is_suicide = false;
-			return BREAK;
-		}
-		else if (board_state.board[neighbor] == PLAYERS[action.player_index])
-		{
-			if (get_cluster(table, neighbor).num_liberties > 1)
+			if (!in_atari(get_group(table, neighbor)))
 			{
 				is_suicide = false;
-				return BREAK;
+				return Break;
 			}
 		}
-		// enemy neighbor cell
+		// enemy neighbor stone
 		else
 		{
-			// if an enemy cluster will be captured
-			if (get_cluster(table, neighbor).num_liberties == 1)
+			// if an enemy group will be captured
+			if (in_atari(get_group(table, neighbor)))
 			{
 				is_suicide = false;
-				return BREAK;
+				return Break;
 			}
 		}
-		return CONTINUE;
+		return Continue;
 	});
 	return is_suicide;
 }
 
-static uint32_t
-get_ko(const ClusterTable& table, const BoardState& state, uint32_t action_pos)
+static uint32_t get_ko(
+    const GroupTable& table, const BoardState& state, uint32_t action_pos,
+    uint32_t num_captured_stones)
 {
-	if (count_liberties(table, action_pos) != 1)
-		return BoardState::INVALID_INDEX;
-
-	uint32_t num_captured_stones = 0;
-	uint32_t captured_stone_idx;
-	for_each_neighbor_cluster(table, state, action_pos, [&](auto& cluster) {
-		if (cluster.num_liberties == 1)
-		{
-			num_captured_stones += cluster.size;
-			captured_stone_idx = cluster.parent_idx;
-		}
-	});
-
 	// there is a ko if:
 	//     1. the previous move captured exactly one stone,
 	//     2. the played stone has exactly one liberty, and
-	//     3. the played stone's cluster consists only of it
-	if (get_cluster(table, action_pos).size == 1 && num_captured_stones == 1)
-		return captured_stone_idx;
-	else
+	//     3. the played stone's group consists only of it
+	if (num_captured_stones != 1)
 		return BoardState::INVALID_INDEX;
+
+	auto& action_group = get_group(table, action_pos);
+	if (in_atari(action_group) && action_group.size == 1)
+	{
+		uint32_t captured_stone_idx = 0;
+		for_each_neighbor(state, action_pos, [&](auto neighbor) {
+			if (is_empty(state, neighbor))
+			{
+				captured_stone_idx = neighbor;
+				return Break;
+			}
+			return Continue;
+		});
+		return captured_stone_idx;
+	}
+	return BoardState::INVALID_INDEX;
 }
 
-bool go::engine::make_move(GameState& game_state, const Action& action)
+bool go::engine::make_move(GameState& game, const Action& action)
 {
-	ClusterTable& table = game_state.cluster_table;
-	BoardState& board_state = game_state.board_state;
-	if (is_valid_move(table, board_state, action))
+	if (is_legal_move(game, action))
 	{
-		if (!is_pass(action))
-		{
-			game_state.players[game_state.player_turn].number_alive_stones++;
-			board_state.board[action.pos] = PLAYERS[action.player_index];
-			board_state.ko = get_ko(table, board_state, action.pos);
-			update_clusters(game_state, action);
-		}
-
-		game_state.number_played_moves++;
-		game_state.player_turn = 1 - game_state.player_turn;
-		game_state.move_history.push_back(action);
-
+		force_move(game, action);
 		return true;
 	}
 	else
 	{
-		DEBUG_PRINT("engine::make_move: invalid move!\n");
+		DEBUG_PRINT(
+		    "engine::make_move: invalid move, case: %s\n",
+		    move_legality_strings[static_cast<size_t>(
+		        get_move_legality(game, action))]);
 		return false;
 	}
 }
 
-void go::engine::calculate_score(
-    const BoardState& boardState, Player& black_player, Player& white_player)
+void go::engine::force_move(GameState& game, const Action& action)
 {
-	uint32_t white_territory_score = 0, black_territory_score = 0,
-	         score_temp = 0;
+	auto& table = game.group_table;
+	auto& board = game.board;
 
-	// To detect wether the traversed territory belong to which side, "01" for
-	// white and "10" for black
-	unsigned char territory_type; // if the output of the traversed territory
-	                              // was "11" the it was a false territory
-	details::SearchCache
-	    search_cache; // to avoid starting traversing a new territory from an
-	                  // already traversed empty cell
-
-	// Traversing the board to detect any start of any territory
-	for (uint32_t i = 0; i < BoardState::MAX_NUM_CELLS; i++)
+	if (!is_pass(action))
 	{
-		if (!search_cache.is_visited(i) && is_empty_cell(boardState, i))
+		game.players[game.player_turn].num_alive++;
+		board.stones[action.pos] = get_player_stone(action.player_idx);
+		uint32_t num_captured_stones = update_groups(game, action);
+		board.ko = get_ko(table, board, action.pos, num_captured_stones);
+	}
+
+	game.player_turn = 1 - game.player_turn;
+	game.move_history.push_back(action);
+}
+
+std::pair<float, float>
+go::engine::calculate_score(const GameState& state, const Rules& rules)
+{
+	auto& board = state.board;
+	auto& [black_player, white_player] = state.players;
+	uint32_t white_territory_score = 0;
+	uint32_t black_territory_score = 0;
+
+	details::SearchCache cache;
+	constexpr uint32_t board_begin = BoardState::EXTENDED_SIZE + 1;
+	const uint32_t board_end = BoardState::index(board.size, board.size);
+	for (uint32_t i = board_begin; i < board_end; i++)
+	{
+		if (!cache.is_visited(i) && is_empty(board, i))
 		{
-			territory_type = 0;
-			score_temp =
-			    territory_points(boardState, territory_type, i, search_cache);
-			// ANDing the territory_type to figure out the output of the
-			// traversed territory
-			if ((territory_type & static_cast<unsigned char>(Cell::BLACK)) == 0)
-				white_territory_score += score_temp;
-			else if (
-			    (territory_type & static_cast<unsigned char>(Cell::WHITE)) == 0)
-				black_territory_score += score_temp;
+			auto [score, black_territory, white_territory] =
+			    territory_points(board, i, cache);
+
+			if (black_territory && !white_territory)
+				black_territory_score += score;
+			else if (white_territory && !black_territory)
+				white_territory_score += score;
 		}
 	}
 
-	// Updating scores
-	white_player.total_score =
-	    white_territory_score + white_player.number_alive_stones +
-	    white_player.number_captured_enemies; //+ Rules::KOMI;
-	black_player.total_score = black_territory_score +
-	                           black_player.number_alive_stones +
-	                           black_player.number_captured_enemies;
+	float white_score = white_territory_score + white_player.num_alive +
+	                    white_player.num_captures + rules.komi;
+	float black_score = black_territory_score + black_player.num_alive +
+	                    black_player.num_captures;
+
+	return {black_score, white_score};
 }
 
-static inline uint32_t territory_points(
-    const BoardState& state, unsigned char& territory_type, uint32_t root,
-    details::SearchCache& search_cache)
+static inline std::tuple<uint32_t, bool, bool> territory_points(
+    const BoardState& state, uint32_t root, details::SearchCache& cache)
 {
 	uint32_t score = 1;
-	search_cache.push(root);
-	search_cache.mark_visited(root);
-	while (!search_cache.empty())
+	cache.push(root);
+	cache.mark_visited(root);
+	std::array<bool, 2> player_stone = {false, false};
+	while (!cache.empty())
 	{
-		uint32_t cur_pos = search_cache.pop();
+		uint32_t cur_pos = cache.pop();
 		for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
-			if (is_empty_cell(state, neighbour) &&
-			    !search_cache.is_visited(neighbour))
+			if (is_empty(state, neighbour) && !cache.is_visited(neighbour))
 			{
-				search_cache.push(neighbour);
-				search_cache.mark_visited(neighbour);
+				cache.push(neighbour);
+				cache.mark_visited(neighbour);
 				score++;
 			}
 			else
 			{
-				territory_type |=
-				    static_cast<unsigned char>(state.board[neighbour]);
+				Stone stone = state.stones[neighbour];
+				player_stone[get_player_idx(stone)] = true;
 			}
 		});
 	}
-	return score;
+	return {score, player_stone[0], player_stone[1]};
 }
 
 bool go::engine::is_terminal_state(const GameState& state)
