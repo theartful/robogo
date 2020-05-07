@@ -2,9 +2,10 @@
 #define GTP_GTP_H_
 
 #include <unordered_map>
-#include <variant>
+#include <tuple>
 
 #include "engine/board.h"
+#include "engine/game.h"
 #include "gtp/utility.h"
 
 namespace go::gtp
@@ -15,8 +16,23 @@ struct Vertex
 	uint32_t row;
 	uint32_t col;
 
-	explicit Vertex(uint32_t row_ = 0, uint32_t col_ = 0) : row(row_), col(col_)
+	explicit Vertex(uint32_t row_, uint32_t col_) :
+		row(row_), col(col_)
 	{
+	}
+
+	explicit Vertex(uint32_t pos)
+	{
+		std::tie(row, col) = go::engine::BoardState::row_col(pos);
+		// we count rows from 1 not 0
+		row++;
+	}
+
+	Vertex() {}
+
+	constexpr uint16_t index() const
+	{
+		return go::engine::BoardState::index(row, col);
 	}
 };
 
@@ -26,6 +42,16 @@ enum class Color
 	White
 };
 
+inline uint8_t to_player_idx(Color color)
+{
+	return color == Color::Black? uint8_t{0} : uint8_t{1};
+}
+
+inline go::engine::Action to_action(Color color, const Vertex& vertex)
+{
+	return go::engine::Action{vertex.index(), to_player_idx(color)};
+}
+
 struct GTPCommand
 {
 	std::string_view id;
@@ -33,9 +59,9 @@ struct GTPCommand
 	std::vector<std::string_view> args;
 
 	explicit GTPCommand(
-	    std::string_view id_ = {}, std::string_view command_ = {},
-	    std::vector<std::string_view> args_ = {})
-	    : id{id_}, command{command_}, args{std::move(args_)}
+		std::string_view id_ = {}, std::string_view command_ = {},
+		std::vector<std::string_view> args_ = {})
+			: id{id_}, command{command_}, args{std::move(args_)}
 	{
 	}
 };
@@ -46,7 +72,7 @@ struct GTPCommandResult
 	bool error;
 
 	explicit GTPCommandResult(std::string output_ = {}, bool error_ = false)
-	    : output(output_), error(error_)
+		: output(output_), error(error_)
 	{
 	}
 };
@@ -57,7 +83,7 @@ class GTPController
 {
 public:
 	GTPController();
-	void main_loop();
+	void main_loop(std::ostream& out, std::istream& in);
 
 	// supported commands
 	uint32_t protocol_version();
@@ -68,19 +94,23 @@ public:
 
 	void quit();
 	expected<void> boardsize(uint32_t size);
+	uint32_t query_boardsize();
 	void komi(float new_komi);
-	void clearboard();
 	expected<void> play(Color color, Vertex vertex);
 	Vertex genmove(Color color);
 	std::string showboard();
 	void clear_board();
 
-	// debugging
+	// debugging & testing
 	std::string rg_showboard();
+	uint32_t countlib(Vertex vertex);
+	std::vector<Vertex> findlib(Vertex vertex);
+	bool is_legal(Color color, Vertex vertex);
+	uint32_t captures(Color color);
 
 private:
 	template <typename R, typename... Args>
-	GTPFunction to_gtp_function(R (GTPController::*func)(Args...));
+	GTPFunction to_gtp_func(R (GTPController::*func)(Args...));
 
 private:
 	using GTPFunctionMap = std::unordered_map<std::string_view, GTPFunction>;

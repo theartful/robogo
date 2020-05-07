@@ -1,19 +1,18 @@
-#include "engine.h"
-#include "group.h"
+#include "game.h"
 #include "iterators.h"
 #include "liberties.h"
-#include <cmath>
 
-using namespace go::engine;
+namespace go::engine
+{
 
 static const std::array move_legality_strings = {
-    "not empty", "ko", "suicide", "inlegal action value", "legal"};
+	"not empty", "ko", "suicide", "illegal action value", "legal"};
 
-static inline std::tuple<uint32_t, bool, bool> territory_points(
-    const BoardState& state, uint32_t root, details::SearchCache& cache);
+static std::tuple<uint32_t, bool, bool> territory_points(
+	const BoardState& state, uint32_t root, details::SearchCache& cache);
 
 MoveLegality
-go::engine::get_move_legality(const GameState& game, const Action& action)
+get_move_legality(const GameState& game, const Action& action)
 {
 	const auto& board = game.board;
 	if (is_pass(action))
@@ -22,7 +21,7 @@ go::engine::get_move_legality(const GameState& game, const Action& action)
 		return MoveLegality::InvalidActionValue;
 	else if (!is_empty(board, action.pos))
 		return MoveLegality::IllegalNotEmpty;
-	else if (is_simple_ko(board, action))
+	else if (is_simple_ko(game, action))
 		return MoveLegality::IllegalKo;
 	else if (is_suicide_move(game, action))
 		return MoveLegality::IllegalSuicide;
@@ -30,13 +29,17 @@ go::engine::get_move_legality(const GameState& game, const Action& action)
 		return MoveLegality::Legal;
 }
 
-bool go::engine::is_legal_move(const GameState& game, const Action& action)
+bool is_legal_move(const GameState& game, const Action& action)
 {
 	return get_move_legality(game, action) == MoveLegality::Legal;
 }
 
-#include <iostream>
-bool go::engine::is_suicide_move(const GameState& game, const Action& action)
+bool is_simple_ko(const GameState& game, const Action& action)
+{
+	return game.player_turn == action.player_idx && game.board.ko == action.pos;
+}
+
+bool is_suicide_move(const GameState& game, const Action& action)
 {
 	auto& board = game.board;
 	auto& table = game.group_table;
@@ -73,8 +76,8 @@ bool go::engine::is_suicide_move(const GameState& game, const Action& action)
 }
 
 static uint32_t get_ko(
-    const GroupTable& table, const BoardState& state, uint32_t action_pos,
-    uint32_t num_captured_stones)
+	const GroupTable& table, const BoardState& state, uint32_t action_pos,
+	uint32_t num_captured_stones)
 {
 	// there is a ko if:
 	//     1. the previous move captured exactly one stone,
@@ -100,7 +103,7 @@ static uint32_t get_ko(
 	return BoardState::INVALID_INDEX;
 }
 
-bool go::engine::make_move(GameState& game, const Action& action)
+bool make_move(GameState& game, const Action& action)
 {
 	if (is_legal_move(game, action))
 	{
@@ -110,14 +113,14 @@ bool go::engine::make_move(GameState& game, const Action& action)
 	else
 	{
 		DEBUG_PRINT(
-		    "engine::make_move: invalid move, case: %s\n",
-		    move_legality_strings[static_cast<size_t>(
-		        get_move_legality(game, action))]);
+			"engine::make_move: invalid move, case: %s\n",
+			move_legality_strings[static_cast<size_t>(
+				get_move_legality(game, action))]);
 		return false;
 	}
 }
 
-void go::engine::force_move(GameState& game, const Action& action)
+void force_move(GameState& game, const Action& action)
 {
 	auto& table = game.group_table;
 	auto& board = game.board;
@@ -134,67 +137,8 @@ void go::engine::force_move(GameState& game, const Action& action)
 	game.move_history.push_back(action);
 }
 
-std::pair<float, float>
-go::engine::calculate_score(const GameState& state, const Rules& rules)
-{
-	auto& board = state.board;
-	auto& [black_player, white_player] = state.players;
-	uint32_t white_territory_score = 0;
-	uint32_t black_territory_score = 0;
 
-	details::SearchCache cache;
-	constexpr uint32_t board_begin = BoardState::EXTENDED_SIZE + 1;
-	const uint32_t board_end = BoardState::index(board.size, board.size);
-	for (uint32_t i = board_begin; i < board_end; i++)
-	{
-		if (!cache.is_visited(i) && is_empty(board, i))
-		{
-			auto [score, black_territory, white_territory] =
-			    territory_points(board, i, cache);
-
-			if (black_territory && !white_territory)
-				black_territory_score += score;
-			else if (white_territory && !black_territory)
-				white_territory_score += score;
-		}
-	}
-
-	float white_score = white_territory_score + white_player.num_alive +
-	                    white_player.num_captures + rules.komi;
-	float black_score = black_territory_score + black_player.num_alive +
-	                    black_player.num_captures;
-
-	return {black_score, white_score};
-}
-
-static inline std::tuple<uint32_t, bool, bool> territory_points(
-    const BoardState& state, uint32_t root, details::SearchCache& cache)
-{
-	uint32_t score = 1;
-	cache.push(root);
-	cache.mark_visited(root);
-	std::array<bool, 2> player_stone = {false, false};
-	while (!cache.empty())
-	{
-		uint32_t cur_pos = cache.pop();
-		for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
-			if (is_empty(state, neighbour) && !cache.is_visited(neighbour))
-			{
-				cache.push(neighbour);
-				cache.mark_visited(neighbour);
-				score++;
-			}
-			else
-			{
-				Stone stone = state.stones[neighbour];
-				player_stone[get_player_idx(stone)] = true;
-			}
-		});
-	}
-	return {score, player_stone[0], player_stone[1]};
-}
-
-bool go::engine::is_terminal_state(const GameState& state)
+bool is_terminal_state(const GameState& state)
 {
 	if (state.move_history.size() > 1)
 	{
@@ -206,4 +150,6 @@ bool go::engine::is_terminal_state(const GameState& state)
 	{
 		return false;
 	}
+}
+
 }

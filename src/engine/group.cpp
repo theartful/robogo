@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "engine.h"
+#include "game.h"
 #include "group.h"
 #include "liberties.h"
 #include "utility.h"

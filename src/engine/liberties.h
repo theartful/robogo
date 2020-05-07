@@ -3,6 +3,7 @@
 
 #include "iterators.h"
 #include <stdint.h>
+
 namespace go::engine
 {
 
@@ -15,11 +16,16 @@ uint32_t count_liberties(const BoardState&, uint32_t);
 
 // Finds liberty count from cached data
 uint32_t count_liberties(const GroupTable&, uint32_t);
+uint32_t count_liberties(const GameState&, uint32_t);
+
+std::vector<uint32_t> get_liberties(const GameState&, uint32_t);
+std::vector<uint32_t> get_liberties(const BoardState&, const Group&);
 
 inline bool in_atari(const Group& group)
 {
 	return group.num_libs == 1;
 }
+
 inline bool in_atari(const GameState& game_state, uint32_t pos)
 {
 	return count_liberties(game_state.group_table, pos) == 1;
@@ -40,7 +46,7 @@ inline bool will_be_surrounded(const GameState& state, uint32_t pos)
 	if (get_empty_neighbors_count(board, pos) >= 1)
 		return false;
 	if (get_white_neighbors_count(board, pos) >= 1 &&
-	    get_black_neighbors_count(board, pos) >= 1)
+			get_black_neighbors_count(board, pos) >= 1)
 		return false;
 
 	bool atari_exists = false;

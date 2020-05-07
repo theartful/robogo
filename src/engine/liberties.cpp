@@ -6,11 +6,10 @@
 #include "iterators.h"
 #include "liberties.h"
 
-using go::engine::BoardState;
-using go::engine::Stone;
+namespace go::engine
+{
 
-uint32_t
-go::engine::count_liberties(const BoardState& state, uint32_t stone_idx)
+uint32_t count_liberties(const BoardState& state, uint32_t stone_idx)
 {
 	uint32_t num_liberties = 0;
 	for_each_stone(state, stone_idx, [&](uint32_t cur_idx) {
@@ -23,8 +22,27 @@ go::engine::count_liberties(const BoardState& state, uint32_t stone_idx)
 	return num_liberties;
 }
 
-uint32_t
-go::engine::count_liberties(const GroupTable& table, uint32_t stone_idx)
+uint32_t count_liberties(const GroupTable& table, uint32_t stone_idx)
 {
 	return get_num_liberties(get_group(table, stone_idx));
+}
+
+uint32_t count_liberties(const GameState& game, uint32_t stone_idx)
+{
+	return count_liberties(game.group_table, stone_idx);
+}
+
+std::vector<uint32_t> get_liberties(const BoardState& state, const Group& group)
+{
+	std::vector<uint32_t> vec;
+	for_each_liberty(state, group, [&] (uint32_t idx) {
+		vec.push_back(idx);
+	});
+	return vec;
+}
+
+std::vector<uint32_t> get_liberties(const GameState& game, uint32_t stone_idx)
+{
+	return get_liberties(game.board, get_group(game.group_table, stone_idx));
+}
 }

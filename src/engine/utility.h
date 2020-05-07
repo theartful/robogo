@@ -16,7 +16,7 @@ namespace go::engine
 {
 
 template <size_t N, size_t margin>
-constexpr size_t index(size_t i, size_t j)
+static constexpr size_t index(size_t i, size_t j)
 {
 	return (i + margin) * (N + 2 * margin) + (j + margin);
 }
@@ -24,10 +24,7 @@ constexpr size_t index(size_t i, size_t j)
 template <size_t N, size_t M, size_t margin = 1, typename T = uint16_t>
 struct MarginMapping
 {
-	constexpr size_t operator()(size_t t)
-	{
-		return index_map[t];
-	}
+	static constexpr size_t map(size_t t) { return index_map[t]; }
 
 private:
 	static constexpr auto get_index_map()
@@ -47,35 +44,33 @@ class RemappedContainer : public Container
 	using parent = Container;
 
 public:
-	using Container::Container;
+	using parent::Container;
 	constexpr decltype(auto) operator[](std::size_t pos)
 	{
-		return parent::operator[](Mapping{}(pos));
+		return parent::operator[](Mapping::map(pos));
 	}
 	constexpr decltype(auto) operator[](std::size_t pos) const
 	{
-		return parent::operator[](Mapping{}(pos));
+		return parent::operator[](Mapping::map(pos));
 	}
 };
+
 template <size_t N, typename Mapping>
 class RemappedBitset : public RemappedContainer<std::bitset<N>, Mapping>
 {
 	using parent = RemappedContainer<std::bitset<N>, Mapping>;
 
 public:
-	using RemappedContainer<std::bitset<N>, Mapping>::RemappedContainer;
+	using parent::RemappedContainer;
 	decltype(auto) set(std::size_t pos, bool value = true)
 	{
-		return parent::set(Mapping{}(pos), value);
+		return parent::set(Mapping::map(pos), value);
 	}
 	decltype(auto) reset(std::size_t pos)
 	{
-		return parent::reset(Mapping{}(pos));
+		return parent::reset(Mapping::map(pos));
 	}
-	decltype(auto) reset()
-	{
-		return parent::reset();
-	}
+	decltype(auto) reset() { return parent::reset(); }
 };
 
 template <typename T, size_t N, size_t margin = 1>
@@ -83,11 +78,11 @@ using MarginRemapped2DArray_ = std::array<T, 21 * 21>;
 
 template <typename T, size_t N, size_t margin = 1>
 using MarginRemapped2DArray =
-    RemappedContainer<std::array<T, N * N>, MarginMapping<N, N, margin>>;
+	RemappedContainer<std::array<T, N * N>, MarginMapping<N, N, margin>>;
 
 template <size_t N, size_t margin = 1>
 using MarginRemapped2DBitset =
-    RemappedBitset<N * N, MarginMapping<N, N, margin>>;
+	RemappedBitset<N * N, MarginMapping<N, N, margin>>;
 
 template <size_t N, size_t margin = 1>
 using MarginRemapped2DBitset_ = std::bitset<21 * 21>;

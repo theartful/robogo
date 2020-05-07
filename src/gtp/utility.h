@@ -5,9 +5,7 @@
 #include <array>
 #include <variant>
 
-namespace go
-{
-namespace gtp
+namespace go::gtp
 {
 
 char get_column_char(uint32_t col);
@@ -97,7 +95,6 @@ constexpr decltype(auto) apply(Callable&& func, Container&& t)
 	    std::make_index_sequence<N>{});
 }
 
-} // namespace gtp
-} // namespace go
+} // namespace go::gtp
 
 #endif // GTP_UTILITY_H_

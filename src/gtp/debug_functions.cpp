@@ -6,6 +6,7 @@
 
 #include "engine/board.h"
 #include "engine/engine.h"
+#include "engine/liberties.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
 
@@ -14,8 +15,9 @@ namespace go::gtp
 
 static inline char get_extended_column_char(uint32_t col)
 {
-	return std::array{'?', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-	                  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', '?'}[col];
+	return std::array{
+		'?', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
+		'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', '?'}[col];
 }
 
 std::string GTPController::rg_showboard()
@@ -31,8 +33,9 @@ std::string GTPController::rg_showboard()
 
 	auto point_symbol = [&](uint32_t row, uint32_t col) -> char {
 		auto is_star_point = [](uint32_t r, uint32_t c) -> bool {
-			return (r == 4 || r == 10 || r == 16) &&
-			       (c == 4 || c == 10 || c == 16);
+			return
+				(r == 4 || r == 10 || r == 16) &&
+				(c == 4 || c == 10 || c == 16);
 		};
 		if (board(row, col) == engine::Stone::Black)
 			return 'X';
@@ -64,5 +67,31 @@ std::string GTPController::rg_showboard()
 	show_col_names(oss, 21);
 	return oss.str();
 }
+
+uint32_t GTPController::countlib(Vertex vertex)
+{
+	return count_liberties(game, vertex.index());
+}
+
+std::vector<Vertex> GTPController::findlib(Vertex vertex)
+{
+	std::vector<uint32_t> libs = get_liberties(game, vertex.index());
+	std::vector<Vertex> output;
+	output.reserve(libs.size());
+	std::transform(libs.begin(), libs.end(), std::back_inserter(output),
+			[] (uint32_t lib) { return Vertex(lib); });
+	return output;
+}
+
+bool GTPController::is_legal(Color color, Vertex vertex)
+{
+	return go::engine::is_legal_move(game, to_action(color, vertex));
+}
+
+uint32_t GTPController::captures(Color color)
+{
+	return go::engine::num_captures(game, to_player_idx(color));
+}
+
 
 } // namespace go::gtp

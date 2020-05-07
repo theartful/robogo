@@ -257,14 +257,9 @@ void for_each_liberty(
 		if (count == group.num_libs)
 			return Break;
 		if (state.stones[idx] == group_color)
-		{
 			return Expand;
-		}
 		else if (is_empty(state, idx))
-		{
-			count++;
-			return wrapped_lambda(idx);
-		}
+			return count++, wrapped_lambda(idx);
 		return DontExpand;
 	});
 }

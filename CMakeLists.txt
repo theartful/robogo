@@ -58,7 +58,6 @@ set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 ################################### testing ###################################
-message(${CMAKE_CXX_FLAGS})
 if (ENABLE_TESTING)
 	enable_testing()
 	add_subdirectory(${CMAKE_SOURCE_DIR}/tests)

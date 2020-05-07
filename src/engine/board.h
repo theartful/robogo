@@ -48,9 +48,9 @@ struct BoardState
 	uint16_t size;
 	uint16_t ko;
 
-	explicit BoardState(uint16_t size_)
-	    : stones{}, empty_stones{}, neighbor_count{},
-	      num_empty_stones{0}, size{size_}, ko{INVALID_INDEX}
+	explicit BoardState(uint16_t size_) :
+		stones{}, empty_stones{}, neighbor_count{},
+		num_empty_stones{0}, size{size_}, ko{INVALID_INDEX}
 	{
 		const uint16_t extended_size = size + 2u;
 
@@ -67,9 +67,7 @@ struct BoardState
 		for (uint32_t i = 0; i < size; i++)
 		{
 			for (uint32_t j = 0; j < size; j++)
-			{
 				empty_stones[num_empty_stones++] = index(i, j);
-			}
 		}
 		for (uint32_t i = 0; i < size; i++)
 		{
@@ -97,6 +95,10 @@ struct BoardState
 	static constexpr uint32_t index(uint32_t i, uint32_t j)
 	{
 		return (i + 1) * EXTENDED_SIZE + (j + 1);
+	}
+	static constexpr std::pair<uint32_t, uint32_t> row_col(uint32_t pos)
+	{
+		return {pos / EXTENDED_SIZE - 1, pos % EXTENDED_SIZE - 1};
 	}
 };
 
@@ -164,11 +166,11 @@ inline void remove_empty_stone(BoardState& board, uint32_t idx)
 		{
 			// not constexpr Q_Q
 			std::swap(
-			    board.empty_stones[i],
-			    board.empty_stones[--board.num_empty_stones]);
-			return;
+				board.empty_stones[i],
+				board.empty_stones[--board.num_empty_stones]);
+				return;
+			}
 		}
-	}
 }
 
 struct Action
@@ -179,12 +181,12 @@ struct Action
 	uint16_t pos;
 	uint8_t player_idx;
 
-	constexpr Action(uint16_t pos_, uint8_t player_idx_)
-	    : pos{pos_}, player_idx{player_idx_}
+	constexpr Action(uint16_t pos_, uint8_t player_idx_) :
+		pos{pos_}, player_idx{player_idx_}
 	{
 	}
-	constexpr Action(uint32_t pos_, uint32_t player_idx_)
-	    : Action{static_cast<uint16_t>(pos_), static_cast<uint8_t>(player_idx_)}
+	constexpr Action(uint32_t pos_, uint32_t player_idx_) :
+		Action{static_cast<uint16_t>(pos_), static_cast<uint8_t>(player_idx_)}
 	{
 	}
 	constexpr Action() : Action{0u, 0u}
@@ -196,83 +198,11 @@ inline constexpr bool is_pass(const Action& action)
 {
 	return action.pos == Action::PASS;
 }
+
 inline constexpr bool is_invalid(const Action& action)
 {
 	return action.pos >= Action::INVALID_ACTION;
 }
-
-// A group is a maximal set of connected stones
-struct Group
-{
-	uint16_t parent : 15;
-	uint16_t player_idx : 1;
-	uint16_t size;
-	uint16_t num_libs;
-	uint16_t atari_lib;
-	MarginRemapped2DBitset<BoardState::MAX_SIZE> lib_map;
-
-	constexpr Group()
-	    : parent{0},
-	      player_idx{0}, size{0}, num_libs{0}, atari_lib{0}, lib_map{}
-	{
-	}
-};
-
-// A union find structure
-struct GroupTable
-{
-	// checkout https://senseis.xmp.net/?MaximumNumberOfLiveGroups
-	static constexpr uint32_t MAX_GROUP_NUM = 277;
-
-	std::array<Group, MAX_GROUP_NUM> groups;
-	mutable MarginRemapped2DArray<int16_t, BoardState::MAX_SIZE> parents;
-
-	uint16_t max_group_idx;
-	uint16_t num_in_atari;
-
-	// TODO: decide whether to use linked structure to quickly iterate group
-	// stones or leave the current implementation
-	// mutable std::array<uint16_t, BoardState::EXTENDED_AREA> next_stone;
-
-	constexpr GroupTable()
-	    : groups{}, parents{}, max_group_idx{0}, num_in_atari{0}
-	{
-	}
-};
-
-struct Player
-{
-	uint32_t num_captures;
-	uint32_t num_alive;
-
-	constexpr Player() : num_captures{0}, num_alive{0}
-	{
-	}
-};
-
-struct GameState
-{
-	BoardState board;
-	GroupTable group_table;
-	std::array<Player, 2> players;
-	std::vector<Action> move_history;
-	uint8_t player_turn;
-
-	explicit GameState(uint16_t board_size)
-	    : board{board_size}, group_table{}, players{}, move_history{},
-	      player_turn{0}
-	{
-	}
-	GameState() : GameState(19)
-	{
-	}
-};
-
-// TODO: Support more rules!
-struct Rules
-{
-	float komi = 6.5;
-};
 
 } // namespace go::engine
 

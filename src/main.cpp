@@ -8,5 +8,5 @@ using namespace go;
 
 int main()
 {
-	go::gtp::GTPController{}.main_loop();
+	go::gtp::GTPController{}.main_loop(std::cout, std::cin);
 }

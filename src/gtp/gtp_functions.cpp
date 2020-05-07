@@ -95,10 +95,7 @@ std::string GTPController::showboard()
 
 expected<void> GTPController::play(Color color, Vertex vertex)
 {
-	uint32_t player_idx = color == Color::Black ? 0 : 1;
-	uint32_t pos = engine::BoardState::index(vertex.row, vertex.col);
-
-	if (engine::make_move(game, engine::Action{pos, player_idx}))
+	if (engine::make_move(game, to_action(color, vertex)))
 		return {};
 	else
 		return unexpected("illegal move"s);
