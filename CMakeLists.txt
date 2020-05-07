@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.8)
 project(robogo)
 
+option(ENABLE_TESTING "Enable testing" OFF)
+option(REPORT_COVERAGE "Report coverage" OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake.modules/")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -45,29 +48,17 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 	    -Wundef -Wswitch-default -Werror -Wno-unused")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
-elseif (MSVC)
-	# check that MSVC supports c++17
-	if (MSVC_VERSION GREATER_EQUAL "1900")
-		include(CheckCXXCompilerFlag)
-		CHECK_CXX_COMPILER_FLAG("/std:c++17" _cpp_latest_flag_supported)
-		if (_cpp_latest_flag_supported)
-			add_compile_options("/std:c++17")
-		endif()
-	else()
-		message(FATAL_ERROR "C++17 is required to build robogo, but it isn't \
-		        supported by this compiler")
+	if (REPORT_COVERAGE)
+		set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fprofile-arcs -ftest-coverage")
 	endif()
-	set(COMPILER_WARNINGS "/Wall")
-	set(CMAKE_CXX_FLAGS_RELEASE "/Ot")
 endif()
 
 set(CMAKE_CXX_FLAGS "${COMPILER_WARNINGS} ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
-################ testing ###############
-option(ENABLE_TESTING "Enable testing" OFF)
-
+################################### testing ###################################
+message(${CMAKE_CXX_FLAGS})
 if (ENABLE_TESTING)
 	enable_testing()
 	add_subdirectory(${CMAKE_SOURCE_DIR}/tests)
