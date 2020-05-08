@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <tuple>
+#include <functional>
 
 #include "engine/board.h"
 #include "engine/game.h"

@@ -2,6 +2,7 @@
 #define GTP_UTILITY_H_
 
 #include <algorithm>
+#include <functional>
 #include <array>
 #include <variant>
 
