@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-// The implementation of this parser implementation closely follows gnugo's
+// The implementation of this parser closely follows gnugo's implementation
 
 namespace go::sgf
 {
