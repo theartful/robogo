@@ -34,4 +34,6 @@ ReflowComments: true
 SortIncludes:    true
 Standard:        Cpp11
 TabWidth:        4
-UseTab:          ForIndentation
+UseTab:          Always
+BreakConstructorInitializers:	AfterColon
+BreakInheritanceList: AfterColon

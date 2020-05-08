@@ -44,11 +44,11 @@ struct BoardState
 	std::array<uint16_t, MAX_AREA> empty_stones;
 	MarginRemapped2DArray<uint16_t, MAX_SIZE> neighbor_count;
 
-	uint16_t num_empty_stones;
-	uint16_t size;
+	uint32_t num_empty_stones;
+	uint32_t size;
 	uint16_t ko;
 
-	explicit BoardState(uint16_t size_) :
+	explicit BoardState(uint32_t size_) :
 		stones{}, empty_stones{}, neighbor_count{},
 		num_empty_stones{0}, size{size_}, ko{INVALID_INDEX}
 	{

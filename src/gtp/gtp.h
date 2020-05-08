@@ -110,6 +110,7 @@ public:
 	bool is_legal(Color color, Vertex vertex);
 	bool is_suicide(Color color, Vertex vertex);
 	uint32_t captures(Color color);
+	Color loadsgf(std::string file, int32_t move_num);
 
 private:
 	template <typename R, typename... Args>

@@ -29,7 +29,7 @@ namespace details
 {
 template <typename T>
 using escape_void =
-    std::conditional_t<std::is_same_v<T, void>, std::monostate, T>;
+	std::conditional_t<std::is_same_v<T, void>, std::monostate, T>;
 }
 
 template <typename T, typename E = std::string>
@@ -71,7 +71,7 @@ struct is_value_or_error
 
 public:
 	static constexpr bool value =
-	    std::is_same_v<decltype(test<T>(0, 0, 0)), yes>;
+		std::is_same_v<decltype(test<T>(0, 0, 0)), yes>;
 };
 
 template <typename T>
@@ -91,8 +91,8 @@ template <size_t N, class Callable, class Container>
 constexpr decltype(auto) apply(Callable&& func, Container&& t)
 {
 	return details::apply_impl(
-	    std::forward<Callable>(func), std::forward<Container>(t),
-	    std::make_index_sequence<N>{});
+		std::forward<Callable>(func), std::forward<Container>(t),
+		std::make_index_sequence<N>{});
 }
 
 } // namespace go::gtp

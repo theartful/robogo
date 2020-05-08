@@ -25,7 +25,7 @@ struct GameState
 	std::vector<Action> move_history;
 	uint8_t player_turn;
 
-	explicit GameState(uint16_t board_size) :
+	explicit GameState(uint32_t board_size) :
 		board{board_size}, group_table{}, players{}, move_history{},
 		player_turn{0}
 	{
@@ -35,7 +35,6 @@ struct GameState
 	{
 	}
 };
-
 
 inline constexpr Stone& get_stone(GameState& game, uint32_t idx)
 {

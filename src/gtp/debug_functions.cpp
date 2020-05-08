@@ -1,14 +1,15 @@
-#include <algorithm>
-#include <array>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-
+#include "sgf/sgf.h"
 #include "engine/board.h"
 #include "engine/engine.h"
 #include "engine/liberties.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
+
+#include <algorithm>
+#include <array>
+#include <functional>
+#include <iomanip>
+#include <fstream>
 
 namespace go::gtp
 {
@@ -107,6 +108,20 @@ Color GTPController::color(Vertex vertex)
 	default:
 		return Color::Empty;
 	}
+}
+
+Color GTPController::loadsgf(std::string file, int32_t move_num)
+{
+	std::ifstream fin(file);
+	std::string line;
+	sgf::SGFParser parser(fin);
+	auto tree = parser.parse();
+	sgf::execute_sgf(tree, game, rules, move_num);
+	fin.close();
+	if (game.player_turn == 0)
+		return Color::Black;
+	else
+		return Color::White;
 }
 
 } // namespace go::gtp

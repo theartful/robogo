@@ -1,6 +1,8 @@
 #ifndef _SGF_SGF_PARSER_H_
 #define _SGF_SGF_PARSER_H_
 
+#include "engine/game.h"
+
 #include <memory>
 #include <vector>
 
@@ -42,7 +44,6 @@ enum class SGFPropertyName : uint16_t
 	StartColor = prop_to_num("PL"),
 	Place = prop_to_num("PC"),
 	Source = prop_to_num("SO"),
-	Unknown
 };
 
 struct SGFProperty
@@ -61,6 +62,10 @@ struct SGFNode
 	std::shared_ptr<SGFNode> parent;
 	std::vector<std::shared_ptr<SGFNode>> children;
 };
+
+void execute_sgf(
+	const std::shared_ptr<SGFNode>&, engine::GameState&, engine::Rules&,
+	int32_t = -1);
 
 class SGFParser
 {
@@ -83,6 +88,6 @@ private:
 	int lookahead;
 };
 
-}
+} // namespace go::sgf
 
 #endif // _SGF_SGF_PARSER_H_

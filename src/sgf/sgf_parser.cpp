@@ -1,14 +1,15 @@
-#include "sgf_parser.h"
+#include "sgf.h"
 
 #include <cctype>
 #include <sstream>
+#include <iostream>
 
 // The implementation of this parser implementation closely follows gnugo's
 
 namespace go::sgf
 {
 
-SGFParser::SGFParser(std::istream& in_) : in{in_} { }
+SGFParser::SGFParser(std::istream& in_) : in{in_}, lookahead{0} { }
 
 std::shared_ptr<SGFNode> SGFParser::parse()
 {
@@ -29,7 +30,6 @@ static SGFPropertyName prop_to_enum(const char* name)
 {
 	return static_cast<SGFPropertyName>(prop_to_num(name));
 }
-
 
 void SGFParser::next_token()
 {
@@ -53,10 +53,10 @@ SGFPropertyName SGFParser::parse_property_name()
 		parse_error("Expected an upper case letter.");
 
 	std::ostringstream ss;
-	while (lookahead != EOF && std::isalpha(lookahead))
+	while (lookahead != eof && std::isalpha(lookahead))
 	{
 		if (std::isupper(lookahead))
-			ss << lookahead;
+			ss << static_cast<char>(lookahead);
 		next_token();
 	}
 	std::string str = ss.str();
@@ -87,7 +87,7 @@ std::string SGFParser::parse_property_value()
 			}
 			continue;
 		}
-		ss << lookahead;
+		ss << static_cast<char>(lookahead);
 		lookahead = in.get();
 	}
 	match(']');
@@ -135,6 +135,7 @@ SGFParser::parse_sequence(std::shared_ptr<SGFNode> n)
 std::shared_ptr<SGFNode>
 SGFParser::parse_gametree(const std::shared_ptr<SGFNode>& parent)
 {
+	next_token();
 	while (true)
 	{
 		if (lookahead == eof)

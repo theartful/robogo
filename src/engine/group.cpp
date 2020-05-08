@@ -9,7 +9,7 @@
 using namespace go::engine;
 
 static inline uint32_t init_single_stone_group(
-    GroupTable&, uint16_t, const BoardState&, const Action&);
+	GroupTable&, uint16_t, const BoardState&, const Action&);
 static inline uint32_t merge_groups(GroupTable&, uint32_t*, uint32_t);
 static inline void
 merge_group_with_stone(uint16_t, uint32_t, GroupTable&, const BoardState&);
@@ -100,7 +100,7 @@ static inline uint32_t find_new_group(GroupTable& table)
 		return table.max_group_idx++;
 
 	DEBUG_PRINT(
-	    "engine::new_group: couldn't create new group. this shouldn't happen!");
+		"engine::new_group: couldn't create new group. this shouldn't happen!");
 	exit(-1);
 }
 
@@ -124,37 +124,37 @@ uint32_t go::engine::update_groups(GameState& game_state, const Action& action)
 	uint32_t capture_count = 0;
 
 	for_each_neighbor_group(
-	    table, board, action.pos, [&](auto group_idx, auto& group) {
-		    // if friendly group, add it to be merged
-		    if (group.player_idx == action.player_idx)
-		    {
-			    to_merge[merge_count++] = group_idx;
-			    if (in_atari(group))
-				    table.num_in_atari--;
-		    }
-		    // if enemy group with zero liberties, add it to be captured
-		    else
-		    {
-			    if (in_atari(group))
-			    {
-				    table.num_in_atari--;
-				    to_capture[capture_count++] = group_idx;
-				    num_captured_stones += group.size;
-			    }
-			    else
-			    {
-				    group.num_libs--;
-				    group.lib_map.reset(action.pos);
-				    update_if_atari(board, group, table);
-			    }
-		    }
-	    });
+		table, board, action.pos, [&](auto group_idx, auto& group) {
+			// if friendly group, add it to be merged
+			if (group.player_idx == action.player_idx)
+			{
+				to_merge[merge_count++] = group_idx;
+				if (in_atari(group))
+					table.num_in_atari--;
+			}
+			// if enemy group with zero liberties, add it to be captured
+			else
+			{
+				group.lib_map.reset(action.pos);
+				group.num_libs--;
+				if (group.num_libs == 0)
+				{
+					table.num_in_atari--;
+					to_capture[capture_count++] = group_idx;
+					num_captured_stones += group.size;
+				}
+				else
+				{
+					update_if_atari(board, group, table);
+				}
+			}
+		});
 
 	uint32_t new_group_idx;
 	if (merge_count == 0)
 	{
 		new_group_idx = init_single_stone_group(
-		    table, find_new_group(table), board, action);
+			table, find_new_group(table), board, action);
 	}
 	else
 	{
@@ -171,16 +171,16 @@ uint32_t go::engine::update_groups(GameState& game_state, const Action& action)
 }
 
 static inline uint32_t init_single_stone_group(
-    GroupTable& table, uint16_t group_idx, const BoardState& state,
-    const Action& action)
+	GroupTable& table, uint16_t group_idx, const BoardState& state,
+	const Action& action)
 {
 	set_group_parent(table, action.pos, group_idx);
 	auto& group = table.groups[group_idx];
-	group.player_idx = action.player_idx;
 	group.parent = action.pos;
+	group.player_idx = action.player_idx;
 	group.size = 1;
-	group.lib_map.reset();
 	group.num_libs = 0;
+	group.lib_map.reset();
 	for_each_neighbor(state, action.pos, [&](uint32_t neighbor) {
 		if (is_empty(state, neighbor))
 		{
@@ -194,8 +194,8 @@ static inline uint32_t init_single_stone_group(
 }
 
 static inline void merge_group_with_stone(
-    uint16_t group_idx, uint32_t stone_idx, GroupTable& table,
-    const BoardState& state)
+	uint16_t group_idx, uint32_t stone_idx, GroupTable& table,
+	const BoardState& state)
 {
 	Group& group = table.groups[group_idx];
 	set_stone_parent(table, stone_idx, group.parent);
@@ -226,14 +226,15 @@ merge_groups(GroupTable& table, uint32_t* groups_idxs, uint32_t count)
 {
 	if (count == 1)
 		return groups_idxs[0];
+
 	// find group with maximum size and make it the first element
 	std::swap(
-	    *std::max_element(
-	        groups_idxs, groups_idxs + count,
-	        [&](uint32_t a, uint32_t b) {
-		        return table.groups[a].size < table.groups[b].size;
-	        }),
-	    *groups_idxs);
+		*std::max_element(
+			groups_idxs, groups_idxs + count,
+			[&](uint32_t a, uint32_t b) {
+				return table.groups[a].size < table.groups[b].size;
+			}),
+		*groups_idxs);
 
 	uint32_t biggest = groups_idxs[0];
 	Group& biggest_group = table.groups[biggest];
@@ -250,6 +251,8 @@ merge_groups(GroupTable& table, uint32_t* groups_idxs, uint32_t count)
 		biggest_group.lib_map |= to_merge.lib_map;
 		to_merge.size = 0;
 	}
+	biggest_group.num_libs = biggest_group.lib_map.count();
+
 	return biggest;
 }
 

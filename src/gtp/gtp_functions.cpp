@@ -49,10 +49,9 @@ std::string GTPController::list_commands()
 std::string GTPController::showboard()
 {
 	auto show_col_names = [](std::ostringstream& stream, uint32_t board_size) {
-		stream << "    ";
+		stream << "   ";
 		for (uint32_t col = 0; col < board_size; col++)
 			stream << get_column_char(col) << ' ';
-		stream << std::endl;
 	};
 
 	auto is_star_point = [](uint32_t r, uint32_t c) -> bool {
@@ -79,10 +78,10 @@ std::string GTPController::showboard()
 	oss << std::endl;
 	const auto& board = game.board;
 	show_col_names(oss, board.size);
-	for (int32_t row = board.size - 1; row >= 0; row--)
+	oss << std::endl;
+	for (int32_t row = static_cast<int32_t>(board.size - 1); row >= 0; row--)
 	{
 		uint32_t urow = static_cast<uint32_t>(row);
-		oss << ' ';
 		oss << std::setw(2) << urow + 1 << ' ';
 
 		for (uint32_t col = 0; col < board.size; col++)

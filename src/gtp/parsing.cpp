@@ -166,7 +166,14 @@ static GTPFunction to_gtp_func_impl(Callable&& func)
 		constexpr size_t num_func_args = sizeof...(Args);
 
 		if (command.args.size() != num_func_args)
-			return GTPCommandResult{"invalid number of arguments", true};
+		{
+			std::ostringstream ss;
+			ss << "invalid number of arguments. expected ";
+			ss << num_func_args;
+			ss << " but got ";
+			ss << command.args.size();
+			return GTPCommandResult{ss.str(), true};
+		}
 
 		// convert argument strings to their type in the function
 		auto args = apply<num_func_args>(
@@ -320,6 +327,7 @@ GTPController::GTPController() : game{}, quit_flag{false}
 		{"is_suicide", to_gtp_func(&GTPController::is_suicide)},
 		{"color", to_gtp_func(&GTPController::color)},
 		{"captures", to_gtp_func(&GTPController::captures)},
+		{"loadsgf", to_gtp_func(&GTPController::loadsgf)},
 	};
 	for (auto&& pair : function_map)
 		known_commands.push_back(pair.first);

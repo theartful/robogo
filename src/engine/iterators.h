@@ -39,17 +39,18 @@ wrap_void_lambda(Lambda&& lambda, ForPolicy default_policy = Continue)
 
 template <typename Lambda>
 void for_each_neighbor(
-    const BoardState& state, uint32_t stone_idx, Lambda&& lambda)
+	const BoardState& state, uint32_t stone_idx, Lambda&& lambda)
 {
 	auto wrapped_lambda =
-	    details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
+		details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
 	// right
-	if (uint32_t right = stone_idx + 1; get_stone(state, right) != Stone::Border)
+	if (uint32_t right = stone_idx + 1;
+		get_stone(state, right) != Stone::Border)
 		if (wrapped_lambda(right) == Break)
 			return;
 	// up
 	if (uint32_t up = stone_idx - BoardState::EXTENDED_SIZE;
-	    get_stone(state, up) != Stone::Border)
+		get_stone(state, up) != Stone::Border)
 		if (wrapped_lambda(up) == Break)
 			return;
 	// left
@@ -58,7 +59,7 @@ void for_each_neighbor(
 			return;
 	// down
 	if (uint32_t down = stone_idx + BoardState::EXTENDED_SIZE;
-	    get_stone(state, down) != Stone::Border)
+		get_stone(state, down) != Stone::Border)
 		if (wrapped_lambda(down) == Break)
 			return;
 }
@@ -67,14 +68,14 @@ template <typename Lambda>
 void for_each_8neighbor_all(uint32_t pos, Lambda&& lambda)
 {
 	const auto neighbors = {
-	    pos - BoardState::EXTENDED_SIZE - 1,
-	    pos - BoardState::EXTENDED_SIZE,
-	    pos - BoardState::EXTENDED_SIZE + 1,
-	    pos - 1,
-	    pos + 1,
-	    pos + BoardState::EXTENDED_SIZE - 1,
-	    pos + BoardState::EXTENDED_SIZE,
-	    pos + BoardState::EXTENDED_SIZE + 1,
+		pos - BoardState::EXTENDED_SIZE - 1,
+		pos - BoardState::EXTENDED_SIZE,
+		pos - BoardState::EXTENDED_SIZE + 1,
+		pos - 1,
+		pos + 1,
+		pos + BoardState::EXTENDED_SIZE - 1,
+		pos + BoardState::EXTENDED_SIZE,
+		pos + BoardState::EXTENDED_SIZE + 1,
 	};
 	for (auto neighbor : neighbors)
 		lambda(neighbor);
@@ -82,18 +83,18 @@ void for_each_8neighbor_all(uint32_t pos, Lambda&& lambda)
 
 template <typename Lambda, typename CVGroupTable>
 void for_each_neighbor_group(
-    CVGroupTable& table, const BoardState& state, uint32_t stone_idx,
-    Lambda&& lambda)
+	CVGroupTable& table, const BoardState& state, uint32_t stone_idx,
+	Lambda&& lambda)
 {
 	constexpr bool pass_index =
-	    std::is_invocable<Lambda, uint32_t, Group&>::value;
+		std::is_invocable<Lambda, uint32_t, Group&>::value;
 	auto get_wrapped_lambda = [&]() {
 		if constexpr (pass_index)
 			return details::wrap_void_lambda<uint32_t, Group&>(
-			    std::forward<Lambda>(lambda));
+				std::forward<Lambda>(lambda));
 		else
 			return details::wrap_void_lambda<Group&>(
-			    std::forward<Lambda>(lambda));
+				std::forward<Lambda>(lambda));
 	};
 	auto wrapped_lambda = get_wrapped_lambda();
 
@@ -184,10 +185,10 @@ void for_each_stone(const BoardState& state, uint32_t root, Lambda&& lambda)
 
 template <typename Lambda>
 void for_each_group_stone(
-    const Group& group, const BoardState& state, Lambda&& lambda)
+	const Group& group, const BoardState& state, Lambda&& lambda)
 {
 	auto wrapped_lambda = details::wrap_void_lambda<uint32_t>(
-	    std::forward<Lambda>(lambda), Expand);
+		std::forward<Lambda>(lambda), Expand);
 	Stone group_color = get_stone(state, group.parent);
 	for_each_stone(state, group.parent, [&](uint32_t idx) {
 		if (get_stone(state, idx) == group_color)
@@ -200,18 +201,18 @@ void for_each_group_stone(
 /*
 template <typename Lambda>
 void for_each_group_stone(
-    const Group& group, const GroupTable& table, Lambda&& lambda)
+	const Group& group, const GroupTable& table, Lambda&& lambda)
 {
-    auto wrapped_lambda = details::wrap_void_lambda<uint32_t, Expand>(
-        std::forward<Lambda>(lambda));
+	auto wrapped_lambda = details::wrap_void_lambda<uint32_t, Expand>(
+		std::forward<Lambda>(lambda));
 
-    uint32_t index = group.parent;
-    do
-    {
-        if (wrapped_lambda(index) == Break)
-            return;
-        index = table.next_stone[index];
-    } while (index != group.parent);
+	uint32_t index = group.parent;
+	do
+	{
+		if (wrapped_lambda(index) == Break)
+			return;
+		index = table.next_stone[index];
+	} while (index != group.parent);
 }
 */
 
@@ -219,7 +220,7 @@ template <typename Lambda>
 void for_each_empty_stone(const BoardState& state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
-	    details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
+		details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
 	for (uint32_t i = 0; i < state.num_empty_stones; i++)
 	{
 		if (wrapped_lambda(state.empty_stones[i]) == Break)
@@ -233,7 +234,7 @@ template <typename Lambda>
 void for_each_legal_action(const GameState& state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
-	    details::wrap_void_lambda<Action&>(std::forward<Lambda>(lambda));
+		details::wrap_void_lambda<Action&>(std::forward<Lambda>(lambda));
 	Action action;
 	action.player_idx = state.player_turn;
 	for_each_empty_stone(state.board, [&](auto pos) {
@@ -246,10 +247,10 @@ void for_each_legal_action(const GameState& state, Lambda&& lambda)
 
 template <typename Lambda>
 void for_each_liberty(
-    const BoardState& state, const Group& group, Lambda&& lambda)
+	const BoardState& state, const Group& group, Lambda&& lambda)
 {
 	auto wrapped_lambda = details::wrap_void_lambda<uint32_t>(
-	    std::forward<Lambda>(lambda), DontExpand);
+		std::forward<Lambda>(lambda), DontExpand);
 	uint32_t count = 0;
 
 	Stone group_color = get_stone(state, group.parent);
@@ -268,7 +269,7 @@ template <typename Lambda>
 void for_each_group(const GameState& game_state, Lambda&& lambda)
 {
 	auto wrapped_lambda =
-	    details::wrap_void_lambda<Group&>(std::forward<Lambda>(lambda));
+		details::wrap_void_lambda<Group&>(std::forward<Lambda>(lambda));
 	for (auto& group : game_state.group_table.groups)
 	{
 		if (group.size)
