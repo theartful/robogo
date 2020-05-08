@@ -12,7 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 # set default build type
 if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE "DEBUG" CACHE STRING
-	     "Choose the type of build, options are: Debug Release" FORCE)
+		"Choose the type of build, options are: Debug Release" FORCE)
 endif()
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
@@ -34,18 +34,18 @@ include_directories(
 	"${PROJECT_BINARY_DIR}/src/"
 )
 
-# use c++20 (trying out new features!)
-set(CMAKE_CXX_STANDARD 20)
+# use c++17 (trying out new features!)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set compiler flags
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(COMPILER_WARNINGS
-	    "-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
-	    -Wdisabled-optimization -Winit-self -Wstrict-overflow=5 \
-	    -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
-	    -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
-	    -Wundef -Wswitch-default -Werror -Wno-unused")
+		"-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
+		-Wdisabled-optimization -Winit-self -Wstrict-overflow=5 \
+		-Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
+		-Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
+		-Wundef -Wswitch-default -Werror -Wno-unused")
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 	if (REPORT_COVERAGE)

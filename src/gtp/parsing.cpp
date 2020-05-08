@@ -3,28 +3,25 @@
 #include <cctype>
 #include <cstdlib>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <iomanip>
 
 #include "engine/board.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
-
 
 namespace go::gtp
 {
 
 static constexpr auto get_column_char_arr()
 {
-	return std::array{
-		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
-		'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'
-	};
+	return std::array{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
+					  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T'};
 }
 
 char get_column_char(uint32_t col)
@@ -53,7 +50,7 @@ static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex)
 
 static std::ostream& operator<<(std::ostream& stream, const Color& color)
 {
-	switch(color)
+	switch (color)
 	{
 	case Color::Black:
 		return stream << "black";
@@ -103,8 +100,7 @@ operator<<(std::ostream& stream, const ValueOrError& ve)
 }
 
 template <typename T>
-static std::ostream&
-operator<<(std::ostream& stream, const std::vector<T>& vec)
+static std::ostream& operator<<(std::ostream& stream, const std::vector<T>& vec)
 {
 	if (!vec.empty())
 	{
@@ -235,7 +231,12 @@ static GTPFunction to_gtp_func_impl(Callable&& func)
 template <typename R, typename... Args>
 GTPFunction GTPController::to_gtp_func(R (GTPController::*func)(Args...))
 {
-	return details::to_gtp_func_impl<R, Args...>(std::bind_front(func, this));
+	// c++ 20
+	// return details::to_gtp_func_impl<R, Args...>(std::bind_front(func,
+	// this));
+	return details::to_gtp_func_impl<R, Args...>([=](auto&&... args) {
+		return (this->*func)(std::forward<Args>(args)...);
+	});
 }
 
 static GTPCommand parse(std::string_view str)
@@ -246,7 +247,7 @@ static GTPCommand parse(std::string_view str)
 	while (word_begin < str.end())
 	{
 		const auto word_end = std::find_if(
-				word_begin, str.end(), [](char c) { return c == '\0'; });
+			word_begin, str.end(), [](char c) { return c == '\0'; });
 
 		if (word_end != word_begin)
 			tokens.emplace_back(
@@ -260,7 +261,8 @@ static GTPCommand parse(std::string_view str)
 		return GTPCommand{};
 
 	// check id
-	bool has_id = !tokens[0].empty() &&
+	bool has_id =
+		!tokens[0].empty() &&
 		std::all_of(tokens[0].begin(), tokens[0].end(), [](unsigned char c) {
 			return std::isdigit(c);
 		});
@@ -288,7 +290,7 @@ static void preprocess(std::string& request)
 				return '\0';
 			else
 				return std::tolower(c);
-	});
+		});
 
 	// remove comments
 	auto it = std::find(request.begin(), request.end(), '#');
