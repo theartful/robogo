@@ -1,6 +1,8 @@
 #ifndef _ENGINE_SCORE_H_
 #define _ENGINE_SCORE_H_
 
+#include "game.h"
+
 namespace go::engine
 {
 

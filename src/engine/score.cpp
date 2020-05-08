@@ -1,8 +1,35 @@
-#include "game.h"
+#include "score.h"
 #include "iterators.h"
 
 namespace go::engine
 {
+
+static std::tuple<uint32_t, bool, bool> territory_points(
+	const BoardState& state, uint32_t root, details::SearchCache& cache)
+{
+	uint32_t score = 1;
+	cache.push(root);
+	cache.mark_visited(root);
+	std::array<bool, 2> player_stone = {false, false};
+	while (!cache.empty())
+	{
+		uint32_t cur_pos = cache.pop();
+		for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
+			if (is_empty(state, neighbour) && !cache.is_visited(neighbour))
+			{
+				cache.push(neighbour);
+				cache.mark_visited(neighbour);
+				score++;
+			}
+			else
+			{
+				Stone stone = state.stones[neighbour];
+				player_stone[get_player_idx(stone)] = true;
+			}
+		});
+	}
+	return {score, player_stone[0], player_stone[1]};
+}
 
 std::pair<float, float>
 calculate_score(const GameState& state, const Rules& rules)
@@ -35,33 +62,6 @@ calculate_score(const GameState& state, const Rules& rules)
 		black_player.num_captures;
 
 	return {black_score, white_score};
-}
-
-static std::tuple<uint32_t, bool, bool> territory_points(
-	const BoardState& state, uint32_t root, details::SearchCache& cache)
-{
-	uint32_t score = 1;
-	cache.push(root);
-	cache.mark_visited(root);
-	std::array<bool, 2> player_stone = {false, false};
-	while (!cache.empty())
-	{
-		uint32_t cur_pos = cache.pop();
-		for_each_neighbor(state, cur_pos, [&](uint32_t neighbour) {
-			if (is_empty(state, neighbour) && !cache.is_visited(neighbour))
-			{
-				cache.push(neighbour);
-				cache.mark_visited(neighbour);
-				score++;
-			}
-			else
-			{
-				Stone stone = state.stones[neighbour];
-				player_stone[get_player_idx(stone)] = true;
-			}
-		});
-	}
-	return {score, player_stone[0], player_stone[1]};
 }
 
 }

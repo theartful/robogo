@@ -42,7 +42,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(COMPILER_WARNINGS
 	    "-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy \
-	    -Wdisabled-optimization -Wformat=2 -Winit-self -Wstrict-overflow=5 \
+	    -Wdisabled-optimization -Winit-self -Wstrict-overflow=5 \
 	    -Wmissing-declarations -Wmissing-include-dirs -Wold-style-cast -Wshadow \
 	    -Woverloaded-virtual -Wredundant-decls -Wsign-conversion -Wsign-promo \
 	    -Wundef -Wswitch-default -Werror -Wno-unused")
