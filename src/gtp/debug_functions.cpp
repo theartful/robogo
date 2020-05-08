@@ -2,6 +2,7 @@
 #include "engine/board.h"
 #include "engine/engine.h"
 #include "engine/liberties.h"
+#include "engine/score.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
 
@@ -122,6 +123,13 @@ Color GTPController::loadsgf(std::string file, int32_t move_num)
 		return Color::Black;
 	else
 		return Color::White;
+}
+
+Score GTPController::final_score()
+{
+	Score score;
+	std::tie(score.black, score.white) = engine::calculate_score(game, rules);
+	return score;
 }
 
 } // namespace go::gtp

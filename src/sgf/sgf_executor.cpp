@@ -54,10 +54,13 @@ void execute_sgf(
 				rules.komi = get_float_property(prop);
 				break;
 			}
-			case SGFPropertyName::AddBlack:
-			case SGFPropertyName::AddWhite:
 			case SGFPropertyName::BlackMove:
 			case SGFPropertyName::WhiteMove: {
+				move_num++;
+				[[fallthrough]];
+			}
+			case SGFPropertyName::AddBlack:
+			case SGFPropertyName::AddWhite: {
 				uint32_t move = get_move_property(prop, game);
 				uint32_t player_idx;
 				if (prop.name == SGFPropertyName::AddBlack ||
@@ -66,7 +69,6 @@ void execute_sgf(
 				else
 					player_idx = 1;
 				engine::force_move(game, engine::Action{move, player_idx});
-				move_num++;
 				break;
 			}
 			case SGFPropertyName::StartColor: {

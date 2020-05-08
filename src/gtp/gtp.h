@@ -53,6 +53,12 @@ inline go::engine::Action to_action(Color color, const Vertex& vertex)
 	return go::engine::Action{vertex.index(), to_player_idx(color)};
 }
 
+struct Score
+{
+	float black;
+	float white;
+};
+
 struct GTPCommand
 {
 	std::string_view id;
@@ -110,6 +116,7 @@ public:
 	bool is_legal(Color color, Vertex vertex);
 	bool is_suicide(Color color, Vertex vertex);
 	uint32_t captures(Color color);
+	Score final_score();
 	Color loadsgf(std::string file, int32_t move_num);
 
 private:

@@ -28,7 +28,7 @@ inline constexpr Stone get_player_stone(uint16_t player_idx)
 }
 inline constexpr uint32_t get_player_idx(Stone stone)
 {
-	constexpr std::array<uint32_t, 4> idxs = {3, 0, 1, 3};
+	constexpr std::array<uint32_t, 4> idxs = {2, 0, 1, 2};
 	return idxs[static_cast<unsigned char>(stone)];
 }
 

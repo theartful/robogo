@@ -10,7 +10,7 @@ static std::tuple<uint32_t, bool, bool> territory_points(
 	uint32_t score = 1;
 	cache.push(root);
 	cache.mark_visited(root);
-	std::array<bool, 2> player_stone = {false, false};
+	std::array<bool, 3> player_stone = {false, false, false};
 	while (!cache.empty())
 	{
 		uint32_t cur_pos = cache.pop();

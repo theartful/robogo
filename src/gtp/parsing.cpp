@@ -9,10 +9,12 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <iomanip>
 
 #include "engine/board.h"
 #include "gtp/gtp.h"
 #include "gtp/utility.h"
+
 
 namespace go::gtp
 {
@@ -62,6 +64,25 @@ static std::ostream& operator<<(std::ostream& stream, const Color& color)
 	default:
 		return stream;
 	}
+}
+
+static std::ostream& operator<<(std::ostream& stream, const Score& score)
+{
+	if (score.black > score.white)
+	{
+		stream << "B+";
+		stream << std::setprecision(4) << (score.black - score.white);
+	}
+	else if (score.white > score.black)
+	{
+		stream << "W+";
+		stream << std::setprecision(4) << (score.white - score.black);
+	}
+	else
+	{
+		stream << '0';
+	}
+	return stream;
 }
 
 static std::ostream&
@@ -318,6 +339,7 @@ GTPController::GTPController() : game{}, quit_flag{false}
 		{"play", to_gtp_func(&GTPController::play)},
 		{"clear_board", to_gtp_func(&GTPController::clear_board)},
 		{"komi", to_gtp_func(&GTPController::komi)},
+		{"final_score", to_gtp_func(&GTPController::final_score)},
 		{"boardsize", to_gtp_func(&GTPController::boardsize)},
 		{"quit", to_gtp_func(&GTPController::quit)},
 		// {"rg_showboard", to_gtp_func(&GTPController::rg_showboard)},
