@@ -1,6 +1,8 @@
 #include "score.h"
 #include "iterators.h"
 
+#include <tuple>
+
 namespace go::engine
 {
 
