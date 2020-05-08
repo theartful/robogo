@@ -44,21 +44,21 @@ void for_each_neighbor(
 	auto wrapped_lambda =
 	    details::wrap_void_lambda<uint32_t>(std::forward<Lambda>(lambda));
 	// right
-	if (uint32_t right = stone_idx + 1; state.stones[right] != Stone::Border)
+	if (uint32_t right = stone_idx + 1; get_stone(state, right) != Stone::Border)
 		if (wrapped_lambda(right) == Break)
 			return;
 	// up
 	if (uint32_t up = stone_idx - BoardState::EXTENDED_SIZE;
-	    state.stones[up] != Stone::Border)
+	    get_stone(state, up) != Stone::Border)
 		if (wrapped_lambda(up) == Break)
 			return;
 	// left
-	if (uint32_t left = stone_idx - 1; state.stones[left] != Stone::Border)
+	if (uint32_t left = stone_idx - 1; get_stone(state, left) != Stone::Border)
 		if (wrapped_lambda(left) == Break)
 			return;
 	// down
 	if (uint32_t down = stone_idx + BoardState::EXTENDED_SIZE;
-	    state.stones[down] != Stone::Border)
+	    get_stone(state, down) != Stone::Border)
 		if (wrapped_lambda(down) == Break)
 			return;
 }
@@ -100,7 +100,7 @@ void for_each_neighbor_group(
 	uint32_t visited[4];
 	uint32_t visited_count = 0;
 	for_each_neighbor(state, stone_idx, [&](uint32_t neighbor) {
-		if (!is_empty(state.stones[neighbor]))
+		if (!is_empty(get_stone(state, neighbor)))
 		{
 			uint32_t group_idx = get_group_idx(table, neighbor);
 			// check if visited
@@ -188,9 +188,9 @@ void for_each_group_stone(
 {
 	auto wrapped_lambda = details::wrap_void_lambda<uint32_t>(
 	    std::forward<Lambda>(lambda), Expand);
-	Stone group_color = state.stones[group.parent];
+	Stone group_color = get_stone(state, group.parent);
 	for_each_stone(state, group.parent, [&](uint32_t idx) {
-		if (state.stones[idx] == group_color)
+		if (get_stone(state, idx) == group_color)
 			return wrapped_lambda(idx);
 		else
 			return DontExpand;
@@ -252,11 +252,11 @@ void for_each_liberty(
 	    std::forward<Lambda>(lambda), DontExpand);
 	uint32_t count = 0;
 
-	Stone group_color = state.stones[group.parent];
+	Stone group_color = get_stone(state, group.parent);
 	for_each_stone(state, group.parent, [&](uint32_t idx) {
 		if (count == group.num_libs)
 			return Break;
-		if (state.stones[idx] == group_color)
+		if (get_stone(state, idx) == group_color)
 			return Expand;
 		else if (is_empty(state, idx))
 			return count++, wrapped_lambda(idx);

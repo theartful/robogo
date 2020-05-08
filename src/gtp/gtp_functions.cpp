@@ -33,7 +33,7 @@ std::string_view GTPController::version()
 bool GTPController::known_command(std::string_view command)
 {
 	return std::find(known_commands.begin(), known_commands.end(), command) !=
-	       known_commands.end();
+		known_commands.end();
 }
 
 std::string GTPController::list_commands()
@@ -48,8 +48,6 @@ std::string GTPController::list_commands()
 
 std::string GTPController::showboard()
 {
-	auto& board = game.board;
-
 	auto show_col_names = [](std::ostringstream& stream, uint32_t board_size) {
 		stream << "    ";
 		for (uint32_t col = 0; col < board_size; col++)
@@ -57,16 +55,18 @@ std::string GTPController::showboard()
 		stream << std::endl;
 	};
 
+	auto is_star_point = [](uint32_t r, uint32_t c) -> bool {
+		return
+			(r == 3 || r == 9 || r == 15) &&
+			(c == 3 || c == 9 || c == 15);
+	};
+
 	auto point_symbol = [&](uint32_t row, uint32_t col) -> char {
-		auto is_star_point = [](uint32_t r, uint32_t c) -> bool {
-			return (r == 3 || r == 9 || r == 15) &&
-			       (c == 3 || c == 9 || c == 15);
-		};
-		if (board(row, col) == engine::Stone::Black)
+		if (get_stone(game, row, col) == engine::Stone::Black)
 			return 'X';
-		else if (board(row, col) == engine::Stone::White)
+		else if (get_stone(game, row, col) == engine::Stone::White)
 			return 'O';
-		else if (board(row, col) == engine::Stone::Empty)
+		else if (get_stone(game, row, col) == engine::Stone::Empty)
 			if (is_star_point(row, col))
 				return '+';
 			else
@@ -77,6 +77,7 @@ std::string GTPController::showboard()
 
 	std::ostringstream oss;
 	oss << std::endl;
+	const auto& board = game.board;
 	show_col_names(oss, board.size);
 	for (int32_t row = board.size - 1; row >= 0; row--)
 	{

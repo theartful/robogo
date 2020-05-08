@@ -36,6 +36,20 @@ struct GameState
 	}
 };
 
+
+inline constexpr Stone& get_stone(GameState& game, uint32_t idx)
+{
+	return get_stone(game.board, idx);
+}
+inline constexpr const Stone& get_stone(const GameState& game, uint32_t idx)
+{
+	return get_stone(game.board, idx);
+}
+inline constexpr const Stone&
+get_stone(const GameState& game, uint32_t row, uint32_t col)
+{
+	return get_stone(game.board, BoardState::index(row, col));
+}
 inline uint32_t num_captures(GameState& game, uint8_t player_idx)
 {
 	return game.players[player_idx].num_captures;

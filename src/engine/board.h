@@ -84,14 +84,6 @@ struct BoardState
 	BoardState() : BoardState{MAX_SIZE}
 	{
 	}
-	constexpr Stone& operator()(uint32_t i, uint32_t j)
-	{
-		return stones[index(i, j)];
-	}
-	constexpr Stone operator()(uint32_t i, uint32_t j) const
-	{
-		return stones[index(i, j)];
-	}
 	static constexpr uint32_t index(uint32_t i, uint32_t j)
 	{
 		return (i + 1) * EXTENDED_SIZE + (j + 1);
@@ -102,13 +94,21 @@ struct BoardState
 	}
 };
 
+inline constexpr Stone& get_stone(BoardState& board, uint32_t idx)
+{
+	return board.stones[idx];
+}
+inline constexpr const Stone& get_stone(const BoardState& board, uint32_t idx)
+{
+	return board.stones[idx];
+}
 inline constexpr bool is_empty(Stone stone)
 {
 	return stone == Stone::Empty;
 }
 inline constexpr bool is_empty(const BoardState& board, uint32_t idx)
 {
-	return is_empty(board.stones[idx]);
+	return is_empty(get_stone(board, idx));
 }
 inline constexpr void increment_empty_neighbors(BoardState& board, uint32_t idx)
 {

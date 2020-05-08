@@ -22,8 +22,6 @@ static inline char get_extended_column_char(uint32_t col)
 
 std::string GTPController::rg_showboard()
 {
-	auto& board = game.board;
-
 	auto show_col_names = [](std::ostringstream& stream, uint32_t board_size) {
 		stream << "    ";
 		for (uint32_t col = 0; col < board_size; col++)
@@ -37,11 +35,11 @@ std::string GTPController::rg_showboard()
 				(r == 4 || r == 10 || r == 16) &&
 				(c == 4 || c == 10 || c == 16);
 		};
-		if (board(row, col) == engine::Stone::Black)
+		if (get_stone(game, row, col) == engine::Stone::Black)
 			return 'X';
-		else if (board(row, col) == engine::Stone::White)
+		else if (get_stone(game, row, col) == engine::Stone::White)
 			return 'O';
-		else if (board(row, col) == engine::Stone::Empty)
+		else if (get_stone(game, row, col) == engine::Stone::Empty)
 			if (is_star_point(row, col))
 				return '+';
 			else
@@ -88,10 +86,27 @@ bool GTPController::is_legal(Color color, Vertex vertex)
 	return go::engine::is_legal_move(game, to_action(color, vertex));
 }
 
+bool GTPController::is_suicide(Color color, Vertex vertex)
+{
+	return go::engine::is_suicide_move(game, to_action(color, vertex));
+}
+
 uint32_t GTPController::captures(Color color)
 {
 	return go::engine::num_captures(game, to_player_idx(color));
 }
 
+Color GTPController::color(Vertex vertex)
+{
+	switch (go::engine::get_stone(game, vertex.index()))
+	{
+	case engine::Stone::White:
+		return Color::White;
+	case engine::Stone::Black:
+		return Color::Black;
+	default:
+		return Color::Empty;
+	}
+}
 
 } // namespace go::gtp

@@ -46,8 +46,22 @@ uint32_t get_column_idx(char col_char)
 
 static std::ostream& operator<<(std::ostream& stream, const Vertex& vertex)
 {
-	stream << get_column_char(vertex.col) << vertex.row;
-	return stream;
+	return stream << get_column_char(vertex.col) << vertex.row;
+}
+
+static std::ostream& operator<<(std::ostream& stream, const Color& color)
+{
+	switch(color)
+	{
+	case Color::Black:
+		return stream << "black";
+	case Color::White:
+		return stream << "white";
+	case Color::Empty:
+		return stream << "empty";
+	default:
+		return stream;
+	}
 }
 
 static std::ostream&
@@ -303,6 +317,8 @@ GTPController::GTPController() : game{}, quit_flag{false}
 		{"countlib", to_gtp_func(&GTPController::countlib)},
 		{"findlib", to_gtp_func(&GTPController::findlib)},
 		{"is_legal", to_gtp_func(&GTPController::is_legal)},
+		{"is_suicide", to_gtp_func(&GTPController::is_suicide)},
+		{"color", to_gtp_func(&GTPController::color)},
 		{"captures", to_gtp_func(&GTPController::captures)},
 	};
 	for (auto&& pair : function_map)

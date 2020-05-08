@@ -39,7 +39,8 @@ struct Vertex
 enum class Color
 {
 	Black,
-	White
+	White,
+	Empty,
 };
 
 inline uint8_t to_player_idx(Color color)
@@ -60,8 +61,8 @@ struct GTPCommand
 
 	explicit GTPCommand(
 		std::string_view id_ = {}, std::string_view command_ = {},
-		std::vector<std::string_view> args_ = {})
-			: id{id_}, command{command_}, args{std::move(args_)}
+		std::vector<std::string_view> args_ = {}) :
+			id{id_}, command{command_}, args{std::move(args_)}
 	{
 	}
 };
@@ -71,8 +72,8 @@ struct GTPCommandResult
 	std::string output;
 	bool error;
 
-	explicit GTPCommandResult(std::string output_ = {}, bool error_ = false)
-		: output(output_), error(error_)
+	explicit GTPCommandResult(std::string output_ = {}, bool error_ = false) :
+		output(output_), error(error_)
 	{
 	}
 };
@@ -105,7 +106,9 @@ public:
 	std::string rg_showboard();
 	uint32_t countlib(Vertex vertex);
 	std::vector<Vertex> findlib(Vertex vertex);
+	Color color(Vertex vertex);
 	bool is_legal(Color color, Vertex vertex);
+	bool is_suicide(Color color, Vertex vertex);
 	uint32_t captures(Color color);
 
 private:
