@@ -11,6 +11,7 @@
 #include <functional>
 #include <iomanip>
 #include <fstream>
+#include <iostream>
 
 namespace go::gtp
 {
@@ -114,7 +115,6 @@ Color GTPController::color(Vertex vertex)
 Color GTPController::loadsgf(std::string file, int32_t move_num)
 {
 	std::ifstream fin(file);
-	std::string line;
 	sgf::SGFParser parser(fin);
 	auto tree = parser.parse();
 	sgf::execute_sgf(tree, game, rules, move_num);

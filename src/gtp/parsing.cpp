@@ -281,15 +281,15 @@ static GTPCommand parse(std::string_view str)
 
 static void preprocess(std::string& request)
 {
-	// replace delimiters by null and convert to lower case
+	// replace delimiters by null
 	std::transform(
 		request.begin(), request.end(), request.begin(),
-		[](unsigned char c) -> char {
+		[](char c) -> char {
 			constexpr std::array delims = {' ', '\t'};
 			if (std::find(delims.begin(), delims.end(), c) != delims.end())
 				return '\0';
 			else
-				return std::tolower(c);
+				return c;
 		});
 
 	// remove comments
