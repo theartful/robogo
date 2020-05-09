@@ -11,15 +11,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 # set default build type
 if (NOT CMAKE_BUILD_TYPE)
-	set (CMAKE_BUILD_TYPE "DEBUG" CACHE STRING
+	set (CMAKE_BUILD_TYPE "Debug" CACHE STRING
 		"Choose the type of build, options are: Debug Release" FORCE)
 endif()
-string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
 # set NDEBUG
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(NDEBUG 0)
-elseif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 	set(NDEBUG 1)
 endif()
 
@@ -49,7 +48,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
 	if (REPORT_COVERAGE)
-		set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-fprofile-arcs -ftest-coverage")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+		include(CodeCoverage)
+		setup_target_for_coverage_lcov(
+		  NAME coverage
+		  EXECUTABLE ctest)
 	endif()
 endif()
 
