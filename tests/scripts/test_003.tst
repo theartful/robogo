@@ -1,4 +1,4 @@
-loadsgf ../../sgf_matches/Game_023.sgf 23
+loadsgf games/Game_023.sgf 23
 
 play black F19
 
@@ -18,7 +18,7 @@ is_suicide white F18
 #? true
 
 is_legal white F19
-#?false
+#? false
 play white F19 
 color F19
 #? black
@@ -26,8 +26,10 @@ color F19
 countlib O17
 #? 2
 findlib O17
-#? N17 O16s
+#? N17
+#? O16
 
 play white B17
-captures white //no captures, when no attack
+# no captures, when no attack
+captures white
 #? 0

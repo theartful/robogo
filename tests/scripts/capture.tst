@@ -3954,3 +3954,6 @@ color B1
 loadsgf ./games/Game_003.sgf 297
 color B1
 #? empty
+
+
+

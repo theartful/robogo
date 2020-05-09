@@ -355,7 +355,7 @@ GTPController::GTPController() : game{}, quit_flag{false}
 		{"final_score", to_gtp_func(&GTPController::final_score)},
 		{"boardsize", to_gtp_func(&GTPController::boardsize)},
 		{"quit", to_gtp_func(&GTPController::quit)},
-		// {"rg_showboard", to_gtp_func(&GTPController::rg_showboard)},
+		{"rg_showboard", to_gtp_func(&GTPController::rg_showboard)},
 		{"countlib", to_gtp_func(&GTPController::countlib)},
 		{"findlib", to_gtp_func(&GTPController::findlib)},
 		{"is_legal", to_gtp_func(&GTPController::is_legal)},

@@ -1,4 +1,4 @@
-loadsgf ../../sgf_matches/Game_021.sgf 142
+loadsgf games/Game_021.sgf 142
 
 captures white
 #? 3

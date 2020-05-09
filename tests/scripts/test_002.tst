@@ -1,4 +1,4 @@
-loadsgf ../../sgf_matches/Game_022.sgf 101
+loadsgf games/Game_022.sgf 101
 
 play black K15
 color K15

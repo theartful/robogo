@@ -1291,3 +1291,5 @@ is_ko white K19
 #? true
 play white K19
 #? illegal move
+
+
