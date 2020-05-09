@@ -39,6 +39,7 @@ void execute_sgf(
 		return;
 
 	rules = {};
+	game = engine::GameState{19};
 	int32_t move_num = 1;
 	for (auto crawler = tree;;)
 	{
