@@ -51,8 +51,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 		include(CodeCoverage)
 		setup_target_for_coverage_lcov(
-		  NAME coverage
-		  EXECUTABLE ctest)
+			NAME coverage
+			EXCLUDE
+				"${CMAKE_SOURCE_DIR}/tests/**"
+				"${CMAKE_SOURCE_DIR}/src/main.cpp"
+				"/usr/include/gtest/**"
+				"/usr/include/x86_64-linux-gnu/c++/9/bits/**"
+				"/usr/include/c++/**"
+			EXECUTABLE ctest)
 	endif()
 endif()
 
