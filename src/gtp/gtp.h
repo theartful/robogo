@@ -92,6 +92,7 @@ class GTPController
 public:
 	GTPController();
 	void main_loop(std::ostream& out, std::istream& in);
+	void handle_request(std::string request, std::ostream& out);
 
 	// supported commands
 	uint32_t protocol_version();

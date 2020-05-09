@@ -283,8 +283,7 @@ static void preprocess(std::string& request)
 {
 	// replace delimiters by null
 	std::transform(
-		request.begin(), request.end(), request.begin(),
-		[](char c) -> char {
+		request.begin(), request.end(), request.begin(), [](char c) -> char {
 			constexpr std::array delims = {' ', '\t'};
 			if (std::find(delims.begin(), delims.end(), c) != delims.end())
 				return '\0';
@@ -301,31 +300,36 @@ static void preprocess(std::string& request)
 void GTPController::main_loop(std::ostream& out, std::istream& in)
 {
 	std::string request;
-	while (!quit_flag)
+	while (!quit_flag && std::getline(in, request))
 	{
-		std::getline(in, request);
-		if (request.empty())
-			continue;
-		preprocess(request);
+		handle_request(std::move(request), out);
+		request = {};
+	}
+}
 
-		GTPCommand gtp_command = parse(request);
-		auto it = function_map.find(gtp_command.command);
-		if (it == function_map.end())
-		{
-			out << '?' << gtp_command.id << ' ';
-			out << "unknown command: " << gtp_command.command;
-			out << std::endl << std::endl;
-		}
+void GTPController::handle_request(std::string request, std::ostream& out)
+{
+	if (request.empty())
+		return;
+	preprocess(request);
+
+	GTPCommand gtp_command = parse(request);
+	auto it = function_map.find(gtp_command.command);
+	if (it == function_map.end())
+	{
+		out << '?' << gtp_command.id << ' ';
+		out << "unknown command: " << gtp_command.command;
+		out << std::endl << std::endl;
+	}
+	else
+	{
+		auto result = it->second(gtp_command);
+		if (result.error)
+			out << '?';
 		else
-		{
-			auto result = it->second(gtp_command);
-			if (result.error)
-				out << '?';
-			else
-				out << '=';
-			out << gtp_command.id << ' ';
-			out << result.output << std::endl << std::endl;
-		}
+			out << '=';
+		out << gtp_command.id << ' ';
+		out << result.output << std::endl << std::endl;
 	}
 }
 
