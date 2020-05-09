@@ -8,7 +8,7 @@ color J11
 play white J11
 color J11
 #? white
-captures white 
+captures white
 #? 5
 
 play black O12
@@ -20,14 +20,14 @@ is_legal white M13
 is_suicide white M13
 #? false
 play white M13
-captures white 
+captures white
 #? 6
 
 captures black
 #? 1
 play black P13
 play white M11
-captures white 
+captures white
 #? 7
 
 is_legal black N13
@@ -35,13 +35,13 @@ is_legal black N13
 is_suicide black N13
 #? false
 play black N13
-captures black 
+captures black
 #? 4
 
 play white A5
 play black A6
 play white C5
-captures white 
+captures white
 #? 8
 
 is_legal black A4
@@ -49,7 +49,7 @@ is_legal black A4
 is_suicide black A4
 #? false
 play black A4
-captures black 
+captures black
 #? 5
 
 is_legal white A5
@@ -59,6 +59,5 @@ is_suicide white A5
 play white A5
 color A5
 #? empty
-captures white 
+captures white
 #? 8
-

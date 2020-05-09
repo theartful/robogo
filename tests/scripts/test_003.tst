@@ -2,7 +2,7 @@ loadsgf games/Game_023.sgf 23
 
 play black F19
 
-captures black 
+captures black
 #? 1
 countlib F18
 #? 0
@@ -19,7 +19,7 @@ is_suicide white F18
 
 is_legal white F19
 #? false
-play white F19 
+play white F19
 color F19
 #? black
 

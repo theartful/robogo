@@ -200,8 +200,6 @@ play white K19
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_005.sgf 75
 is_suicide black G17
 #? true
@@ -316,8 +314,6 @@ is_suicide black R14
 #? true
 play black R14
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_008.sgf 74
@@ -449,8 +445,6 @@ play black M3
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_018.sgf 115
 is_suicide black N4
 #? true
@@ -546,6 +540,16 @@ play white O19
 #? illegal move
 
 
+loadsgf ./games/Game_022.sgf 124
+is_suicide white M15
+#? true
+play white M15
+#? illegal move
+loadsgf ./games/Game_022.sgf 145
+is_suicide black N19
+#? true
+play black N19
+#? illegal move
 
 
 loadsgf ./games/Game_007.sgf 41
@@ -664,6 +668,46 @@ play black O12
 #? illegal move
 
 
+loadsgf ./games/Game_023.sgf 24
+is_suicide white F18
+#? true
+play white F18
+#? illegal move
+loadsgf ./games/Game_023.sgf 90
+is_suicide white R2
+#? true
+play white R2
+#? illegal move
+loadsgf ./games/Game_023.sgf 162
+is_suicide white M3
+#? true
+play white M3
+#? illegal move
+loadsgf ./games/Game_023.sgf 178
+is_suicide white E19
+#? true
+play white E19
+#? illegal move
+loadsgf ./games/Game_023.sgf 182
+is_suicide white Q1
+#? true
+play white Q1
+#? illegal move
+loadsgf ./games/Game_023.sgf 188
+is_suicide white G19
+#? true
+play white G19
+#? illegal move
+loadsgf ./games/Game_023.sgf 201
+is_suicide black A16
+#? true
+play black A16
+#? illegal move
+loadsgf ./games/Game_023.sgf 204
+is_suicide white S4
+#? true
+play white S4
+#? illegal move
 
 
 loadsgf ./games/Game_012.sgf 125
@@ -686,8 +730,6 @@ is_suicide black O16
 #? true
 play black O16
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_011.sgf 117
@@ -726,6 +768,50 @@ play white E9
 #? illegal move
 
 
+loadsgf ./games/Game_021.sgf 42
+is_suicide white C5
+#? true
+play white C5
+#? illegal move
+loadsgf ./games/Game_021.sgf 43
+is_suicide black B3
+#? true
+play black B3
+#? illegal move
+loadsgf ./games/Game_021.sgf 135
+is_suicide black O18
+#? true
+play black O18
+#? illegal move
+loadsgf ./games/Game_021.sgf 139
+is_suicide black R19
+#? true
+play black R19
+#? illegal move
+is_suicide black P19
+#? true
+play black P19
+#? illegal move
+loadsgf ./games/Game_021.sgf 140
+is_suicide white H16
+#? true
+play white H16
+#? illegal move
+loadsgf ./games/Game_021.sgf 147
+is_suicide black M12
+#? true
+play black M12
+#? illegal move
+loadsgf ./games/Game_021.sgf 149
+is_suicide black A4
+#? true
+play black A4
+#? illegal move
+loadsgf ./games/Game_021.sgf 188
+is_suicide white K4
+#? true
+play white K4
+#? illegal move
 
 
 loadsgf ./games/Game_001.sgf 37
@@ -840,8 +926,6 @@ play white N5
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_010.sgf 82
 is_suicide white D17
 #? true
@@ -943,8 +1027,6 @@ play white L19
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_014.sgf 55
 is_suicide black R5
 #? true
@@ -984,8 +1066,6 @@ is_suicide black M8
 #? true
 play black M8
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_017.sgf 39
@@ -1068,8 +1148,6 @@ is_suicide black J1
 #? true
 play black J1
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_013.sgf 41
@@ -1172,8 +1250,6 @@ play black P18
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_019.sgf 39
 is_suicide black D3
 #? true
@@ -1212,8 +1288,6 @@ is_suicide black L15
 #? true
 play black L15
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_015.sgf 91
@@ -1270,8 +1344,6 @@ is_suicide white B15
 #? true
 play white B15
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_009.sgf 63
@@ -1332,8 +1404,6 @@ is_suicide black T9
 #? true
 play black T9
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_006.sgf 60
@@ -1486,8 +1556,6 @@ is_suicide black B8
 #? true
 play black B8
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_016.sgf 140
@@ -1643,8 +1711,6 @@ play black Q19
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_020.sgf 81
 is_suicide black E2
 #? true
@@ -1725,8 +1791,6 @@ play white O19
 #? illegal move
 
 
-
-
 loadsgf ./games/Game_004.sgf 100
 is_suicide white O10
 #? true
@@ -1751,8 +1815,6 @@ is_suicide white Q19
 #? true
 play white Q19
 #? illegal move
-
-
 
 
 loadsgf ./games/Game_003.sgf 96
@@ -1878,7 +1940,3 @@ is_suicide black B1
 #? true
 play black B1
 #? illegal move
-
-
-
-

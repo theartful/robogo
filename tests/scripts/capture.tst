@@ -993,6 +993,54 @@ color O19
 
 
 
+loadsgf ./games/Game_022.sgf 102
+color G15
+#? black
+color H15
+#? black
+loadsgf ./games/Game_022.sgf 103
+color G15
+#? empty
+color H15
+#? empty
+
+loadsgf ./games/Game_022.sgf 108
+color N17
+#? black
+loadsgf ./games/Game_022.sgf 109
+color N17
+#? empty
+
+loadsgf ./games/Game_022.sgf 111
+color M17
+#? white
+loadsgf ./games/Game_022.sgf 112
+color M17
+#? empty
+
+loadsgf ./games/Game_022.sgf 114
+color N17
+#? black
+loadsgf ./games/Game_022.sgf 115
+color N17
+#? empty
+
+loadsgf ./games/Game_022.sgf 121
+color M17
+#? white
+loadsgf ./games/Game_022.sgf 122
+color M17
+#? empty
+
+loadsgf ./games/Game_022.sgf 123
+color M15
+#? white
+loadsgf ./games/Game_022.sgf 124
+color M15
+#? empty
+
+
+
 loadsgf ./games/Game_007.sgf 40
 color C4
 #? black
@@ -1123,6 +1171,51 @@ color B5
 
 
 
+loadsgf ./games/Game_023.sgf 23
+color F18
+#? white
+loadsgf ./games/Game_023.sgf 24
+color F18
+#? empty
+
+loadsgf ./games/Game_023.sgf 89
+color R2
+#? white
+loadsgf ./games/Game_023.sgf 90
+color R2
+#? empty
+
+loadsgf ./games/Game_023.sgf 161
+color M3
+#? white
+loadsgf ./games/Game_023.sgf 162
+color M3
+#? empty
+
+loadsgf ./games/Game_023.sgf 198
+color C17
+#? black
+color B17
+#? black
+color D17
+#? black
+loadsgf ./games/Game_023.sgf 199
+color C17
+#? empty
+color B17
+#? empty
+color D17
+#? empty
+
+loadsgf ./games/Game_023.sgf 203
+color S4
+#? white
+loadsgf ./games/Game_023.sgf 204
+color S4
+#? empty
+
+
+
 loadsgf ./games/Game_012.sgf 124
 color K9
 #? black
@@ -1236,6 +1329,90 @@ color E9
 #? white
 loadsgf ./games/Game_011.sgf 188
 color E9
+#? empty
+
+
+
+loadsgf ./games/Game_021.sgf 42
+color B3
+#? black
+loadsgf ./games/Game_021.sgf 43
+color B3
+#? empty
+
+loadsgf ./games/Game_021.sgf 134
+color O18
+#? black
+loadsgf ./games/Game_021.sgf 135
+color O18
+#? empty
+
+loadsgf ./games/Game_021.sgf 138
+color P19
+#? black
+loadsgf ./games/Game_021.sgf 139
+color P19
+#? empty
+
+loadsgf ./games/Game_021.sgf 139
+color H16
+#? white
+loadsgf ./games/Game_021.sgf 140
+color H16
+#? empty
+
+loadsgf ./games/Game_021.sgf 142
+color K12
+#? black
+color J12
+#? black
+loadsgf ./games/Game_021.sgf 143
+color K12
+#? empty
+color J12
+#? empty
+
+loadsgf ./games/Game_021.sgf 144
+color N13
+#? black
+loadsgf ./games/Game_021.sgf 145
+color N13
+#? empty
+
+loadsgf ./games/Game_021.sgf 146
+color M12
+#? black
+loadsgf ./games/Game_021.sgf 147
+color M12
+#? empty
+
+loadsgf ./games/Game_021.sgf 147
+color N14
+#? white
+color O14
+#? white
+color O13
+#? white
+loadsgf ./games/Game_021.sgf 148
+color N14
+#? empty
+color O14
+#? empty
+color O13
+#? empty
+
+loadsgf ./games/Game_021.sgf 150
+color C4
+#? black
+loadsgf ./games/Game_021.sgf 151
+color C4
+#? empty
+
+loadsgf ./games/Game_021.sgf 187
+color K4
+#? white
+loadsgf ./games/Game_021.sgf 188
+color K4
 #? empty
 
 
@@ -3954,6 +4131,3 @@ color B1
 loadsgf ./games/Game_003.sgf 297
 color B1
 #? empty
-
-
-

@@ -176,6 +176,8 @@ countlib K13
 findlib K13
 #? H13
 #? J12
+
+
 loadsgf ./games/Game_005.sgf 40
 countlib Q13
 #? 5
@@ -284,6 +286,8 @@ findlib D3
 #? B3
 #? A2
 #? B1
+
+
 loadsgf ./games/Game_008.sgf 40
 countlib R17
 #? 5
@@ -415,6 +419,8 @@ findlib B6
 #? G1
 #? H4
 #? J5
+
+
 loadsgf ./games/Game_018.sgf 40
 countlib Q17
 #? 2
@@ -484,6 +490,74 @@ findlib D13
 #? B12
 #? C12
 #? D12
+
+
+loadsgf ./games/Game_022.sgf 40
+countlib K17
+#? 4
+findlib K17
+#? K19
+#? J18
+#? L18
+#? J17
+countlib F16
+#? 6
+findlib F16
+#? D18
+#? C19
+#? B17
+#? A16
+#? A15
+#? E16
+loadsgf ./games/Game_022.sgf 53
+countlib C6
+#? 4
+findlib C6
+#? C7
+#? B6
+#? C5
+#? D6
+loadsgf ./games/Game_022.sgf 61
+countlib L17
+#? 6
+findlib L17
+#? J16
+#? K15
+#? L18
+#? M17
+#? L15
+#? M16
+loadsgf ./games/Game_022.sgf 83
+countlib O5
+#? 6
+findlib O5
+#? N9
+#? M8
+#? O8
+#? L7
+#? P6
+#? P5
+loadsgf ./games/Game_022.sgf 145
+countlib G14
+#? 7
+findlib G14
+#? E15
+#? E14
+#? F13
+#? G13
+#? H15
+#? H13
+#? G15
+countlib O3
+#? 5
+findlib O3
+#? N4
+#? N3
+#? O2
+#? P2
+#? Q2
+
+
 loadsgf ./games/Game_007.sgf 40
 countlib Q3
 #? 5
@@ -591,6 +665,93 @@ countlib H6
 findlib H6
 #? G7
 #? H5
+
+
+loadsgf ./games/Game_023.sgf 40
+countlib Q16
+#? 5
+findlib Q16
+#? O16
+#? P15
+#? Q15
+#? R15
+#? S16
+countlib M3
+#? 4
+findlib M3
+#? M4
+#? L3
+#? M2
+#? N3
+loadsgf ./games/Game_023.sgf 54
+countlib E16
+#? 5
+findlib E16
+#? B16
+#? C15
+#? D15
+#? E15
+#? F16
+loadsgf ./games/Game_023.sgf 62
+countlib R11
+#? 3
+findlib R11
+#? Q11
+#? R10
+#? S11
+loadsgf ./games/Game_023.sgf 84
+countlib Q16
+#? 6
+findlib Q16
+#? N16
+#? O15
+#? P15
+#? Q15
+#? R15
+#? S16
+loadsgf ./games/Game_023.sgf 146
+countlib J6
+#? 4
+findlib J6
+#? H7
+#? G6
+#? K6
+#? K5
+countlib M6
+#? 13
+findlib M6
+#? M8
+#? L8
+#? K8
+#? J11
+#? H10
+#? L11
+#? M11
+#? H9
+#? H7
+#? K6
+#? N7
+#? O5
+#? O6
+loadsgf ./games/Game_023.sgf 197
+countlib L12
+#? 5
+findlib L12
+#? L11
+#? M14
+#? N13
+#? M11
+#? N12
+countlib M15
+#? 5
+findlib M15
+#? M16
+#? L15
+#? M14
+#? N16
+#? O15
+
+
 loadsgf ./games/Game_012.sgf 40
 countlib R8
 #? 6
@@ -649,6 +810,8 @@ findlib M9
 #? N7
 #? O7
 #? P8
+
+
 loadsgf ./games/Game_011.sgf 40
 countlib Q3
 #? 5
@@ -708,6 +871,72 @@ findlib M15
 #? M16
 #? M14
 #? N15
+
+
+loadsgf ./games/Game_021.sgf 40
+countlib R18
+#? 5
+findlib R18
+#? R19
+#? Q19
+#? P19
+#? O18
+#? S18
+countlib Q16
+#? 3
+findlib Q16
+#? P15
+#? Q15
+#? R16
+loadsgf ./games/Game_021.sgf 53
+countlib N16
+#? 5
+findlib N16
+#? M16
+#? M15
+#? N14
+#? O14
+#? P15
+loadsgf ./games/Game_021.sgf 62
+countlib R8
+#? 4
+findlib R8
+#? R9
+#? Q8
+#? R7
+#? S8
+loadsgf ./games/Game_021.sgf 84
+countlib O17
+#? 3
+findlib O17
+#? O18
+#? N19
+#? M18
+loadsgf ./games/Game_021.sgf 146
+countlib G3
+#? 5
+findlib G3
+#? F4
+#? E3
+#? F2
+#? G2
+#? H3
+countlib M6
+#? 4
+findlib M6
+#? M7
+#? L6
+#? M5
+#? N6
+loadsgf ./games/Game_021.sgf 201
+countlib Q11
+#? 3
+findlib Q11
+#? P12
+#? P11
+#? Q10
+
+
 loadsgf ./games/Game_001.sgf 40
 countlib Q4
 #? 4
@@ -837,6 +1066,8 @@ findlib B13
 #? B12
 #? C13
 #? D14
+
+
 loadsgf ./games/Game_010.sgf 40
 countlib S13
 #? 6
@@ -942,6 +1173,8 @@ findlib P6
 #? Q8
 #? Q7
 #? Q6
+
+
 loadsgf ./games/Game_014.sgf 40
 countlib R17
 #? 5
@@ -1016,6 +1249,8 @@ findlib Q16
 #? O17
 #? O16
 #? Q15
+
+
 loadsgf ./games/Game_017.sgf 40
 countlib Q15
 #? 5
@@ -1080,6 +1315,8 @@ findlib J18
 #? J19
 #? K19
 #? L18
+
+
 loadsgf ./games/Game_013.sgf 40
 countlib N4
 #? 4
@@ -1152,6 +1389,8 @@ findlib L12
 #? K8
 #? L8
 #? M9
+
+
 loadsgf ./games/Game_019.sgf 40
 countlib H3
 #? 4
@@ -1204,6 +1443,8 @@ findlib K9
 #? M9
 #? L7
 #? M8
+
+
 loadsgf ./games/Game_015.sgf 40
 countlib Q3
 #? 5
@@ -1293,6 +1534,8 @@ findlib K14
 #? K15
 #? J14
 #? K13
+
+
 loadsgf ./games/Game_009.sgf 40
 countlib Q4
 #? 6
@@ -1363,6 +1606,8 @@ findlib M11
 #? J9
 #? M9
 #? M10
+
+
 loadsgf ./games/Game_006.sgf 40
 countlib Q16
 #? 4
@@ -1470,6 +1715,8 @@ findlib D7
 #? C7
 #? D6
 #? C5
+
+
 loadsgf ./games/Game_016.sgf 40
 countlib R6
 #? 4
@@ -1633,6 +1880,8 @@ findlib F13
 #? G11
 #? H12
 #? H13
+
+
 loadsgf ./games/Game_020.sgf 40
 countlib Q16
 #? 4
@@ -1704,6 +1953,8 @@ findlib J12
 #? D12
 #? K12
 #? L13
+
+
 loadsgf ./games/Game_004.sgf 40
 countlib Q3
 #? 3
@@ -1763,6 +2014,8 @@ findlib M4
 #? K3
 #? L2
 #? M2
+
+
 loadsgf ./games/Game_003.sgf 40
 countlib R16
 #? 4

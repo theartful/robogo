@@ -246,6 +246,28 @@ play black N4
 #? illegal move
 
 
+loadsgf ./games/Game_022.sgf 109
+is_ko black N17
+#? true
+play black N17
+#? illegal move
+loadsgf ./games/Game_022.sgf 112
+is_ko white M17
+#? true
+play white M17
+#? illegal move
+loadsgf ./games/Game_022.sgf 115
+is_ko black N17
+#? true
+play black N17
+#? illegal move
+loadsgf ./games/Game_022.sgf 122
+is_ko white M17
+#? true
+play white M17
+#? illegal move
+
+
 loadsgf ./games/Game_007.sgf 230
 is_ko white B6
 #? true
@@ -256,6 +278,8 @@ is_ko black B5
 #? true
 play black B5
 #? illegal move
+
+
 
 
 loadsgf ./games/Game_012.sgf 178
@@ -289,6 +313,18 @@ loadsgf ./games/Game_011.sgf 181
 is_ko black L2
 #? true
 play black L2
+#? illegal move
+
+
+loadsgf ./games/Game_021.sgf 145
+is_ko black N13
+#? true
+play black N13
+#? illegal move
+loadsgf ./games/Game_021.sgf 151
+is_ko black C4
+#? true
+play black C4
 #? illegal move
 
 
@@ -1291,5 +1327,3 @@ is_ko white K19
 #? true
 play white K19
 #? illegal move
-
-

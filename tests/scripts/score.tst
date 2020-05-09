@@ -10,7 +10,13 @@ final_score
 loadsgf ./games/Game_018.sgf 0
 final_score
 #? B\+23.5
+loadsgf ./games/Game_022.sgf 0
+final_score
+#? W\+10.5
 loadsgf ./games/Game_007.sgf 0
+final_score
+#? W\+0.5
+loadsgf ./games/Game_023.sgf 0
 final_score
 #? W\+0.5
 loadsgf ./games/Game_012.sgf 0
@@ -19,6 +25,9 @@ final_score
 loadsgf ./games/Game_011.sgf 0
 final_score
 #? W\+11.5
+loadsgf ./games/Game_021.sgf 0
+final_score
+#? W\+4.5
 loadsgf ./games/Game_001.sgf 0
 final_score
 #? B\+6.5
