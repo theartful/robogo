@@ -117,6 +117,7 @@ public:
 	Color color(Vertex vertex);
 	bool is_legal(Color color, Vertex vertex);
 	bool is_suicide(Color color, Vertex vertex);
+	bool is_ko(Color color, Vertex vertex);
 	uint32_t captures(Color color);
 	Score final_score();
 	Color loadsgf(std::string file, int32_t move_num);

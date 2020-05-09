@@ -360,6 +360,7 @@ GTPController::GTPController() : game{}, quit_flag{false}
 		{"findlib", to_gtp_func(&GTPController::findlib)},
 		{"is_legal", to_gtp_func(&GTPController::is_legal)},
 		{"is_suicide", to_gtp_func(&GTPController::is_suicide)},
+		{"is_ko", to_gtp_func(&GTPController::is_ko)},
 		{"color", to_gtp_func(&GTPController::color)},
 		{"captures", to_gtp_func(&GTPController::captures)},
 		{"loadsgf", to_gtp_func(&GTPController::loadsgf)},

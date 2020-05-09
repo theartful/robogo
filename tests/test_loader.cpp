@@ -19,7 +19,8 @@ void TestLoader::run_test()
 	std::string last_response;
 	std::string last_command;
 	std::ifstream fin(file);
-	for (std::string line; std::getline(fin, line); line = {})
+	uint32_t line_num = 1;
+	for (std::string line; std::getline(fin, line); line = {}, line_num++)
 	{
 		if (line.size() <= 1)
 		{
@@ -36,7 +37,8 @@ void TestLoader::run_test()
 				line.substr(static_cast<size_t>(first_nonspace));
 			std::regex re{re_str};
 			EXPECT_TRUE(std::regex_search(last_response, re))
-				<< "Test case failed. Output of command \"" << last_command
+				<< "Test case at line " << line_num << " failed."
+				<< "Output of command \"" << last_command
 				<< "\" is \"" << last_response << "\". Expected to match \""
 				<< re_str << "\"!";
 		}

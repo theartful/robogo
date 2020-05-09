@@ -94,6 +94,11 @@ bool GTPController::is_suicide(Color color, Vertex vertex)
 	return go::engine::is_suicide_move(game, to_action(color, vertex));
 }
 
+bool GTPController::is_ko(Color color, Vertex vertex)
+{
+	return go::engine::is_simple_ko(game, to_action(color, vertex));
+}
+
 uint32_t GTPController::captures(Color color)
 {
 	return go::engine::num_captures(game, to_player_idx(color));
