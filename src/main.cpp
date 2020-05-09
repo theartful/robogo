@@ -1,6 +1,5 @@
-#include "engine/board.h"
 #include "gtp/gtp.h"
-#include <memory>
+
 #include <iostream>
 
 using namespace go::engine;

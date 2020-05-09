@@ -153,7 +153,7 @@ std::optional<Vertex> from_str<Vertex>(std::string_view str)
 	if (str.size() > 3 || str.size() < 2)
 		return {};
 
-	uint32_t col = get_column_idx(str[0]);
+	uint32_t col = get_column_idx(std::tolower(str[0]));
 
 	std::string_view row_str{str.data() + 1, str.size() - 1};
 	if (auto row = from_str<uint32_t>(row_str); row)
@@ -165,9 +165,16 @@ std::optional<Vertex> from_str<Vertex>(std::string_view str)
 template <>
 std::optional<Color> from_str<Color>(std::string_view str)
 {
-	if (str == "b" || str == "black")
+	auto cmp = [](auto&& a, auto&& b) {
+		return std::equal(
+			std::begin(a), std::end(a), std::begin(b),
+			[](unsigned char x, unsigned char y) {
+				return std::tolower(x) == y;
+			});
+	};
+	if (cmp(str, "b") || cmp(str, "black"))
 		return Color::Black;
-	else if (str == "w" || str == "white")
+	else if (cmp(str, "w") || cmp(str, "white"))
 		return Color::White;
 	else
 		return {};
